@@ -1,0 +1,7 @@
+# Local Claude/agent skills
+.claude/skills/
+
+# JetBrains / macOS noise
+.idea/
+.DS_Store
+
