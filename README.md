@@ -52,6 +52,8 @@ npm run dev
 - `npm run dev` - Start development server (Cloudflare workerd runtime)
 - `npm run build` - Build for production
 - `npm run preview` - Preview production build
+- `npm run deploy` - Build and deploy to Cloudflare Workers
+- `npm run tail` - Stream production logs as JSON
 - `npm run lint` - Run ESLint with type-checked rules
 - `npm run lint:fix` - Auto-fix ESLint issues
 - `npm run format` - Run Prettier
@@ -151,24 +153,24 @@ Route protection is handled in `src/middleware.ts`. Add paths to the `PROTECTED_
 ## Deployment
 
 This project deploys to [Cloudflare Workers](https://workers.cloudflare.com/).
+Production URL: <https://10x-money-tracker.devbmmail.workers.dev>.
 
-1. Build the project:
-
-```bash
-npm run build
-```
-
-2. Deploy with Wrangler:
+Build and deploy in one command:
 
 ```bash
-npx wrangler deploy
+npm run deploy   # = astro build && wrangler deploy
 ```
 
-Set `SUPABASE_URL` and `SUPABASE_KEY` as secrets in your Cloudflare dashboard or via `npx wrangler secret put`.
+Production secrets (`SUPABASE_URL`, `SUPABASE_KEY`) live in Cloudflare and are
+managed via `npx wrangler secret put <NAME>` / `npx wrangler secret list`. They
+are never stored in the repository or in CI.
+
+Roll back the active version with `npx wrangler rollback`. Stream production
+logs with `npm run tail`.
 
 ## CI
 
-GitHub Actions runs lint + build on every push and PR to `master`. Configure `SUPABASE_URL` and `SUPABASE_KEY` as repository secrets in GitHub for the build step.
+GitHub Actions runs lint + build on every push and PR to `master`. Configure `SUPABASE_URL` and `SUPABASE_KEY` as repository secrets in GitHub for the build step. CI does **not** deploy; production deploys are run manually with `npm run deploy`.
 
 ## License
 
