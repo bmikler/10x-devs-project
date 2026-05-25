@@ -6,6 +6,8 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
+    "deploy": "astro build && wrangler deploy",
+    "tail": "wrangler tail --remote --format=json",
     "astro": "astro",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
