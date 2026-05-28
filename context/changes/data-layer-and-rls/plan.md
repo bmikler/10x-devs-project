@@ -602,31 +602,31 @@ F-01 ships schema only; no query paths exist yet. Two notes for downstream:
 
 #### Automated
 
-- [x] 1.1 Migration applies cleanly: `npx supabase db push` exits 0
-- [x] 1.2 Schema-list confirms both tables via `\dt public.*`
-- [x] 1.3 RLS enabled on both tables (`relrowsecurity = t`)
-- [x] 1.4 Both triggers registered on `public.categories` (cascade-other, protect-system)
-- [x] 1.5 Lint + build still pass: `npm run lint && npm run build`
+- [x] 1.1 Migration applies cleanly: `npx supabase db push` exits 0 — e2e26c9
+- [x] 1.2 Schema-list confirms both tables via `\dt public.*` — e2e26c9
+- [x] 1.3 RLS enabled on both tables (`relrowsecurity = t`) — e2e26c9
+- [x] 1.4 Both triggers registered on `public.categories` (cascade-other, protect-system) — e2e26c9
+- [x] 1.5 Lint + build still pass: `npm run lint && npm run build` — e2e26c9
 
 #### Manual
 
-- [x] 1.6 With user-category + manually-seeded 'other' present, `DELETE` on the system row raises `Cannot delete the system category`
-- [x] 1.7 Deleting a non-system category reassigns its expenses to 'other'
-- [x] 1.8 Deleting a non-system category with no 'other' present raises the fail-fast cascade error
-- [x] 1.9 A second authenticated user sees none of the first user's rows
+- [x] 1.6 With user-category + manually-seeded 'other' present, `DELETE` on the system row raises `Cannot delete the system category` — e2e26c9
+- [x] 1.7 Deleting a non-system category reassigns its expenses to 'other' — e2e26c9
+- [x] 1.8 Deleting a non-system category with no 'other' present raises the fail-fast cascade error — e2e26c9
+- [x] 1.9 A second authenticated user sees none of the first user's rows — e2e26c9
 
 ### Phase 2: Generated TypeScript types + typed Supabase client
 
 #### Automated
 
-- [ ] 2.1 `npm run db:types` exits 0; file contains `Database` export with both tables
-- [ ] 2.2 `npm run build` exits 0 (Astro runs `astro check`)
-- [ ] 2.3 `npm run lint` passes
+- [x] 2.1 `npm run db:types` exits 0; file contains `Database` export with both tables
+- [x] 2.2 `npm run build` exits 0 (Astro runs `astro check`)
+- [x] 2.3 `npm run lint` passes
 
 #### Manual
 
-- [ ] 2.4 IntelliSense on `supabase.from('categories').select('*')` shows the typed row shape
-- [ ] 2.5 `src/db/database.types.ts` is tracked in git
+- [x] 2.4 IntelliSense on `supabase.from('categories').select('*')` shows the typed row shape
+- [x] 2.5 `src/db/database.types.ts` is tracked in git
 
 ### Phase 3: Doc updates — PRD FR-007 / FR-008, roadmap, lessons
 
