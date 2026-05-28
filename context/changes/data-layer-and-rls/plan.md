@@ -632,11 +632,11 @@ F-01 ships schema only; no query paths exist yet. Two notes for downstream:
 
 #### Automated
 
-- [x] 3.1 `npm run lint && npm run build` still pass
-- [x] 3.2 `rg -l "FR-007|FR-008|F-01" context/foundation/` resolves cleanly
+- [x] 3.1 `npm run lint && npm run build` still pass — 90fedf2
+- [x] 3.2 `rg -l "FR-007|FR-008|F-01" context/foundation/` resolves cleanly — 90fedf2
 
 #### Manual
 
-- [x] 3.3 PRD FR-007/FR-008 text aligns with the schema in Phase 1
-- [x] 3.4 Roadmap `Done` entry names the migration file correctly
-- [x] 3.5 `lessons.md` reads as a usable future reference (not a journal entry)
+- [x] 3.3 PRD FR-007/FR-008 text aligns with the schema in Phase 1 — 90fedf2
+- [x] 3.4 Roadmap `Done` entry names the migration file correctly — 90fedf2
+- [x] 3.5 `lessons.md` reads as a usable future reference (not a journal entry) — 90fedf2
