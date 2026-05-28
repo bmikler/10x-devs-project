@@ -602,18 +602,18 @@ F-01 ships schema only; no query paths exist yet. Two notes for downstream:
 
 #### Automated
 
-- [ ] 1.1 Migration applies cleanly: `npx supabase db push` exits 0
-- [ ] 1.2 Schema-list confirms both tables via `\dt public.*`
-- [ ] 1.3 RLS enabled on both tables (`relrowsecurity = t`)
-- [ ] 1.4 Both triggers registered on `public.categories` (cascade-other, protect-system)
-- [ ] 1.5 Lint + build still pass: `npm run lint && npm run build`
+- [x] 1.1 Migration applies cleanly: `npx supabase db push` exits 0
+- [x] 1.2 Schema-list confirms both tables via `\dt public.*`
+- [x] 1.3 RLS enabled on both tables (`relrowsecurity = t`)
+- [x] 1.4 Both triggers registered on `public.categories` (cascade-other, protect-system)
+- [x] 1.5 Lint + build still pass: `npm run lint && npm run build`
 
 #### Manual
 
-- [ ] 1.6 With user-category + manually-seeded 'other' present, `DELETE` on the system row raises `Cannot delete the system category`
-- [ ] 1.7 Deleting a non-system category reassigns its expenses to 'other'
-- [ ] 1.8 Deleting a non-system category with no 'other' present raises the fail-fast cascade error
-- [ ] 1.9 A second authenticated user sees none of the first user's rows
+- [x] 1.6 With user-category + manually-seeded 'other' present, `DELETE` on the system row raises `Cannot delete the system category`
+- [x] 1.7 Deleting a non-system category reassigns its expenses to 'other'
+- [x] 1.8 Deleting a non-system category with no 'other' present raises the fail-fast cascade error
+- [x] 1.9 A second authenticated user sees none of the first user's rows
 
 ### Phase 2: Generated TypeScript types + typed Supabase client
 
