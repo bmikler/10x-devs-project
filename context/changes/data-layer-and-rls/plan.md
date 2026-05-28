@@ -3,9 +3,9 @@
 ## Overview
 
 Stand up the first domain migration for 10xmoney-tracker: a year-scoped
-`categories` table, a `name`-bearing `expenses` table, two triggers (auto-seed
-the per-year "other" fallback on first user-category insert; cascade
-expense-reassignment on category delete), and a `FOR ALL` RLS policy per table
+`categories` table, a `name`-bearing `expenses` table, two `categories`
+triggers (cascade expense-reassignment on category delete; protect system
+rows from UPDATE), and a `FOR ALL` RLS policy per table
 that enforces per-user isolation structurally via `auth.uid() = user_id`.
 Generate `src/db/database.types.ts` from the live linked project, upgrade
 `src/lib/supabase.ts` to a typed `createServerClient<Database>(...)`, and amend
@@ -41,10 +41,16 @@ After this plan lands:
 2. Querying as any authenticated user returns only that user's rows; INSERTs
    that set `user_id` to anyone other than `auth.uid()` are rejected by RLS
    `WITH CHECK`.
-3. Creating the first non-system category in a year auto-creates an
-   `is_system = true` "other" row for that (user, year).
+3. The schema supports the app-level seeding pattern that S-02 will ship:
+   inserting an `is_system = true` 'other' row per (user, year) alongside the
+   user's first non-system category. F-01 itself does NOT auto-seed — the
+   pattern lives in S-02's code. F-01 delivers the fail-fast backstop: the
+   cascade trigger raises `'No "other" category for user X in year Y'` if any
+   path bypasses the seeding rule.
 4. Deleting a non-system category reassigns its expenses to the same year's
-   "other" row atomically. Deleting a system row raises an exception.
+   "other" row atomically. Deleting a system row from a user-initiated path
+   raises an exception; cascade-deletes triggered by removing the owning
+   `auth.users` row pass through cleanly.
 5. `src/db/database.types.ts` exists, is committed, and is regenerable via
    `npm run db:types`.
 6. `src/lib/supabase.ts` uses `createServerClient<Database>(...)`; `npm run
@@ -129,6 +135,13 @@ what the schema actually does, so they're last.
   (a script, Supabase Studio, a future RPC) bypassed the seeding rule and
   needs to learn it. F-01 does NOT enforce seeding at DB level by design —
   the rule lives in app code so the schema stays minimal.
+- **Auth-user cascade-delete bypasses the system-row guard.** `categories.user_id`
+  uses `references auth.users on delete cascade`. When the auth user is deleted,
+  the FK cascade fires `DELETE` on every category for that user — including the
+  `is_system = true` 'other' row. The cascade trigger detects this case via
+  `EXISTS (SELECT 1 FROM auth.users WHERE id = OLD.user_id)` and lets the cascade
+  through. The user-facing invariant ("you cannot delete your own 'other' row")
+  still holds for every other delete path.
 - **`auth.uid()` requires the user JWT.** RLS predicates evaluate
   `auth.uid()` from the request's `Authorization` header / session cookie. The
   Supabase SSR client (already wired in `src/lib/supabase.ts:9`) handles this
@@ -220,7 +233,13 @@ produces:
   DECLARE other_id UUID;
   BEGIN
     IF OLD.is_system THEN
-      RAISE EXCEPTION 'Cannot delete the system category';
+      -- Bypass the system-row protection when the owning auth.users row
+      -- is being deleted (FK ON DELETE CASCADE). Without this, deleting
+      -- a user account fails because the cascade tries to delete 'other'.
+      IF EXISTS (SELECT 1 FROM auth.users WHERE id = OLD.user_id) THEN
+        RAISE EXCEPTION 'Cannot delete the system category';
+      END IF;
+      RETURN OLD;
     END IF;
     SELECT id INTO other_id FROM public.categories
     WHERE user_id = OLD.user_id AND year = OLD.year AND is_system = true;
@@ -330,11 +349,24 @@ regeneration script to `package.json`, and upgrade the SSR client factory in
 
 **File**: `package.json`
 
-**Intent**: Make type regeneration a single named command so it appears in
-`npm run` listings and in CI / docs without bash incantations.
+**Intent**: Make type regeneration a single named command per target (linked
+remote vs local Docker stack) so it appears in `npm run` listings and in
+CI / docs without bash incantations.
 
-**Contract**: A new `scripts` entry: `"db:types": "supabase gen types
-typescript --linked > src/db/database.types.ts"`. No other scripts change.
+**Contract**: Two new `scripts` entries:
+- `"db:types": "supabase gen types typescript --linked > src/db/database.types.ts"`
+  — pulls types from the linked Supabase project. Default; this is the path
+  used at PR time so the committed file matches what ships.
+- `"db:types:local": "supabase gen types typescript --local > src/db/database.types.ts"`
+  — pulls types from the Docker stack started via `supabase start`. Use this
+  during in-flight iteration on a migration that hasn't been pushed remote
+  yet (e.g. verifying a trigger or RLS shape locally). Requires Docker and
+  `supabase start` to be running.
+
+No other scripts change. The two scripts write to the same file, so a
+developer who alternates between local and remote regeneration must
+re-run the relevant command before committing — the file always reflects
+its last source.
 
 #### 2. Generate and commit the types file
 

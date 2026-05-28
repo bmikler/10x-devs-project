@@ -45,13 +45,14 @@ schema decisions taken during planning.
 | Delete-category cascade (FR-006)         | `BEFORE DELETE` trigger reassigns expenses to that year's "other"; system rows raise on delete       | Keeps the cascade structural (a future cron / psql bypass still preserves history) and refuses to let the user delete the catch-all.                                                                              | Plan   |
 | Expense identifier text                  | Required `name TEXT NOT NULL`; UI defaults from the picked category (or "other")                      | The v1.1 grouped-by-name report needs *something* to group by; defaulting from category keeps the 10-second mobile-entry criterion intact, and "McDonalds under food" is the override path.                       | Plan   |
 | RLS policy shape                         | One `FOR ALL` permissive policy per table with both `USING` and `WITH CHECK`                          | Less SQL than four-per-table; the explicit `WITH CHECK` clause keeps the read-filter / write-check pair symmetric and rejects cross-user inserts.                                                                  | Plan   |
-| Types generation + local-dev posture     | Remote-only — `npm run db:types` calls `supabase gen types typescript --linked`; types committed       | Matches solo-after-hours posture; no Docker; types stay in lockstep with the live prod schema; Supabase branching is the safety net we adopt from S-02 onward when there's data to protect.                       | Plan   |
+| Types generation + local-dev posture     | Both paths — `npm run db:types` against the linked remote (default at PR time) and `npm run db:types:local` against the Docker stack (`supabase start`); types committed | Default path keeps types in lockstep with the live prod schema; the local path lets a developer iterate on a migration against a Docker-backed Postgres before pushing remote (useful for verifying triggers / RLS without touching prod); whichever path generates the file, the committed types remain the source of truth at PR time. | Plan   |
 
 ## Scope
 
 **In scope:**
-- One Supabase migration creating both tables, all constraints, indexes, three
-  triggers, and the RLS policy pair.
+- One Supabase migration creating both tables, all constraints, indexes, two
+  `categories` triggers (cascade-to-'other' on delete; protect-system on update),
+  and the RLS policy pair.
 - `supabase link` to the live project; `supabase db push` to apply.
 - `npm run db:types` script + committed `src/db/database.types.ts`.
 - `src/lib/supabase.ts` upgrade to `createServerClient<Database>(...)`.
