@@ -194,30 +194,30 @@ No code changes. This phase is purely verification.
 
 #### Manual
 
-- [ ] 1.3 Sign in → redirected to `/dashboard`
-- [ ] 1.4 Unauthenticated `/categories` → redirected to `/auth/signin`
-- [ ] 1.5 Unauthenticated `/expenses` → redirected to `/auth/signin`
-- [ ] 1.6 Unauthenticated `/report` → redirected to `/auth/signin`
+- [x] 1.3 Sign in → redirected to `/dashboard`
+- [x] 1.4 Unauthenticated `/categories` → redirected to `/auth/signin`
+- [x] 1.5 Unauthenticated `/expenses` → redirected to `/auth/signin`
+- [x] 1.6 Unauthenticated `/report` → redirected to `/auth/signin`
 
 ### Phase 2: Dashboard hub page
 
 #### Automated
 
-- [x] 2.1 Linting passes: `npm run lint`
-- [x] 2.2 Build succeeds: `npm run build`
+- [x] 2.1 Linting passes: `npm run lint` — dd8c08f
+- [x] 2.2 Build succeeds: `npm run build` — dd8c08f
 
 #### Manual
 
-- [ ] 2.3 Dashboard shows welcome greeting with user email
-- [ ] 2.4 Three action cards visible in vertical stack
-- [ ] 2.5 Cards are thumb-tappable on mobile (375px)
-- [ ] 2.6 No horizontal scroll on 320px viewport
-- [ ] 2.7 Sign-out button works
+- [x] 2.3 Dashboard shows welcome greeting with user email
+- [x] 2.4 Three action cards visible in vertical stack
+- [x] 2.5 Cards are thumb-tappable on mobile (375px)
+- [x] 2.6 No horizontal scroll on 320px viewport
+- [x] 2.7 Sign-out button works
 
 ### Phase 3: Smoke-test the full loop
 
 #### Manual
 
-- [ ] 3.1 Full sign-in → hub → sign-out loop on desktop
-- [ ] 3.2 Full loop on mobile viewport (375px), one-handed usability
-- [ ] 3.3 All protected routes redirect when unauthenticated
+- [x] 3.1 Full sign-in → hub → sign-out loop on desktop
+- [x] 3.2 Full loop on mobile viewport (375px), one-handed usability
+- [x] 3.3 All protected routes redirect when unauthenticated
