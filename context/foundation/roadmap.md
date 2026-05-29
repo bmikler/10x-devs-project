@@ -3,7 +3,7 @@ project: 10xmoney-tracker
 version: 1
 status: draft
 created: 2026-05-27
-updated: 2026-05-27
+updated: 2026-05-29
 prd_version: 1
 main_goal: learn
 top_blocker: capacity
@@ -30,7 +30,7 @@ Replace the personal-budget Excel workflow with a mobile-first web app where log
 | ID    | Change ID                | Outcome (user can …)                                                                | Prerequisites    | PRD refs                            | Status   |
 | ----- | ------------------------ | ----------------------------------------------------------------------------------- | ---------------- | ----------------------------------- | -------- |
 | F-01  | data-layer-and-rls       | (foundation) categories + expenses tables + per-user RLS + generated TS types       | —                | NFR §Data isolation, FR-003, FR-007 | done     |
-| S-01  | signed-in-shell          | sign in, sign out, and land on a hub linking to Categories / Log expense / Report   | —                | FR-001, FR-002                      | ready    |
+| S-01  | signed-in-shell          | sign in, sign out, and land on a hub linking to Categories / Log expense / Report   | —                | FR-001, FR-002                      | done     |
 | S-02  | categories-create-list   | create a category and see all categories listed (including implicit "other")        | F-01, S-01       | FR-003, FR-004                      | proposed |
 | S-03  | log-expense-from-phone   | log an expense (amount + category + date) from a phone, with "other" as fallback    | F-01, S-01, S-02 | FR-007, FR-008                      | proposed |
 | S-04  | per-category-report      | view per-category remaining for the current year (avg monthly spend for recurring, single value for irregular) | F-01, S-02, S-03 | FR-011, US-01                       | proposed |
@@ -91,7 +91,7 @@ What's already in place in the codebase as of 2026-05-27 (auto-researched + user
   - Is email/password (current) acceptable as the "third-party identity provider" of FR-001, or should this slice swap to OAuth (Google/GitHub) per shape-notes? — Owner: user. Block: no (existing auth works as-is; an OAuth swap adds work but does not gate planning).
   - Repurpose or replace the placeholder `src/pages/dashboard.astro`? — Owner: user. Block: no.
 - **Risk:** Low — mostly cosmetic and navigation work; the auth plumbing already exists in the baseline.
-- **Status:** ready
+- **Status:** done — shipped to prod 2026-05-29. Functional; hub styling is rough (see Parked: hub styling polish).
 
 ### S-02: Categories — create and list
 
@@ -177,7 +177,7 @@ What's already in place in the codebase as of 2026-05-27 (auto-researched + user
 | Roadmap ID | Change ID                | Suggested issue title                                      | Ready for `/10x-plan` | Notes |
 | ---------- | ------------------------ | ---------------------------------------------------------- | --------------------- | ----- |
 | F-01       | data-layer-and-rls       | Foundation: domain data model + per-user RLS               | shipped               | Migration 20260528132105_create_budget_schema.sql; types in src/db/database.types.ts. |
-| S-01       | signed-in-shell          | Signed-in shell + budget-tracker landing hub               | yes                   | Run `/10x-plan signed-in-shell`. Parallel with F-01. |
+| S-01       | signed-in-shell          | Signed-in shell + budget-tracker landing hub               | shipped               | Shipped to prod 2026-05-29. Hub styling rough — see Parked. |
 | S-02       | categories-create-list   | Categories: create + list (incl. implicit "other")         | no                    | Blocked by F-01, S-01 — promote to `ready` once both ship. |
 | S-03       | log-expense-from-phone   | Log an expense from a phone (with "other" fallback)        | no                    | Blocked by F-01, S-01, S-02. |
 | S-04       | per-category-report      | Per-category report (north-star slice)                     | no                    | Blocked by F-01, S-02, S-03. Promote first once Prereqs ship. |
@@ -208,7 +208,9 @@ What's already in place in the codebase as of 2026-05-27 (auto-researched + user
 - **Multi-year planning + year-switcher UI** — deferred to v1.1.
 - **Multi-currency / FX conversion** — deferred to v1.1.
 - **Burn-rate / pacing signal for irregular annual categories** — deferred to v1.1 (see Open Q #3).
+- **Signed-in hub styling polish** — S-01 shipped functional but visually rough (tested on prod 2026-05-29). Refine the action-card visuals, spacing, and welcome header against the cosmic identity, and drop the redundant Topbar "Dashboard" link the user is already on. Cosmetic only — no behaviour change. Owner: user/designer. Open via `/10x-new` when picked up.
 
 ## Done
 
 - F-01 / data-layer-and-rls — shipped 2026-05-28. Migration 20260528132105_create_budget_schema.sql; types in src/db/database.types.ts.
+- S-01 / signed-in-shell — shipped to prod 2026-05-29. Post-login redirect to `/dashboard`; middleware protects `/categories`, `/expenses`, `/report`; dashboard hub with three vertical action cards + sign-out. Styling polish deferred (see Parked).
