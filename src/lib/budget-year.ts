@@ -1,0 +1,15 @@
+/**
+ * Single source of "the current budget year", derived in `Europe/Warsaw`.
+ *
+ * Cloudflare Workers run in UTC, so `new Date().getFullYear()` is wrong near a
+ * year boundary (e.g. 23:30 Warsaw on Dec 31 is still 22:30 UTC — same year —
+ * but at 00:30 Warsaw on Jan 1 it is 23:30 UTC on Dec 31, the *previous* year).
+ * `Intl.DateTimeFormat` with an explicit `timeZone` sidesteps the host clock.
+ */
+export function getCurrentBudgetYear(): number {
+  const year = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Europe/Warsaw",
+    year: "numeric",
+  }).format(new Date());
+  return Number(year);
+}
