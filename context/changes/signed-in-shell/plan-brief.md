@@ -16,22 +16,24 @@ A signed-in user is redirected to `/dashboard` immediately after sign-in and see
 
 ## Key Decisions Made
 
-| Decision | Choice | Why (1 sentence) |
-| --- | --- | --- |
-| Hub layout | Vertical action cards | Large tap targets optimised for one-handed phone use, matching the PRD's mobile-first mandate. |
-| Dashboard reuse | Repurpose `/dashboard` | No new routes needed; middleware already protects it; avoids redirect plumbing. |
-| Post-login redirect | Redirect to `/dashboard` | User lands on the actionable hub immediately — zero wasted taps. |
-| Route protection | Pre-register future routes | One middleware change covers S-02 through S-07; future slices don't touch middleware. |
+| Decision            | Choice                     | Why (1 sentence)                                                                               |
+| ------------------- | -------------------------- | ---------------------------------------------------------------------------------------------- |
+| Hub layout          | Vertical action cards      | Large tap targets optimised for one-handed phone use, matching the PRD's mobile-first mandate. |
+| Dashboard reuse     | Repurpose `/dashboard`     | No new routes needed; middleware already protects it; avoids redirect plumbing.                |
+| Post-login redirect | Redirect to `/dashboard`   | User lands on the actionable hub immediately — zero wasted taps.                               |
+| Route protection    | Pre-register future routes | One middleware change covers S-02 through S-07; future slices don't touch middleware.          |
 
 ## Scope
 
 **In scope:**
+
 - Fix sign-in redirect from `/` to `/dashboard`
 - Expand middleware `PROTECTED_ROUTES` to cover `/categories`, `/expenses`, `/report`
 - Replace dashboard stub with hub layout (welcome header, three action cards, sign-out)
 - Include Topbar on the hub page
 
 **Out of scope:**
+
 - Building Categories / Log expense / Report pages (S-02, S-03, S-04)
 - Fetching or displaying budget data
 - OAuth (staying with email/password)
@@ -43,11 +45,11 @@ Pure server-rendered Astro page — no client-side JS needed. The dashboard page
 
 ## Phases at a Glance
 
-| Phase | What it delivers | Key risk |
-| --- | --- | --- |
-| 1. Post-login redirect & route protection | Users land on hub after sign-in; future routes pre-protected | None — two single-line changes |
-| 2. Dashboard hub page | Visual hub with action cards and Topbar | Cards might not feel tappable enough on small screens |
-| 3. Smoke-test the full loop | End-to-end verification on desktop and mobile | None — verification only |
+| Phase                                     | What it delivers                                             | Key risk                                              |
+| ----------------------------------------- | ------------------------------------------------------------ | ----------------------------------------------------- |
+| 1. Post-login redirect & route protection | Users land on hub after sign-in; future routes pre-protected | None — two single-line changes                        |
+| 2. Dashboard hub page                     | Visual hub with action cards and Topbar                      | Cards might not feel tappable enough on small screens |
+| 3. Smoke-test the full loop               | End-to-end verification on desktop and mobile                | None — verification only                              |
 
 **Prerequisites:** Auth flows working (already shipped in baseline).
 **Estimated effort:** ~1 short session (1 phase of plumbing + 1 phase of UI).

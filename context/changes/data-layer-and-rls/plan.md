@@ -54,7 +54,7 @@ After this plan lands:
 5. `src/db/database.types.ts` exists, is committed, and is regenerable via
    `npm run db:types`.
 6. `src/lib/supabase.ts` uses `createServerClient<Database>(...)`; `npm run
-   build` succeeds with no type errors.
+build` succeeds with no type errors.
 7. `prd.md` FR-007 mentions the `name` field; FR-008 mentions the
    at-least-one-category precondition. `roadmap.md` records F-01 as `done`.
 
@@ -86,14 +86,14 @@ one as a fake user B) that confirm each only sees their own rows.
   S-02 / S-03 territory. F-01 builds the surface those slices will consume.
 - **No UI work.** All UI lives downstream.
 - **No copy-from-previous-year function.** Per the user's roadmap clarification,
-  the year-scoped schema *supports* a future copy workflow; building the actual
+  the year-scoped schema _supports_ a future copy workflow; building the actual
   copy RPC or UI is a later slice.
 - **No Hyperdrive binding.** The deploy-plan's risk register recommends
   Hyperdrive in front of Supabase; this plan does not provision it. F-01 only
   defines schema — query-path performance work waits until we have a measured
   latency problem.
 - **No `description` column on categories.** PRD FR-003 specifies name + type
-  + limit. `name` is sufficient.
+  - limit. `name` is sufficient.
 - **No soft-delete columns on expenses.** S-06 will decide soft vs hard
   delete; F-01 sets no `deleted_at`.
 - **No CI hooks for `npm run db:types`.** Manual regeneration is the MVP
@@ -129,7 +129,7 @@ what the schema actually does, so they're last.
   `is_system = true` 'other' row exists for `(auth.uid(), NEW.year)` whenever
   it creates a non-system category. The recommended shape is two inserts in
   sequence — the user's category, then `INSERT ... 'other' ... WHERE NOT
-  EXISTS` — both idempotent under retry. The BEFORE DELETE cascade trigger
+EXISTS` — both idempotent under retry. The BEFORE DELETE cascade trigger
   raises `'No "other" category for user X in year Y'` if 'other' is missing
   at delete time; treat that exception as a fail-fast signal that some path
   (a script, Supabase Studio, a future RPC) bypassed the seeding rule and
@@ -195,15 +195,15 @@ triggers live on the same table.
 produces:
 
 - `public.categories(id UUID PK default gen_random_uuid(), user_id UUID NOT
-  NULL references auth.users on delete cascade, year SMALLINT NOT NULL CHECK
-  year BETWEEN 2000 AND 2100, name TEXT NOT NULL CHECK length(trim(name)) > 0,
-  type TEXT NOT NULL CHECK type IN ('recurring','irregular'), limit_cents
-  BIGINT CHECK limit_cents >= 0, is_system BOOLEAN NOT NULL DEFAULT false,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT now())`
+NULL references auth.users on delete cascade, year SMALLINT NOT NULL CHECK
+year BETWEEN 2000 AND 2100, name TEXT NOT NULL CHECK length(trim(name)) > 0,
+type TEXT NOT NULL CHECK type IN ('recurring','irregular'), limit_cents
+BIGINT CHECK limit_cents >= 0, is_system BOOLEAN NOT NULL DEFAULT false,
+created_at TIMESTAMPTZ NOT NULL DEFAULT now())`
   - `UNIQUE (user_id, year, name)` — no two categories with the same name
     in the same year for the same user.
   - `CHECK ((is_system = true AND limit_cents IS NULL) OR (is_system = false
-    AND limit_cents IS NOT NULL))` — system rows have no limit; user rows
+AND limit_cents IS NOT NULL))` — system rows have no limit; user rows
     must.
   - Index: `(user_id, year)` for list-by-year queries.
 - `public.expenses(id UUID PK default gen_random_uuid(), user_id UUID NOT
@@ -211,7 +211,7 @@ produces:
   references public.categories(id), name TEXT NOT NULL CHECK
   length(trim(name)) > 0, amount_cents BIGINT NOT NULL CHECK amount_cents
   > 0, expense_at TIMESTAMPTZ NOT NULL DEFAULT now(), created_at TIMESTAMPTZ
-  NOT NULL DEFAULT now())`
+  > NOT NULL DEFAULT now())`
   - Index: `(user_id, expense_at)` for report queries that scan by year.
   - Index: `(category_id)` so the cascade-on-delete `UPDATE` is fast.
 - `ALTER TABLE ... ENABLE ROW LEVEL SECURITY` on both tables.
@@ -227,6 +227,7 @@ produces:
   someone else's `user_id`; without it, the `FOR ALL` policy would only
   filter reads. Both clauses are required.
 - BEFORE DELETE trigger `categories_cascade_other_before_delete`:
+
   ```sql
   CREATE FUNCTION public.fn_cascade_to_other()
   RETURNS trigger LANGUAGE plpgsql AS $$
@@ -255,11 +256,14 @@ produces:
   BEFORE DELETE ON public.categories
   FOR EACH ROW EXECUTE FUNCTION public.fn_cascade_to_other();
   ```
+
   The `IF other_id IS NULL THEN RAISE` clause is load-bearing — it's the
   fail-fast signal that some path created a non-system category without
   also seeding 'other' (the seeding rule that lives in S-02's API route).
+
 - BEFORE UPDATE trigger that protects system rows from rename / retype /
   re-limit / un-system:
+
   ```sql
   CREATE FUNCTION public.fn_protect_system_category()
   RETURNS trigger LANGUAGE plpgsql AS $$
@@ -283,7 +287,7 @@ produces:
   ```
 
 The migration file is the single source of truth for everything above. Future
-schema work goes in *new* timestamped migration files; this one is never edited
+schema work goes in _new_ timestamped migration files; this one is never edited
 once it lands on the linked project.
 
 #### 3. Apply the migration
@@ -354,6 +358,7 @@ remote vs local Docker stack) so it appears in `npm run` listings and in
 CI / docs without bash incantations.
 
 **Contract**: Two new `scripts` entries:
+
 - `"db:types": "supabase gen types typescript --linked > src/db/database.types.ts"`
   — pulls types from the linked Supabase project. Default; this is the path
   used at PR time so the committed file matches what ships.
@@ -578,7 +583,7 @@ F-01 ships schema only; no query paths exist yet. Two notes for downstream:
   only after verifying on the branch. F-01 captures this convention in
   `lessons.md`.
 - Rollback for this specific migration is a manual `DROP TABLE public.expenses;
-  DROP TABLE public.categories;` plus deleting the migration file — the
+DROP TABLE public.categories;` plus deleting the migration file — the
   project hasn't accumulated state worth preserving yet. This is the only
   migration where that's true.
 

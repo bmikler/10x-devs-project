@@ -29,11 +29,11 @@ hand-off to downstream milestone-planning skills: it answers
 
 ## Bindings
 
-| Binding | Resource | ID | Source |
-|---|---|---|---|
-| `ASSETS` | Static assets from `./dist` | n/a | declared in `wrangler.jsonc:assets` |
+| Binding   | Resource                                 | ID                                 | Source                                                                                               |
+| --------- | ---------------------------------------- | ---------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| `ASSETS`  | Static assets from `./dist`              | n/a                                | declared in `wrangler.jsonc:assets`                                                                  |
 | `SESSION` | KV namespace `10x-money-tracker-session` | `b6d193ca12954145b55a6164a7473c57` | declared in `wrangler.jsonc:kv_namespaces` (auto-provisioned on first deploy, then locked in config) |
-| `IMAGES` | Cloudflare Images | n/a | platform-provided; enabled by adapter |
+| `IMAGES`  | Cloudflare Images                        | n/a                                | platform-provided; enabled by adapter                                                                |
 
 ## Secrets
 
@@ -83,16 +83,16 @@ Stored encrypted in Cloudflare via `wrangler secret put`. Never in the repo.
 
 ## Version history
 
-| Version ID | Created | Note |
-|---|---|---|
-| `db46e301-342a-49b6-9b39-30e175a8684f` | 2026-05-25 13:36 UTC | initial Worker upload before secrets |
-| `fae4a0bb-4540-4b2e-9fd2-ecbf4d7c311c` | 2026-05-25 13:36 UTC | post `SUPABASE_URL` secret |
-| `a4c9d062-451d-455d-bba7-cde4587f5e47` | 2026-05-25 13:36 UTC | post `SUPABASE_KEY` secret |
+| Version ID                             | Created              | Note                                                                |
+| -------------------------------------- | -------------------- | ------------------------------------------------------------------- |
+| `db46e301-342a-49b6-9b39-30e175a8684f` | 2026-05-25 13:36 UTC | initial Worker upload before secrets                                |
+| `fae4a0bb-4540-4b2e-9fd2-ecbf4d7c311c` | 2026-05-25 13:36 UTC | post `SUPABASE_URL` secret                                          |
+| `a4c9d062-451d-455d-bba7-cde4587f5e47` | 2026-05-25 13:36 UTC | post `SUPABASE_KEY` secret                                          |
 | `4db16bf8-f643-4b28-a4fe-75fa13861ee1` | 2026-05-25 13:37 UTC | first `wrangler deploy` (failed publish — no workers.dev subdomain) |
-| `7f02cc23-cf53-487c-9ffd-3849aca9032d` | 2026-05-25 13:39 UTC | first successful production deploy |
-| `0d7cde81-65c4-43c2-a698-051fb294dff2` | 2026-05-25 13:46 UTC | post explicit SESSION KV binding in wrangler.jsonc |
-| `7f02cc23-cf53-487c-9ffd-3849aca9032d` | 2026-05-25 13:48 UTC | **rollback** to previous version (Phase 5 verification) |
-| `067889c8-12c3-42db-89ce-58f33d8c072f` | 2026-05-25 13:49 UTC | roll-forward; current active version |
+| `7f02cc23-cf53-487c-9ffd-3849aca9032d` | 2026-05-25 13:39 UTC | first successful production deploy                                  |
+| `0d7cde81-65c4-43c2-a698-051fb294dff2` | 2026-05-25 13:46 UTC | post explicit SESSION KV binding in wrangler.jsonc                  |
+| `7f02cc23-cf53-487c-9ffd-3849aca9032d` | 2026-05-25 13:48 UTC | **rollback** to previous version (Phase 5 verification)             |
+| `067889c8-12c3-42db-89ce-58f33d8c072f` | 2026-05-25 13:49 UTC | roll-forward; current active version                                |
 
 ## What is already wired (so downstream planners can rely on it)
 

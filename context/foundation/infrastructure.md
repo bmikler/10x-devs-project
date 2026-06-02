@@ -29,14 +29,14 @@ that broke the tie in Cloudflare's favour.
 
 ## Platform Comparison
 
-| Platform | CLI-first | Managed/Serverless | Agent docs | Stable deploy API | MCP / Integration | Free-tier cost @ MVP traffic |
-|---|---|---|---|---|---|---|
-| **Cloudflare Workers** | Pass | Pass | Pass | Pass | Pass | $0 (100k req/day free) |
-| Vercel | Pass | Pass | Pass | Pass | Partial (MCP beta) | $0 (Hobby; non-commercial only) |
-| Netlify | Pass | Pass | Partial (no llms.txt) | Pass | Pass | $0–$9 |
-| Render | Pass | Pass | Pass | Pass | Pass | $7/mo (free tier sleeps 15 min) |
-| Railway | Pass | Pass | Pass | Pass | Pass | $5/mo (no free always-on) |
-| Fly.io | Pass | Partial (Docker, region pinning) | Pass | Pass | Partial (MCP preview) | ~$3–5/mo (no free tier) |
+| Platform               | CLI-first | Managed/Serverless               | Agent docs            | Stable deploy API | MCP / Integration     | Free-tier cost @ MVP traffic    |
+| ---------------------- | --------- | -------------------------------- | --------------------- | ----------------- | --------------------- | ------------------------------- |
+| **Cloudflare Workers** | Pass      | Pass                             | Pass                  | Pass              | Pass                  | $0 (100k req/day free)          |
+| Vercel                 | Pass      | Pass                             | Pass                  | Pass              | Partial (MCP beta)    | $0 (Hobby; non-commercial only) |
+| Netlify                | Pass      | Pass                             | Partial (no llms.txt) | Pass              | Pass                  | $0–$9                           |
+| Render                 | Pass      | Pass                             | Pass                  | Pass              | Pass                  | $7/mo (free tier sleeps 15 min) |
+| Railway                | Pass      | Pass                             | Pass                  | Pass              | Pass                  | $5/mo (no free always-on)       |
+| Fly.io                 | Pass      | Partial (Docker, region pinning) | Pass                  | Pass              | Partial (MCP preview) | ~$3–5/mo (no free tier)         |
 
 ### Shortlisted platforms
 
@@ -131,7 +131,7 @@ platform's pace of change is faster than a solo evening-only dev can track.
 
 ### Unknown Unknowns
 
-- **`@astrojs/cloudflare` is now a *Workers* adapter, not a *Pages* adapter**,
+- **`@astrojs/cloudflare` is now a _Workers_ adapter, not a _Pages_ adapter**,
   even though the package name suggests platform-neutral. Old tutorials still
   say `wrangler pages deploy`; the correct command for this project is
   `wrangler deploy`. Following stale guides is the most likely first-deploy
@@ -163,7 +163,7 @@ platform's pace of change is faster than a solo evening-only dev can track.
   PR-style previews, configure a separate Worker per branch or use
   `--name <branch>-10xmoney-tracker` on `wrangler deploy` from CI.
 - **Secrets**: `wrangler secret put SUPABASE_URL` / `wrangler secret put
-  SUPABASE_KEY` — stored encrypted in the Workers platform, never in the
+SUPABASE_KEY` — stored encrypted in the Workers platform, never in the
   repo. Hyperdrive connection string is configured separately via
   `wrangler hyperdrive create`. Local dev reads from `.dev.vars` (gitignored,
   same KEY=VALUE format). Rotation: re-run `wrangler secret put` with the
@@ -187,18 +187,18 @@ platform's pace of change is faster than a solo evening-only dev can track.
 
 ## Risk Register
 
-| Risk | Source | Likelihood | Impact | Mitigation |
-|---|---|---|---|---|
-| `@astrojs/cloudflare` v13 adapter regression in a future minor | Devil's advocate | M | H | Pin to a known-good minor in `package.json` (currently `^13.5.0`; consider pinning to exact `13.5.x` post-launch). Verify each upgrade against `astro preview` (which runs workerd) before deploying. |
-| Dual env-access pattern (`import.meta.env` vs `Astro.locals.runtime.env`) causes silent `undefined` at runtime | Devil's advocate | M | M | Define a typed `getRuntimeEnv()` helper in `src/lib/env.ts` that reads from `Astro.locals.runtime.env`; route all Supabase secret access through it. Document the pattern in `AGENTS.md` / `CLAUDE.md`. |
-| 3 MB gzipped bundle ceiling on free tier blocks a future server-side feature | Devil's advocate | L | M | Monitor `wrangler deploy` output (size is printed). Lazy-import heavy deps via `await import()` inside route handlers. Upgrade to Paid Standard ($5/mo, 10 MB ceiling) before adding any PDF/image/server-side processing. |
-| 10 ms CPU limit hit by server-side aggregation in the v1.1 grouped-spend report | Pre-mortem | M | H | Do report aggregation in SQL (Postgres views or RPC), not in the Astro server route. Profile any new server-side computation with `wrangler tail --remote` before considering it shippable. |
-| `Astro.locals.runtime.env` shape change between minors causes silent secret unavailability | Pre-mortem | L | H | Validate Supabase env presence at startup with a typed Zod schema; throw on missing values rather than serving requests with `undefined`. The typed helper from row #2 is the right home. |
-| Following stale `wrangler pages deploy` tutorials breaks first deploy | Unknown unknowns | M | L | Stick to `wrangler deploy` (Workers); pin `wrangler.jsonc` `$schema` to the installed Wrangler version (already done). |
-| Wrangler 4 `--local` default makes `wrangler tail` appear silent | Unknown unknowns | M | L | Always pass `--remote` for production observability. Add an `npm run tail` script (`wrangler tail --remote --format=json`) so the agent has one canonical command. |
-| Hyperdrive misconfiguration (wrong connection string, missing flag) on first deploy | Devil's advocate | M | H | Follow Cloudflare's [Hyperdrive + Supabase](https://developers.cloudflare.com/hyperdrive/examples/connect-to-postgres/postgres-database-providers/supabase/) guide exactly. Use the Supabase **direct** connection string, not the pooler. Verify `compatibility_flags: ["nodejs_compat"]` is present (already done) and `compatibility_date >= 2024-09-23` (currently 2026-05-08, fine). |
-| 100k req/day free quota exhausted on UTC reset boundary | Unknown unknowns | L | M | Set up a `wrangler analytics` check or use the Workers Observability MCP to alert before 80% consumption on a given UTC day. Upgrade to Paid Standard ($5/mo, 10M req/mo) once any kind of public-facing traffic appears. |
-| Worker rollback restores code but Supabase migration cannot be rolled back trivially | Research finding | L | H | Treat Supabase migrations as forward-only by convention. Test destructive migrations against a Supabase branch (Supabase has branching) before applying to the production project. |
+| Risk                                                                                                           | Source           | Likelihood | Impact | Mitigation                                                                                                                                                                                                                                                                                                                                                                                |
+| -------------------------------------------------------------------------------------------------------------- | ---------------- | ---------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `@astrojs/cloudflare` v13 adapter regression in a future minor                                                 | Devil's advocate | M          | H      | Pin to a known-good minor in `package.json` (currently `^13.5.0`; consider pinning to exact `13.5.x` post-launch). Verify each upgrade against `astro preview` (which runs workerd) before deploying.                                                                                                                                                                                     |
+| Dual env-access pattern (`import.meta.env` vs `Astro.locals.runtime.env`) causes silent `undefined` at runtime | Devil's advocate | M          | M      | Define a typed `getRuntimeEnv()` helper in `src/lib/env.ts` that reads from `Astro.locals.runtime.env`; route all Supabase secret access through it. Document the pattern in `AGENTS.md` / `CLAUDE.md`.                                                                                                                                                                                   |
+| 3 MB gzipped bundle ceiling on free tier blocks a future server-side feature                                   | Devil's advocate | L          | M      | Monitor `wrangler deploy` output (size is printed). Lazy-import heavy deps via `await import()` inside route handlers. Upgrade to Paid Standard ($5/mo, 10 MB ceiling) before adding any PDF/image/server-side processing.                                                                                                                                                                |
+| 10 ms CPU limit hit by server-side aggregation in the v1.1 grouped-spend report                                | Pre-mortem       | M          | H      | Do report aggregation in SQL (Postgres views or RPC), not in the Astro server route. Profile any new server-side computation with `wrangler tail --remote` before considering it shippable.                                                                                                                                                                                               |
+| `Astro.locals.runtime.env` shape change between minors causes silent secret unavailability                     | Pre-mortem       | L          | H      | Validate Supabase env presence at startup with a typed Zod schema; throw on missing values rather than serving requests with `undefined`. The typed helper from row #2 is the right home.                                                                                                                                                                                                 |
+| Following stale `wrangler pages deploy` tutorials breaks first deploy                                          | Unknown unknowns | M          | L      | Stick to `wrangler deploy` (Workers); pin `wrangler.jsonc` `$schema` to the installed Wrangler version (already done).                                                                                                                                                                                                                                                                    |
+| Wrangler 4 `--local` default makes `wrangler tail` appear silent                                               | Unknown unknowns | M          | L      | Always pass `--remote` for production observability. Add an `npm run tail` script (`wrangler tail --remote --format=json`) so the agent has one canonical command.                                                                                                                                                                                                                        |
+| Hyperdrive misconfiguration (wrong connection string, missing flag) on first deploy                            | Devil's advocate | M          | H      | Follow Cloudflare's [Hyperdrive + Supabase](https://developers.cloudflare.com/hyperdrive/examples/connect-to-postgres/postgres-database-providers/supabase/) guide exactly. Use the Supabase **direct** connection string, not the pooler. Verify `compatibility_flags: ["nodejs_compat"]` is present (already done) and `compatibility_date >= 2024-09-23` (currently 2026-05-08, fine). |
+| 100k req/day free quota exhausted on UTC reset boundary                                                        | Unknown unknowns | L          | M      | Set up a `wrangler analytics` check or use the Workers Observability MCP to alert before 80% consumption on a given UTC day. Upgrade to Paid Standard ($5/mo, 10M req/mo) once any kind of public-facing traffic appears.                                                                                                                                                                 |
+| Worker rollback restores code but Supabase migration cannot be rolled back trivially                           | Research finding | L          | H      | Treat Supabase migrations as forward-only by convention. Test destructive migrations against a Supabase branch (Supabase has branching) before applying to the production project.                                                                                                                                                                                                        |
 
 ## Getting Started
 
@@ -208,46 +208,57 @@ v13.5.0, `wrangler` v4.90.0, and `wrangler.jsonc` with `nodejs_compat` +
 authentication, secrets, and the first deploy.
 
 1. **Authenticate Wrangler with your Cloudflare account.**
+
    ```bash
    npx wrangler login
    ```
+
    Opens a browser; pick the right Cloudflare account if you have more than
    one. Persists credentials in `~/.wrangler`.
 
 2. **Add the Supabase secrets to the Worker.**
+
    ```bash
    npx wrangler secret put SUPABASE_URL
    npx wrangler secret put SUPABASE_KEY
    ```
+
    Each command prompts for the value once and stores it encrypted. Repeat
    for any other server-side secret. For local dev, create `.dev.vars`
    (gitignored) with the same `KEY=VALUE` pairs.
 
 3. **(Recommended) Provision Hyperdrive in front of Supabase Postgres.**
+
    ```bash
    npx wrangler hyperdrive create 10xmoney-pg \
      --connection-string="postgres://postgres:<password>@db.<project-ref>.supabase.co:5432/postgres"
    ```
+
    Use the Supabase **direct** connection string (not the Supavisor pooler —
    Hyperdrive pools). Add the returned binding to `wrangler.jsonc` as
    `hyperdrive: [{ binding: "HYPERDRIVE", id: "<id-returned>" }]`.
 
 4. **Local development.**
+
    ```bash
    npm run dev      # Astro dev server (fast, Node-based, for UI iteration)
    npm run preview  # astro preview — runs workerd locally for runtime fidelity
    ```
+
    In Astro 6 + `@astrojs/cloudflare` v13, `astro preview` exercises the
    actual Workers runtime via `setPrerenderer()` — use this for any change
    that touches `Astro.locals.runtime.env`, secrets, or bindings.
 
 5. **First production deploy.**
+
    ```bash
    npm run build
    npx wrangler deploy
    ```
+
    `wrangler deploy` (not `wrangler pages deploy`) is the correct command for
    Astro 6 + adapter v13. Add an npm script for convenience:
+
    ```json
    "deploy": "astro build && wrangler deploy"
    ```

@@ -16,23 +16,25 @@ A signed-in user opens `/categories`, fills the inline form, submits, and the pa
 
 ## Key Decisions Made
 
-| Decision                     | Choice                                                                 | Why (1 sentence)                                                                                          | Source |
-| ---------------------------- | --------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- | ------ |
-| "other" seeding mechanism    | App-level two-step: insert user category, then idempotent upsert "other" (`onConflict`, `ignoreDuplicates`) | Pure TypeScript, no new migration — exactly what lessons.md §Seeding prescribes; DB trigger is the backstop. | Plan   |
-| Form error handling          | Native form POST → redirect to `/categories?error=…` (match auth)     | Identical to the shipped auth flow, works without JS, minimal new code.                                   | Plan   |
-| Page layout                  | Single `/categories` page (SSR list + inline create-form island)      | Fewer files, one mobile screen, immediate see-result-after-add loop; route already protected.            | Plan   |
-| "other" visual treatment     | Distinct accent color + icon, sorted last, no edit/delete control     | Default for designer Open Q #2; signals it's the non-editable catch-all.                                  | Plan   |
-| Limit input                  | PLN decimal → integer cents; label switches by type; required > 0     | Natural money entry; makes the type→period meaning explicit; satisfies the user-row limit-NOT-NULL check. | Plan   |
-| Current-year derivation      | `getCurrentBudgetYear()` in `Europe/Warsaw`                           | Workers run in UTC; lessons.md §Timezone requires Warsaw for every year-boundary decision.                | Plan   |
+| Decision                  | Choice                                                                                                      | Why (1 sentence)                                                                                             | Source |
+| ------------------------- | ----------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ | ------ |
+| "other" seeding mechanism | App-level two-step: insert user category, then idempotent upsert "other" (`onConflict`, `ignoreDuplicates`) | Pure TypeScript, no new migration — exactly what lessons.md §Seeding prescribes; DB trigger is the backstop. | Plan   |
+| Form error handling       | Native form POST → redirect to `/categories?error=…` (match auth)                                           | Identical to the shipped auth flow, works without JS, minimal new code.                                      | Plan   |
+| Page layout               | Single `/categories` page (SSR list + inline create-form island)                                            | Fewer files, one mobile screen, immediate see-result-after-add loop; route already protected.                | Plan   |
+| "other" visual treatment  | Distinct accent color + icon, sorted last, no edit/delete control                                           | Default for designer Open Q #2; signals it's the non-editable catch-all.                                     | Plan   |
+| Limit input               | PLN decimal → integer cents; label switches by type; required > 0                                           | Natural money entry; makes the type→period meaning explicit; satisfies the user-row limit-NOT-NULL check.    | Plan   |
+| Current-year derivation   | `getCurrentBudgetYear()` in `Europe/Warsaw`                                                                 | Workers run in UTC; lessons.md §Timezone requires Warsaw for every year-boundary decision.                   | Plan   |
 
 ## Scope
 
 **In scope:**
+
 - `POST /api/categories` (validate → insert user category → seed "other") + `budget-year` / `money` helpers.
 - `/categories` SSR list page + `CategoryForm.tsx` island.
 - Roadmap S-02 status update.
 
 **Out of scope:**
+
 - Edit/delete a category (S-07), multi-year/year switcher, any expense or report UI (S-03/S-04).
 - A service layer, JSON-fetch forms, or a Postgres seeding RPC.
 
@@ -42,11 +44,11 @@ Direct-Supabase API route (no service layer, like the auth routes). The create r
 
 ## Phases at a Glance
 
-| Phase                              | What it delivers                                               | Key risk                                                                                  |
-| ---------------------------------- | ------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| 1. API route + helpers             | `POST /api/categories`, `budget-year.ts`, `money.ts`          | Seeding/ordering bug leaves "other" unseeded → cascade trigger raises on a later delete.  |
-| 2. Page + create-form island       | `/categories` SSR list + `CategoryForm.tsx`                   | Mobile-usability NFR (≤320px, thumb targets); losing field values on redirect error.      |
-| 3. Roadmap doc update              | S-02 marked done in both roadmap tables                       | Doc drift if not amended in this change.                                                   |
+| Phase                        | What it delivers                                     | Key risk                                                                                 |
+| ---------------------------- | ---------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| 1. API route + helpers       | `POST /api/categories`, `budget-year.ts`, `money.ts` | Seeding/ordering bug leaves "other" unseeded → cascade trigger raises on a later delete. |
+| 2. Page + create-form island | `/categories` SSR list + `CategoryForm.tsx`          | Mobile-usability NFR (≤320px, thumb targets); losing field values on redirect error.     |
+| 3. Roadmap doc update        | S-02 marked done in both roadmap tables              | Doc drift if not amended in this change.                                                 |
 
 **Prerequisites:** F-01 (shipped) + S-01 (shipped); signed-in session for manual verification; Supabase secrets already wired.
 **Estimated effort:** ~1 evening session — Phase 1 + 2 are the bulk; Phase 3 is a few lines.

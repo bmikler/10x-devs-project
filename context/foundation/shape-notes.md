@@ -48,7 +48,7 @@ insights:
   vacation 2000 PLN/year) are modelled distinctly, with appropriate rollup.
 
 There is also a fourth, elevated insight that became a core domain rule
-(see `## Business Logic`): the product actively surfaces *unplanned* spending
+(see `## Business Logic`): the product actively surfaces _unplanned_ spending
 patterns — recurring expenses logged under "other" that the user didn't budget
 for. The point is not just to track spend against a plan, but to reveal where
 the plan is wrong.
@@ -136,6 +136,7 @@ nicer form": the phone-in-shop scenario has to feel fast.
 ### Authentication
 
 - FR-001: User can sign in via an OAuth identity provider. Priority: must-have
+
   > Socrates: Counter-argument considered: "OAuth is overkill for one user —
   > it adds an external dependency you could avoid with passwordless or local
   > auth." Resolution: kept. Not handling passwords ourselves outweighs the
@@ -151,7 +152,8 @@ nicer form": the phone-in-shop scenario has to feel fast.
 ### Budget planning
 
 - FR-003: User can create a category with a name, a type (recurring monthly or
-          irregular annual), and a spending limit. Priority: must-have
+  irregular annual), and a spending limit. Priority: must-have
+
   > Socrates: Counter-argument considered: "The recurring/irregular type
   > distinction is conceptual overhead that could be deferred." Resolution:
   > kept. The type distinction is load-bearing — it drives the report's
@@ -161,22 +163,25 @@ nicer form": the phone-in-shop scenario has to feel fast.
   > gut the product.
 
 - FR-004: User can view the list of their categories. The implicit "other"
-          category appears in the list alongside user-defined categories.
-          Priority: must-have
+  category appears in the list alongside user-defined categories.
+  Priority: must-have
+
   > Socrates: Counter-argument considered: "Visually distinguishing 'other'
   > is UX detail leaking into an FR." Resolution: FR reworded — the
   > visual-cue requirement is removed from this FR and routed to
+  >
   > ## Open Questions for the designer to resolve.
 
 - FR-005: User can edit a category's name, type, or limit after creation.
-          Priority: must-have
+  Priority: must-have
+
   > Socrates: Counter-argument considered: "Deleting a category orphans its
   > expenses" (covered jointly with FR-006). Resolution: kept; edit on its
   > own does not orphan data. The deletion semantics are clarified in FR-006.
 
 - FR-006: User can delete a category. Any expenses previously logged against
-          the deleted category are automatically reassigned to the implicit
-          "other" category so no expense history is lost. Priority: must-have
+  the deleted category are automatically reassigned to the implicit
+  "other" category so no expense history is lost. Priority: must-have
   > Socrates: Counter-argument considered: "Deleting a category orphans
   > existing expenses logged against it." Resolution: FR updated to specify
   > cascade-to-other semantics. The user does not lose history; reassigned
@@ -185,8 +190,9 @@ nicer form": the phone-in-shop scenario has to feel fast.
 ### Expense logging
 
 - FR-007: User can log an expense by entering an amount and selecting one of
-          their categories. The date field defaults to today; the user can
-          change it if logging a past expense. Priority: must-have
+  their categories. The date field defaults to today; the user can
+  change it if logging a past expense. Priority: must-have
+
   > Socrates: Counter-argument considered: "This is just 'amount + category +
   > save' which Excel-on-phone almost matches." Resolution: kept as written.
   > Phase 1 elevated mobile-fast capture as the product's reason to exist;
@@ -194,7 +200,8 @@ nicer form": the phone-in-shop scenario has to feel fast.
   > Success Criteria as the secondary signal.
 
 - FR-008: User can log an expense without picking a category — the expense is
-          recorded under the implicit "other" category. Priority: must-have
+  recorded under the implicit "other" category. Priority: must-have
+
   > Socrates: Counter-argument considered: "Without a grouped-by-name report,
   > 'other' is just a trash can — ship both or neither." Resolution: kept.
   > Logging into "other" in MVP populates the dataset that the v1.1 grouped
@@ -203,14 +210,15 @@ nicer form": the phone-in-shop scenario has to feel fast.
   > the price for a complete feature in v1.1.
 
 - FR-009: User can view a list of their previously logged expenses.
-          Priority: must-have
+  Priority: must-have
+
   > Socrates: Counter-argument considered: "Could be deferred — MVP only
   > needs aggregate report." Resolution: kept. Without the list view, the
   > user cannot find a specific expense to edit (FR-010) or visually verify
   > recent entries. It is the necessary substrate for the edit/delete flow.
 
 - FR-010: User can edit or delete a previously logged expense.
-          Priority: must-have
+  Priority: must-have
   > Socrates: Counter-argument considered: "Edit/delete enables fraud against
   > oneself — silent rewriting of history weakens budgeting discipline."
   > Resolution: kept. Typos and wrong-category mistakes are inevitable on a
@@ -221,15 +229,16 @@ nicer form": the phone-in-shop scenario has to feel fast.
 ### Reporting
 
 - FR-011: User can view, per category, the amount remaining for the current
-          calendar year (1 Jan – 31 Dec), alongside a spend metric whose shape
-          follows the category's type — an average monthly spend for recurring
-          monthly categories, and a single cumulative spent value for irregular
-          annual categories. Values from prior or future years are never
-          included. Priority: must-have
+  calendar year (1 Jan – 31 Dec), alongside a spend metric whose shape
+  follows the category's type — an average monthly spend for recurring
+  monthly categories, and a single cumulative spent value for irregular
+  annual categories. Values from prior or future years are never
+  included. Priority: must-have
   > Socrates: Counter-argument considered: "'Remaining' for an irregular
   > annual category at month 3 hides pacing — burn-rate would be more useful."
   > Resolution: kept as written for MVP. Burn-rate and projected-total are
   > real product-value adds but additive; pushed to v1.1. Recorded in
+  >
   > ## Open Questions.
 
 ## User Stories
@@ -265,7 +274,7 @@ What the application decides (and the user does not have to):
 
 1. **Period attribution**. Every expense is attributed to the calendar year
    containing its date. The category's type decides only how the year's spend
-   is *summarised* in the report — averaged across months for recurring monthly
+   is _summarised_ in the report — averaged across months for recurring monthly
    categories, presented as a single cumulative value for irregular annual
    categories. The user never picks a period themselves; the summary shape
    follows from the type.
@@ -273,7 +282,7 @@ What the application decides (and the user does not have to):
    year's attributed expenses and subtracts them from the category's
    year-budget (the monthly limit × 12 for recurring categories, or the annual
    limit for irregular categories) to produce a remaining-for-the-year value.
-   The visible numbers are always *plan-relative* — a year-remaining figure,
+   The visible numbers are always _plan-relative_ — a year-remaining figure,
    plus a type-appropriate spend metric — never bare totals.
 3. **Calendar-year boundary**. All summation is bounded to the current calendar
    year (1 Jan – 31 Dec). Expenses from prior or future years never contribute

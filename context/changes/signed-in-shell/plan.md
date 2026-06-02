@@ -100,6 +100,7 @@ Replace the dashboard stub with a hub layout containing a welcome header, three 
 **Intent**: Replace the stub content with a hub layout. Include the Topbar at the top. Below it, show a welcome greeting with the user's email, then three large vertical action cards linking to `/categories`, `/expenses`, and `/report`. Each card should have an icon (emoji or text), a title, and a one-line description. At the bottom, a sign-out form. Follow the existing cosmic visual identity (`bg-cosmic`, `border-white/10 bg-white/10 backdrop-blur-xl` card pattern, gradient text).
 
 **Contract**: The page imports `Layout` and `Topbar`. It reads `user` from `Astro.locals`. The three cards link to:
+
 - `/categories` — "Categories" — manage your budget categories
 - `/expenses` — "Log expense" — record a new expense
 - `/report` — "Report" — view spending vs plan

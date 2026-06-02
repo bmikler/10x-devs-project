@@ -236,17 +236,17 @@ None — no schema change. The "other" seed is data created at runtime by the AP
 
 #### Automated
 
-- [x] 2.1 Build passes: `npm run build`
-- [x] 2.2 Lint passes: `npm run lint`
-- [x] 2.3 Format check clean: `npm run format`
+- [x] 2.1 Build passes: `npm run build` — 57557c6
+- [x] 2.2 Lint passes: `npm run lint` — 57557c6
+- [x] 2.3 Format check clean: `npm run format` — 57557c6
 
 #### Manual
 
-- [ ] 2.4 Phone-width (~360px) shows list + form with no horizontal scroll and thumb-sized targets
-- [ ] 2.5 Creating the first category reloads showing it plus the accented "other" row (distinct color/icon, no edit/delete control)
-- [ ] 2.6 Limit label reads "Monthly limit (PLN)" for recurring and "Annual limit (PLN)" for irregular
-- [ ] 2.7 Duplicate name shows inline server error; client validation blocks empty name / non-positive limit before submit
-- [ ] 2.8 Dashboard "Categories" card links here and the page redirects signed-out users to sign in
+- [x] 2.4 Phone-width (~360px) shows list + form with no horizontal scroll and thumb-sized targets — 57557c6
+- [x] 2.5 Creating the first category reloads showing it plus the accented "other" row (distinct color/icon, no edit/delete control) — 57557c6
+- [x] 2.6 Limit label reads "Monthly limit (PLN)" for recurring and "Annual limit (PLN)" for irregular — 57557c6
+- [x] 2.7 Duplicate name shows inline server error; client validation blocks empty name / non-positive limit before submit — 57557c6
+- [x] 2.8 Dashboard "Categories" card links here and the page redirects signed-out users to sign in — 57557c6
 
 ### Phase 3: Roadmap / backlog doc updates
 
