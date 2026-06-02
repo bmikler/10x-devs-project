@@ -222,23 +222,23 @@ None — no schema change. The "other" seed is data created at runtime by the AP
 
 #### Automated
 
-- [x] 1.1 Type checking + build pass: `npm run build`
-- [x] 1.2 Lint passes: `npm run lint`
+- [x] 1.1 Type checking + build pass: `npm run build` — 1540874
+- [x] 1.2 Lint passes: `npm run lint` — 1540874
 
 #### Manual
 
-- [ ] 1.3 Valid POST creates the user row and an is_system "other" row for the current year, both owned by the signed-in user
-- [ ] 1.4 A second valid create adds only the user row (no duplicate "other")
-- [ ] 1.5 Duplicate name, name "other", empty name, and non-positive/garbage limit each redirect with ?error and create nothing
-- [ ] 1.6 Seeded "other" row has limit_cents = NULL and passes system_limit_check
+- [x] 1.3 Valid POST creates the user row and an is_system "other" row for the current year, both owned by the signed-in user — 1540874
+- [x] 1.4 A second valid create adds only the user row (no duplicate "other") — 1540874
+- [x] 1.5 Duplicate name, name "other", empty name, and non-positive/garbage limit each redirect with ?error and create nothing — 1540874
+- [x] 1.6 Seeded "other" row has limit_cents = NULL and passes system_limit_check — 1540874
 
 ### Phase 2: `/categories` page + create-form island
 
 #### Automated
 
-- [ ] 2.1 Build passes: `npm run build`
-- [ ] 2.2 Lint passes: `npm run lint`
-- [ ] 2.3 Format check clean: `npm run format`
+- [x] 2.1 Build passes: `npm run build`
+- [x] 2.2 Lint passes: `npm run lint`
+- [x] 2.3 Format check clean: `npm run format`
 
 #### Manual
 
