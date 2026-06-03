@@ -175,8 +175,8 @@ Create the `/expenses` Astro page and `ExpenseForm.tsx` React island — the use
 
 #### Automated
 
-- [x] 1.1 Lint passes: `npm run lint`
-- [x] 1.2 Build succeeds: `npm run build`
+- [x] 1.1 Lint passes: `npm run lint` — d23ad74
+- [x] 1.2 Build succeeds: `npm run build` — d23ad74
 
 #### Manual
 
@@ -188,8 +188,8 @@ Create the `/expenses` Astro page and `ExpenseForm.tsx` React island — the use
 
 #### Automated
 
-- [ ] 2.1 Lint passes: `npm run lint`
-- [ ] 2.2 Build succeeds: `npm run build`
+- [x] 2.1 Lint passes: `npm run lint`
+- [x] 2.2 Build succeeds: `npm run build`
 
 #### Manual
 

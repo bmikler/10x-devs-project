@@ -1,0 +1,71 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import Topbar from "@/components/Topbar.astro";
+import ExpenseForm from "@/components/expenses/ExpenseForm";
+import { createClient } from "@/lib/supabase";
+import { getCurrentBudgetYear } from "@/lib/budget-year";
+
+const { user } = Astro.locals;
+const error = Astro.url.searchParams.get("error");
+const success = Astro.url.searchParams.get("success") === "1";
+const year = getCurrentBudgetYear();
+
+/** Compute today as YYYY-MM-DD in Warsaw TZ (Workers run in UTC). */
+function todayInWarsaw(): string {
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Europe/Warsaw",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(new Date());
+}
+
+const today = todayInWarsaw();
+
+interface CategoryRow {
+  id: string;
+  name: string;
+  is_system: boolean;
+}
+
+let categories: CategoryRow[] = [];
+const supabase = createClient(Astro.request.headers, Astro.cookies);
+if (supabase && user) {
+  // is_system=false first (user rows), then the system "other" row last.
+  const { data } = await supabase
+    .from("categories")
+    .select("id,name,is_system")
+    .eq("year", year)
+    .order("is_system", { ascending: true })
+    .order("name", { ascending: true });
+  categories = data ?? [];
+}
+---
+
+<Layout title="Log Expense">
+  <div class="bg-cosmic flex min-h-screen flex-col p-4">
+    <div class="mx-auto w-full max-w-md">
+      <Topbar />
+
+      <h1
+        class="mb-2 bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text text-center text-3xl font-bold text-transparent"
+      >
+        Log Expense
+      </h1>
+      <p class="mb-6 text-center text-blue-100/80">Budget year {year}</p>
+
+      {
+        categories.length === 0 ? (
+          <div class="rounded-2xl border border-white/10 bg-white/5 p-6 text-center text-blue-100/70">
+            No categories yet.{" "}
+            <a href="/categories" class="text-purple-300 underline">
+              Create a category first.
+            </a>
+          </div>
+        ) : (
+          <ExpenseForm client:load categories={categories} today={today} serverError={error} success={success} />
+        )
+      }
+    </div>
+  </div>
+</Layout>
