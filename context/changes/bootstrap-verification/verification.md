@@ -54,10 +54,10 @@ auto-deploy-on-merge matches the standard solo shape.
 
 ## Pre-scaffold verification
 
-| Signal      | Value                              | Severity      | Notes                                                                     |
-| ----------- | ---------------------------------- | ------------- | ------------------------------------------------------------------------- |
-| npm package | not run                            | n/a           | cmd_template starts with `git clone`; no npm CLI to query                 |
-| GitHub repo | not run                            | n/a           | `gh api` returned 401 (Bad credentials); public API returned 403 (rate limited) |
+| Signal      | Value   | Severity | Notes                                                                           |
+| ----------- | ------- | -------- | ------------------------------------------------------------------------------- |
+| npm package | not run | n/a      | cmd_template starts with `git clone`; no npm CLI to query                       |
+| GitHub repo | not run | n/a      | `gh api` returned 401 (Bad credentials); public API returned 403 (rate limited) |
 
 Recency check unavailable on both signals. Per the slot's failure-mode policy this is warn-and-continue; the scaffold proceeded with no recency heads-up.
 
@@ -72,6 +72,7 @@ Recency check unavailable on both signals. Per the slot's failure-mode policy th
 **.bootstrap-scaffold cleanup**: deleted
 
 Notes:
+
 - A leftover `.bootstrap-scaffold/` from a previous interrupted run was present at Step 0; per user choice it was deleted and the clone re-run from scratch.
 - The inherited `.git/` was removed before move-up so the upstream starter's history does not leak into the project repo.
 - The user's own `.git/` in cwd was untouched.
@@ -112,27 +113,28 @@ The 2 direct findings (`@astrojs/check`, `wrangler`) are the most actionable —
 
 ## Hints recorded but not acted on
 
-| Hint                       | Value                              |
-| -------------------------- | ---------------------------------- |
-| bootstrapper_confidence    | first-class                        |
-| quality_override           | false                              |
-| path_taken                 | standard                           |
-| self_check_answers         | null                               |
-| team_size                  | solo                               |
-| deployment_target          | cloudflare-pages                   |
-| ci_provider                | github-actions                     |
-| ci_default_flow            | auto-deploy-on-merge               |
-| has_auth                   | true                               |
-| has_payments               | false                              |
-| has_realtime               | false                              |
-| has_ai                     | false                              |
-| has_background_jobs        | false                              |
+| Hint                    | Value                |
+| ----------------------- | -------------------- |
+| bootstrapper_confidence | first-class          |
+| quality_override        | false                |
+| path_taken              | standard             |
+| self_check_answers      | null                 |
+| team_size               | solo                 |
+| deployment_target       | cloudflare-pages     |
+| ci_provider             | github-actions       |
+| ci_default_flow         | auto-deploy-on-merge |
+| has_auth                | true                 |
+| has_payments            | false                |
+| has_realtime            | false                |
+| has_ai                  | false                |
+| has_background_jobs     | false                |
 
 ## Next steps
 
 Next: a future skill will set up agent context (CLAUDE.md, AGENTS.md). For now, your project is scaffolded and verified — happy hacking.
 
 Useful manual steps in the meantime:
+
 - `git init` is not needed — cwd already carries your own `.git/`; the cloned starter's `.git/` was removed during scaffold so its history does not leak.
 - Review `CLAUDE.md.scaffold` against your existing `CLAUDE.md` (`diff CLAUDE.md CLAUDE.md.scaffold`) and merge anything starter-specific you want to keep (commands, architecture notes, conventions). Delete `CLAUDE.md.scaffold` afterwards.
 - Address audit findings per your project's risk tolerance — the 2 direct findings (`@astrojs/check`, `wrangler`) are the most actionable; `npm audit fix` may resolve some without breaking changes.
