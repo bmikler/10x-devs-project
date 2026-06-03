@@ -3,7 +3,7 @@ project: 10xmoney-tracker
 version: 1
 status: draft
 created: 2026-05-27
-updated: 2026-05-29
+updated: 2026-06-03
 prd_version: 1
 main_goal: learn
 top_blocker: capacity
@@ -31,7 +31,7 @@ Replace the personal-budget Excel workflow with a mobile-first web app where log
 | ---- | ---------------------- | -------------------------------------------------------------------------------------------------------------- | ---------------- | ----------------------------------- | -------- |
 | F-01 | data-layer-and-rls     | (foundation) categories + expenses tables + per-user RLS + generated TS types                                  | —                | NFR §Data isolation, FR-003, FR-007 | done     |
 | S-01 | signed-in-shell        | sign in, sign out, and land on a hub linking to Categories / Log expense / Report                              | —                | FR-001, FR-002                      | done     |
-| S-02 | categories-create-list | create a category and see all categories listed (including implicit "other")                                   | F-01, S-01       | FR-003, FR-004                      | proposed |
+| S-02 | categories-create-list | create a category and see all categories listed (including implicit "other")                                   | F-01, S-01       | FR-003, FR-004                      | done     |
 | S-03 | log-expense-from-phone | log an expense (amount + category + date) from a phone, with "other" as fallback                               | F-01, S-01, S-02 | FR-007, FR-008                      | proposed |
 | S-04 | per-category-report    | view per-category remaining for the current year (avg monthly spend for recurring, single value for irregular) | F-01, S-02, S-03 | FR-011, US-01                       | proposed |
 | S-05 | expenses-list          | view the list of previously logged expenses                                                                    | S-03             | FR-009                              | proposed |
@@ -174,16 +174,16 @@ What's already in place in the codebase as of 2026-05-27 (auto-researched + user
 
 ## Backlog Handoff
 
-| Roadmap ID | Change ID              | Suggested issue title                               | Ready for `/10x-plan` | Notes                                                                                 |
-| ---------- | ---------------------- | --------------------------------------------------- | --------------------- | ------------------------------------------------------------------------------------- |
-| F-01       | data-layer-and-rls     | Foundation: domain data model + per-user RLS        | shipped               | Migration 20260528132105_create_budget_schema.sql; types in src/db/database.types.ts. |
-| S-01       | signed-in-shell        | Signed-in shell + budget-tracker landing hub        | shipped               | Shipped to prod 2026-05-29. Hub styling rough — see Parked.                           |
-| S-02       | categories-create-list | Categories: create + list (incl. implicit "other")  | no                    | Blocked by F-01, S-01 — promote to `ready` once both ship.                            |
-| S-03       | log-expense-from-phone | Log an expense from a phone (with "other" fallback) | no                    | Blocked by F-01, S-01, S-02.                                                          |
-| S-04       | per-category-report    | Per-category report (north-star slice)              | no                    | Blocked by F-01, S-02, S-03. Promote first once Prereqs ship.                         |
-| S-05       | expenses-list          | Expenses list view                                  | no                    | Blocked by S-03.                                                                      |
-| S-06       | expenses-edit-delete   | Expenses: edit + delete                             | no                    | Blocked by S-05.                                                                      |
-| S-07       | categories-edit-delete | Categories: edit + delete (cascade-to-"other")      | no                    | Blocked by S-02.                                                                      |
+| Roadmap ID | Change ID              | Suggested issue title                               | Ready for `/10x-plan` | Notes                                                                                                     |
+| ---------- | ---------------------- | --------------------------------------------------- | --------------------- | --------------------------------------------------------------------------------------------------------- |
+| F-01       | data-layer-and-rls     | Foundation: domain data model + per-user RLS        | shipped               | Migration 20260528132105_create_budget_schema.sql; types in src/db/database.types.ts.                     |
+| S-01       | signed-in-shell        | Signed-in shell + budget-tracker landing hub        | shipped               | Shipped to prod 2026-05-29. Hub styling rough — see Parked.                                               |
+| S-02       | categories-create-list | Categories: create + list (incl. implicit "other")  | shipped               | Shipped to prod 2026-06-02. POST /api/categories, categories.astro, CategoryForm.tsx; "other" app-seeded. |
+| S-03       | log-expense-from-phone | Log an expense from a phone (with "other" fallback) | ready                 | Prereqs F-01, S-01, S-02 all shipped — ready to plan.                                                     |
+| S-04       | per-category-report    | Per-category report (north-star slice)              | no                    | Blocked by F-01, S-02, S-03. Promote first once Prereqs ship.                                             |
+| S-05       | expenses-list          | Expenses list view                                  | no                    | Blocked by S-03.                                                                                          |
+| S-06       | expenses-edit-delete   | Expenses: edit + delete                             | no                    | Blocked by S-05.                                                                                          |
+| S-07       | categories-edit-delete | Categories: edit + delete (cascade-to-"other")      | ready                 | Sole prereq S-02 shipped — ready to plan.                                                                 |
 
 ## Open Roadmap Questions
 
