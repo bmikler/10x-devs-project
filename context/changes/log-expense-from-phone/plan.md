@@ -180,24 +180,24 @@ Create the `/expenses` Astro page and `ExpenseForm.tsx` React island — the use
 
 #### Manual
 
-- [ ] 1.3 POST with valid data returns 302 to `/expenses?success=1` and row appears in Supabase
-- [ ] 1.4 POST with missing/invalid amount returns redirect with error
-- [ ] 1.5 POST with invalid category_id returns redirect with error
+- [x] 1.3 POST with valid data returns 302 to `/expenses?success=1` and row appears in Supabase
+- [x] 1.4 POST with missing/invalid amount returns redirect with error
+- [x] 1.5 POST with invalid category_id returns redirect with error
 
 ### Phase 2: Expense Form Page + Island
 
 #### Automated
 
-- [x] 2.1 Lint passes: `npm run lint`
-- [x] 2.2 Build succeeds: `npm run build`
+- [x] 2.1 Lint passes: `npm run lint` — faffd3d
+- [x] 2.2 Build succeeds: `npm run build` — faffd3d
 
 #### Manual
 
-- [ ] 2.3 Form is usable one-handed on mobile; tap targets are large
-- [ ] 2.4 "other" pre-selected; tapping category updates name field
-- [ ] 2.5 Amount field shows decimal keyboard on mobile
-- [ ] 2.6 Date defaults to today; changeable
-- [ ] 2.7 Valid submit → success banner + form reset
-- [ ] 2.8 Success banner auto-dismisses after ~4 seconds
-- [ ] 2.9 Empty/invalid amount → inline error, no submit
-- [ ] 2.10 End-to-end: app icon → saved confirmation < 10 seconds
+- [x] 2.3 Form is usable one-handed on mobile; tap targets are large
+- [x] 2.4 "other" pre-selected; tapping category updates name field
+- [x] 2.5 Amount field shows decimal keyboard on mobile
+- [x] 2.6 Date defaults to today; changeable
+- [x] 2.7 Valid submit → success banner + form reset
+- [x] 2.8 Success banner auto-dismisses after ~4 seconds
+- [x] 2.9 Empty/invalid amount → inline error, no submit
+- [x] 2.10 End-to-end: app icon → saved confirmation < 10 seconds
