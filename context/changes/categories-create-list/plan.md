@@ -252,8 +252,8 @@ None — no schema change. The "other" seed is data created at runtime by the AP
 
 #### Automated
 
-- [x] 3.1 Markdown formats clean: `npm run format`
+- [x] 3.1 Markdown formats clean: `npm run format` — 779147c
 
 #### Manual
 
-- [x] 3.2 roadmap.md shows S-02 done in both tables with no other slice content changed
+- [x] 3.2 roadmap.md shows S-02 done in both tables with no other slice content changed — 779147c

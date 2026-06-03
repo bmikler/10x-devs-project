@@ -1,9 +1,9 @@
 ---
 change_id: categories-create-list
 title: Categories — create and list (incl. implicit "other")
-status: implementing
+status: implemented
 created: 2026-06-02
-updated: 2026-06-02
+updated: 2026-06-03
 archived_at: null
 ---
 
