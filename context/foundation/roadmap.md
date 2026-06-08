@@ -33,8 +33,8 @@ Replace the personal-budget Excel workflow with a mobile-first web app where log
 | S-01 | signed-in-shell        | sign in, sign out, and land on a hub linking to Categories / Log expense / Report                              | —                | FR-001, FR-002                      | done     |
 | S-02 | categories-create-list | create a category and see all categories listed (including implicit "other")                                   | F-01, S-01       | FR-003, FR-004                      | done     |
 | S-03 | log-expense-from-phone | log an expense (amount + category + date) from a phone, with "other" as fallback                               | F-01, S-01, S-02 | FR-007, FR-008                      | shipped  |
-| S-04 | per-category-report    | view a Monthly section (recurring: avg/limit + burn%) and a Yearly section (irregular: spent/limit + remaining + burn%, "other" last) | F-01, S-02, S-03 | FR-011, US-01                       | planned  |
-| S-05 | expenses-list          | view the list of previously logged expenses                                                                    | S-03             | FR-009                              | proposed |
+| S-04 | per-category-report    | view a Monthly section (recurring: avg/limit + burn%) and a Yearly section (irregular: spent/limit + remaining + burn%, "other" last) | F-01, S-02, S-03 | FR-011, US-01                       | shipped  |
+| S-05 | expenses-list          | view the list of previously logged expenses                                                                    | S-03             | FR-009                              | ready    |
 | S-06 | expenses-edit-delete   | edit or delete a previously logged expense                                                                     | S-05             | FR-010                              | proposed |
 | S-07 | categories-edit-delete | edit a category and delete one with cascade-to-"other" reassignment of expenses                                | S-02             | FR-005, FR-006                      | proposed |
 
@@ -138,7 +138,7 @@ What's already in place in the codebase as of 2026-05-27 (auto-researched + user
   - A month switcher was considered and cut by the user.
 - **FR-011 deviation (recorded):** recurring rows show a *monthly* delta (`limit − avg`) instead of FR-011's literal "remaining for the current year"; the year-remaining figure is kept only in the Yearly (irregular) section. Conscious, user-approved narrowing.
 - **Risk:** The PRD's Business Logic central rule lives here. Period attribution + plan-relative roll-up + calendar-year boundary correctness is the single load-bearing thing this slice ships. Get it wrong and the report lies about plan vs actuals — which invalidates the whole product premise.
-- **Status:** planned
+- **Status:** shipped — `src/lib/report.ts` (pure aggregation helper) + `src/pages/report.astro` (static server-rendered page); expense query capped at start of next month to exclude future-dated expenses; 2 commits: `5e47cf6` (p1 helper), `6a02431` (p2 page). North-star loop complete 2026-06-08.
 
 ### S-05: Expenses — list view
 
@@ -187,8 +187,8 @@ What's already in place in the codebase as of 2026-05-27 (auto-researched + user
 | S-01       | signed-in-shell        | Signed-in shell + budget-tracker landing hub        | shipped               | Shipped to prod 2026-05-29. Hub styling rough — see Parked.                                               |
 | S-02       | categories-create-list | Categories: create + list (incl. implicit "other")  | shipped               | Shipped to prod 2026-06-02. POST /api/categories, categories.astro, CategoryForm.tsx; "other" app-seeded. |
 | S-03       | log-expense-from-phone | Log an expense from a phone (with "other" fallback) | shipped               | POST /api/expenses, expenses.astro, ExpenseForm.tsx; `expense_at` stored at Warsaw noon.                  |
-| S-04       | per-category-report    | Per-category report (north-star slice)              | planned               | Prereqs all shipped. Plan: Monthly/Yearly two-section report — `context/changes/per-category-report/plan.md`. |
-| S-05       | expenses-list          | Expenses list view                                  | no                    | Blocked by S-03.                                                                                          |
+| S-04       | per-category-report    | Per-category report (north-star slice)              | shipped               | `src/lib/report.ts` + `src/pages/report.astro`; north-star loop complete 2026-06-08.                        |
+| S-05       | expenses-list          | Expenses list view                                  | ready                 | Prereq S-03 shipped — ready to plan.                                                                      |
 | S-06       | expenses-edit-delete   | Expenses: edit + delete                             | no                    | Blocked by S-05.                                                                                          |
 | S-07       | categories-edit-delete | Categories: edit + delete (cascade-to-"other")      | ready                 | Sole prereq S-02 shipped — ready to plan.                                                                 |
 
@@ -221,3 +221,4 @@ What's already in place in the codebase as of 2026-05-27 (auto-researched + user
 
 - F-01 / data-layer-and-rls — shipped 2026-05-28. Migration 20260528132105_create_budget_schema.sql; types in src/db/database.types.ts.
 - S-01 / signed-in-shell — shipped to prod 2026-05-29. Post-login redirect to `/dashboard`; middleware protects `/categories`, `/expenses`, `/report`; dashboard hub with three vertical action cards + sign-out. Styling polish deferred (see Parked).
+- S-04 / per-category-report — shipped 2026-06-08. `src/lib/report.ts` (pure buildReport helper) + `src/pages/report.astro` (static server-rendered page); Monthly section (recurring: avg/limit/delta/burn%) + Yearly section (irregular: spent/limit/remaining/burn%, "other" last). North-star loop complete.
