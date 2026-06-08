@@ -314,8 +314,8 @@ None — no schema change.
 
 #### Automated
 
-- [x] 1.1 Type checking passes: `npm run build`
-- [x] 1.2 Linting passes: `npm run lint`
+- [x] 1.1 Type checking passes: `npm run build` — 5e47cf6
+- [x] 1.2 Linting passes: `npm run lint` — 5e47cf6
 
 #### Manual
 
@@ -327,8 +327,8 @@ None — no schema change.
 
 #### Automated
 
-- [ ] 2.1 Build passes: `npm run build`
-- [ ] 2.2 Linting passes: `npm run lint`
+- [x] 2.1 Build passes: `npm run build`
+- [x] 2.2 Linting passes: `npm run lint`
 
 #### Manual
 

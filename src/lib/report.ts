@@ -1,9 +1,7 @@
-import type { CategoryType } from "./categories";
-
 export interface ReportCategory {
   id: string;
   name: string;
-  type: CategoryType;
+  type: string;
   limit_cents: number | null;
   is_system: boolean;
 }
