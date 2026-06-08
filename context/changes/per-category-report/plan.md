@@ -327,8 +327,8 @@ None — no schema change.
 
 #### Automated
 
-- [x] 2.1 Build passes: `npm run build`
-- [x] 2.2 Linting passes: `npm run lint`
+- [x] 2.1 Build passes: `npm run build` — 6a02431
+- [x] 2.2 Linting passes: `npm run lint` — 6a02431
 
 #### Manual
 
