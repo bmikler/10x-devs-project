@@ -3,7 +3,7 @@ project: 10xmoney-tracker
 version: 1
 status: draft
 created: 2026-05-27
-updated: 2026-06-03
+updated: 2026-06-08
 prd_version: 1
 main_goal: learn
 top_blocker: capacity
@@ -32,8 +32,8 @@ Replace the personal-budget Excel workflow with a mobile-first web app where log
 | F-01 | data-layer-and-rls     | (foundation) categories + expenses tables + per-user RLS + generated TS types                                  | —                | NFR §Data isolation, FR-003, FR-007 | done     |
 | S-01 | signed-in-shell        | sign in, sign out, and land on a hub linking to Categories / Log expense / Report                              | —                | FR-001, FR-002                      | done     |
 | S-02 | categories-create-list | create a category and see all categories listed (including implicit "other")                                   | F-01, S-01       | FR-003, FR-004                      | done     |
-| S-03 | log-expense-from-phone | log an expense (amount + category + date) from a phone, with "other" as fallback                               | F-01, S-01, S-02 | FR-007, FR-008                      | proposed |
-| S-04 | per-category-report    | view per-category remaining for the current year (avg monthly spend for recurring, single value for irregular) | F-01, S-02, S-03 | FR-011, US-01                       | proposed |
+| S-03 | log-expense-from-phone | log an expense (amount + category + date) from a phone, with "other" as fallback                               | F-01, S-01, S-02 | FR-007, FR-008                      | shipped  |
+| S-04 | per-category-report    | view a Monthly section (recurring: avg/limit + burn%) and a Yearly section (irregular: spent/limit + remaining + burn%, "other" last) | F-01, S-02, S-03 | FR-011, US-01                       | planned  |
 | S-05 | expenses-list          | view the list of previously logged expenses                                                                    | S-03             | FR-009                              | proposed |
 | S-06 | expenses-edit-delete   | edit or delete a previously logged expense                                                                     | S-05             | FR-010                              | proposed |
 | S-07 | categories-edit-delete | edit a category and delete one with cascade-to-"other" reassignment of expenses                                | S-02             | FR-005, FR-006                      | proposed |
@@ -117,21 +117,28 @@ What's already in place in the codebase as of 2026-05-27 (auto-researched + user
 - **Unknowns:**
   - Native `input[type="date"]` or a custom mobile date picker? — Owner: user. Block: no (default to native; refine if NFR is missed).
 - **Risk:** The PRD's 10-second secondary success criterion lives here. NFR < 2s response budget is exercised on the save path. If this flow doesn't feel fast on a phone, the MVP's core thesis is unproven.
-- **Status:** proposed
+- **Status:** shipped — POST /api/expenses, expenses.astro, ExpenseForm.tsx; `expense_at` stored at Warsaw noon (`warsawNoon()`).
 
-### S-04: Per-category report — remaining for the current year (NORTH STAR)
+### S-04: Per-category report — Monthly / Yearly sections (NORTH STAR)
 
-- **Outcome:** user can view, per category, the amount remaining for the current calendar year (1 Jan – 31 Dec), alongside a spend metric whose shape follows the category's type — an **average monthly spend** for recurring monthly categories, and a **single cumulative spent** value for irregular annual categories.
+- **Outcome:** user can view a read-only `/report` page for the current calendar year (1 Jan – 31 Dec), split into two sections by category type:
+  - **Monthly section** (recurring categories): per row, **average monthly spend** (year total ÷ elapsed Warsaw months, current month inclusive) vs the **monthly limit**, an over/under **delta** (`limit − avg`, negative allowed), and a **burn %** (`avg ÷ monthly limit`).
+  - **Yearly section** (irregular categories): per row, **year-to-date spent** vs the **annual limit**, **remaining** (`limit − spent`, negative allowed), and a **burn %** (`spent ÷ annual limit`). The system **"other"** row appears last, **spent-only** — no limit, no remaining, no burn %.
+  - Overspend/over-pace reads via colour + sign (no new components); empty/partial states handled (no categories → link to create one; categories-with-no-expenses → zeroed rows).
 - **Change ID:** per-category-report
 - **PRD refs:** FR-011, US-01, Business Logic §Period attribution, §Plan-relative roll-up, §Calendar-year boundary
-- **Prerequisites:** F-01, S-02, S-03
+- **Prerequisites:** F-01, S-02, S-03 (all shipped)
 - **Parallel with:** —
 - **Blockers:** —
-- **Unknowns:**
-  - How does the report row visually communicate "average monthly spend" vs "single cumulative spent" so the user doesn't have to translate the metric mentally? — Owner: designer. Block: no.
-  - Default category ordering — alphabetical, by spend, by % of limit? — Owner: user. Block: no.
+- **Design decisions (settled in `/10x-plan`, see `context/changes/per-category-report/plan.md`):**
+  - Aggregation in TypeScript on the page — no migration/RPC; a UTC year-range filter on `expense_at` is exact thanks to the Warsaw-noon storage invariant.
+  - Static `.astro` page, zero client JS (read-only view).
+  - Category ordering: user rows alphabetical, "other" last (reuses the existing pages' `is_system`-then-`name` order).
+  - Burn % is a plain "% of budget consumed", not time-prorated.
+  - A month switcher was considered and cut by the user.
+- **FR-011 deviation (recorded):** recurring rows show a *monthly* delta (`limit − avg`) instead of FR-011's literal "remaining for the current year"; the year-remaining figure is kept only in the Yearly (irregular) section. Conscious, user-approved narrowing.
 - **Risk:** The PRD's Business Logic central rule lives here. Period attribution + plan-relative roll-up + calendar-year boundary correctness is the single load-bearing thing this slice ships. Get it wrong and the report lies about plan vs actuals — which invalidates the whole product premise.
-- **Status:** proposed
+- **Status:** planned
 
 ### S-05: Expenses — list view
 
@@ -179,8 +186,8 @@ What's already in place in the codebase as of 2026-05-27 (auto-researched + user
 | F-01       | data-layer-and-rls     | Foundation: domain data model + per-user RLS        | shipped               | Migration 20260528132105_create_budget_schema.sql; types in src/db/database.types.ts.                     |
 | S-01       | signed-in-shell        | Signed-in shell + budget-tracker landing hub        | shipped               | Shipped to prod 2026-05-29. Hub styling rough — see Parked.                                               |
 | S-02       | categories-create-list | Categories: create + list (incl. implicit "other")  | shipped               | Shipped to prod 2026-06-02. POST /api/categories, categories.astro, CategoryForm.tsx; "other" app-seeded. |
-| S-03       | log-expense-from-phone | Log an expense from a phone (with "other" fallback) | ready                 | Prereqs F-01, S-01, S-02 all shipped — ready to plan.                                                     |
-| S-04       | per-category-report    | Per-category report (north-star slice)              | no                    | Blocked by F-01, S-02, S-03. Promote first once Prereqs ship.                                             |
+| S-03       | log-expense-from-phone | Log an expense from a phone (with "other" fallback) | shipped               | POST /api/expenses, expenses.astro, ExpenseForm.tsx; `expense_at` stored at Warsaw noon.                  |
+| S-04       | per-category-report    | Per-category report (north-star slice)              | planned               | Prereqs all shipped. Plan: Monthly/Yearly two-section report — `context/changes/per-category-report/plan.md`. |
 | S-05       | expenses-list          | Expenses list view                                  | no                    | Blocked by S-03.                                                                                          |
 | S-06       | expenses-edit-delete   | Expenses: edit + delete                             | no                    | Blocked by S-05.                                                                                          |
 | S-07       | categories-edit-delete | Categories: edit + delete (cascade-to-"other")      | ready                 | Sole prereq S-02 shipped — ready to plan.                                                                 |
