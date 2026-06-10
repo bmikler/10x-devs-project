@@ -1,0 +1,157 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import Topbar from "@/components/Topbar.astro";
+import { createClient } from "@/lib/supabase";
+import { getCurrentBudgetYear } from "@/lib/budget-year";
+import { formatCentsToPln } from "@/lib/money";
+import { buildReport } from "@/lib/report";
+import type { ReportCategory, ReportExpense } from "@/lib/report";
+
+const { user } = Astro.locals;
+const year = getCurrentBudgetYear();
+
+const elapsedMonths = Number(
+  new Intl.DateTimeFormat("en-US", {
+    timeZone: "Europe/Warsaw",
+    month: "numeric",
+  }).format(new Date()),
+);
+
+const supabase = createClient(Astro.request.headers, Astro.cookies);
+
+let categories: ReportCategory[] = [];
+let expenses: ReportExpense[] = [];
+
+if (supabase && user) {
+  const { data: catData } = await supabase
+    .from("categories")
+    .select("id,name,type,limit_cents,is_system")
+    .eq("year", year)
+    .order("is_system", { ascending: true })
+    .order("name", { ascending: true });
+  categories = catData ?? [];
+
+  // Cap at the start of the next month so future-dated expenses don't inflate
+  // totals. December wraps to January of the following year.
+  const expenseCutoff =
+    elapsedMonths < 12 ? `${year}-${String(elapsedMonths + 1).padStart(2, "0")}-01` : `${year + 1}-01-01`;
+
+  const { data: expData } = await supabase
+    .from("expenses")
+    .select("category_id,amount_cents")
+    .gte("expense_at", `${year}-01-01`)
+    .lt("expense_at", expenseCutoff);
+  expenses = expData ?? [];
+}
+
+const report = buildReport(categories, expenses, elapsedMonths);
+const hasCategories = categories.length > 0;
+---
+
+<Layout title="Report">
+  <div class="bg-cosmic flex min-h-screen flex-col p-4">
+    <div class="mx-auto w-full max-w-md">
+      <Topbar />
+
+      <h1
+        class="mb-2 bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text text-center text-3xl font-bold text-transparent"
+      >
+        Report
+      </h1>
+      <p class="mb-6 text-center text-blue-100/80">Budget year {year}</p>
+
+      {
+        !hasCategories ? (
+          <div class="rounded-2xl border border-white/10 bg-white/5 p-6 text-center text-blue-100/70">
+            No categories yet.{" "}
+            <a href="/categories" class="text-purple-300 underline">
+              Create a category first.
+            </a>
+          </div>
+        ) : (
+          <>
+            <h2 class="mb-3 text-lg font-semibold text-blue-100">Monthly</h2>
+            {report.monthly.length === 0 ? (
+              <p class="mb-6 text-sm text-blue-100/50">No recurring categories yet.</p>
+            ) : (
+              <ul class="mb-6 flex flex-col gap-3">
+                {report.monthly.map((row) => (
+                  <li class="rounded-2xl border border-white/10 bg-white/10 p-4 text-white backdrop-blur-xl">
+                    <div class="mb-2 font-semibold">{row.name}</div>
+                    <div class="flex justify-between text-sm text-blue-100/70">
+                      <span>Avg / month</span>
+                      <span>{formatCentsToPln(row.avgCents)}</span>
+                    </div>
+                    <div class="flex justify-between text-sm text-blue-100/70">
+                      <span>Limit / month</span>
+                      <span>{formatCentsToPln(row.limitCents)}</span>
+                    </div>
+                    <div class="mt-2 flex justify-between border-t border-white/10 pt-2 text-sm font-medium">
+                      <span class="text-blue-100/70">Delta</span>
+                      <span class:list={row.deltaCents < 0 ? "text-red-400" : "text-emerald-300"}>
+                        {formatCentsToPln(row.deltaCents)}
+                      </span>
+                    </div>
+                    {row.burnPct !== null && (
+                      <div class="flex justify-between text-sm font-medium">
+                        <span class="text-blue-100/70">Burn</span>
+                        <span class:list={row.burnPct > 100 ? "text-amber-400" : "text-blue-100/70"}>
+                          {row.burnPct}%
+                        </span>
+                      </div>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            )}
+
+            <h2 class="mb-3 text-lg font-semibold text-blue-100">Yearly</h2>
+            {report.yearly.length === 0 && !report.other ? (
+              <p class="mb-6 text-sm text-blue-100/50">No irregular categories yet.</p>
+            ) : (
+              <ul class="flex flex-col gap-3">
+                {report.yearly.map((row) => (
+                  <li class="rounded-2xl border border-white/10 bg-white/10 p-4 text-white backdrop-blur-xl">
+                    <div class="mb-2 font-semibold">{row.name}</div>
+                    <div class="flex justify-between text-sm text-blue-100/70">
+                      <span>Spent</span>
+                      <span>{formatCentsToPln(row.spentCents)}</span>
+                    </div>
+                    <div class="flex justify-between text-sm text-blue-100/70">
+                      <span>Annual limit</span>
+                      <span>{formatCentsToPln(row.limitCents)}</span>
+                    </div>
+                    <div class="mt-2 flex justify-between border-t border-white/10 pt-2 text-sm font-medium">
+                      <span class="text-blue-100/70">Remaining</span>
+                      <span class:list={row.remainingCents < 0 ? "text-red-400" : "text-emerald-300"}>
+                        {formatCentsToPln(row.remainingCents)}
+                      </span>
+                    </div>
+                    {row.burnPct !== null && (
+                      <div class="flex justify-between text-sm font-medium">
+                        <span class="text-blue-100/70">Burn</span>
+                        <span class:list={row.burnPct > 100 ? "text-amber-400" : "text-blue-100/70"}>
+                          {row.burnPct}%
+                        </span>
+                      </div>
+                    )}
+                  </li>
+                ))}
+                {report.other && (
+                  <li class="flex items-center gap-3 rounded-2xl border border-amber-300/30 bg-amber-400/10 p-4 text-white">
+                    <span class="text-2xl">🗂️</span>
+                    <div class="flex-1">
+                      <div class="font-semibold text-amber-100">{report.other.name}</div>
+                      <div class="text-xs text-amber-100/70">Unplanned spend</div>
+                    </div>
+                    <div class="text-right font-medium text-amber-100">{formatCentsToPln(report.other.spentCents)}</div>
+                  </li>
+                )}
+              </ul>
+            )}
+          </>
+        )
+      }
+    </div>
+  </div>
+</Layout>
