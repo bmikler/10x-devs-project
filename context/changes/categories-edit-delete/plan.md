@@ -189,27 +189,27 @@ None — no schema or data migration. Existing categories and expenses are unaff
 
 #### Automated
 
-- [x] 1.1 Type checking passes: `npm run build`
-- [x] 1.2 Linting passes: `npm run lint`
+- [x] 1.1 Type checking passes: `npm run build` — ff4c961
+- [x] 1.2 Linting passes: `npm run lint` — ff4c961
 
 #### Manual
 
-- [ ] 1.3 POST valid fields to `/api/categories/<id>` updates and redirects
-- [ ] 1.4 Duplicate and reserved-name edits show friendly errors
-- [ ] 1.5 Delete removes the row and reassigns its expenses to `other`
-- [ ] 1.6 System `other` row id yields a friendly cannot-edit/delete error
+- [x] 1.3 POST valid fields to `/api/categories/<id>` updates and redirects
+- [x] 1.4 Duplicate and reserved-name edits show friendly errors
+- [x] 1.5 Delete removes the row and reassigns its expenses to `other`
+- [x] 1.6 System `other` row id yields a friendly cannot-edit/delete error
 
 ### Phase 2: Interactive Category List
 
 #### Automated
 
-- [ ] 2.1 Type checking passes: `npm run build`
-- [ ] 2.2 Linting passes: `npm run lint`
+- [x] 2.1 Type checking passes: `npm run build`
+- [x] 2.2 Linting passes: `npm run lint`
 
 #### Manual
 
-- [ ] 2.3 User rows show Edit/Delete; system row shows neither
-- [ ] 2.4 Edit pre-fills and persists name/type/limit
-- [ ] 2.5 Duplicate/reserved edit shows friendly error after redirect
-- [ ] 2.6 Delete shows the cascade-warning confirm and removes the row
-- [ ] 2.7 Only one row open at a time; Cancel restores idle; no create-flow regression
+- [x] 2.3 User rows show Edit/Delete; system row shows neither
+- [x] 2.4 Edit pre-fills and persists name/type/limit
+- [x] 2.5 Duplicate/reserved edit shows friendly error after redirect
+- [x] 2.6 Delete shows the cascade-warning confirm and removes the row
+- [x] 2.7 Only one row open at a time; Cancel restores idle; no create-flow regression
