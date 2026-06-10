@@ -1,9 +1,10 @@
 ---
 change_id: categories-edit-delete
 title: Categories edit delete
-status: implementing
+status: implemented
 created: 2026-06-10
 updated: 2026-06-10
+
 archived_at: null
 ---
 

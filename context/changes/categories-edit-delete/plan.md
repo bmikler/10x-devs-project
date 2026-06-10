@@ -203,13 +203,13 @@ None — no schema or data migration. Existing categories and expenses are unaff
 
 #### Automated
 
-- [x] 2.1 Type checking passes: `npm run build`
-- [x] 2.2 Linting passes: `npm run lint`
+- [x] 2.1 Type checking passes: `npm run build` — 761fc35
+- [x] 2.2 Linting passes: `npm run lint` — 761fc35
 
 #### Manual
 
-- [x] 2.3 User rows show Edit/Delete; system row shows neither
-- [x] 2.4 Edit pre-fills and persists name/type/limit
-- [x] 2.5 Duplicate/reserved edit shows friendly error after redirect
-- [x] 2.6 Delete shows the cascade-warning confirm and removes the row
-- [x] 2.7 Only one row open at a time; Cancel restores idle; no create-flow regression
+- [x] 2.3 User rows show Edit/Delete; system row shows neither — 761fc35
+- [x] 2.4 Edit pre-fills and persists name/type/limit — 761fc35
+- [x] 2.5 Duplicate/reserved edit shows friendly error after redirect — 761fc35
+- [x] 2.6 Delete shows the cascade-warning confirm and removes the row — 761fc35
+- [x] 2.7 Only one row open at a time; Cancel restores idle; no create-flow regression — 761fc35
