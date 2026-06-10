@@ -235,7 +235,7 @@ No data migration. Pure additive routing + UI change. Rollback = restore `src/pa
 
 #### Manual
 
-- [ ] 1.3 Spot-check `buildMonthBreakdown` (Warsaw-boundary bucketing; recurring shown at zero; irregular absent when no spend)
+- [ ] 1.3 Spot-check `buildMonthBreakdown` (Warsaw-boundary bucketing; recurring shown at zero; irregular absent when no spend) — superseded: per user request every category is now always listed (irregular no longer hidden); bucketing + recurring-at-zero verified via 3.7/3.3
 
 ### Phase 2: Report hub + yearly relocation
 
@@ -246,22 +246,22 @@ No data migration. Pure additive routing + UI change. Rollback = restore `src/pa
 
 #### Manual
 
-- [ ] 2.3 Dashboard "Report" → `/report` shows two cards
-- [ ] 2.4 "Yearly" → `/report/yearly` identical to pre-change `/report`
-- [ ] 2.5 Unauthenticated `/report`, `/report/yearly` redirect to `/auth/signin`
+- [x] 2.3 Dashboard "Report" → `/report` shows two cards
+- [x] 2.4 "Yearly" → `/report/yearly` identical to pre-change `/report` (plus an added "← Reports" back link)
+- [x] 2.5 Unauthenticated `/report`, `/report/yearly` redirect to `/auth/signin`
 
 ### Phase 3: Monthly report page + switcher island
 
 #### Automated
 
-- [x] 3.1 Build passes: `npm run build`
-- [x] 3.2 Lint passes: `npm run lint`
+- [x] 3.1 Build passes: `npm run build` — 5853812
+- [x] 3.2 Lint passes: `npm run lint` — 5853812
 
 #### Manual
 
-- [ ] 3.3 `/report/monthly` defaults to current month and lists grouped expenses
-- [ ] 3.4 Switching months updates list + recurring spend-vs-limit correctly
-- [ ] 3.5 Over/under/burn colour conventions render for recurring rows
-- [ ] 3.6 Irregular & "other" rows appear only with spend, spend-only
-- [ ] 3.7 Month-boundary expense lands in the correct month
-- [ ] 3.8 Mobile width renders cleanly, no console errors
+- [x] 3.3 `/report/monthly` defaults to current month and lists grouped expenses
+- [x] 3.4 Switching months updates list + recurring spend-vs-limit correctly
+- [x] 3.5 Over/under/burn colour conventions render for recurring rows (burn % replaced by a spending/limit traffic light: over=red, equal=yellow, under=green)
+- [ ] 3.6 Irregular & "other" rows appear only with spend, spend-only — superseded: per user request all categories are now always listed (spend-only still holds for irregular/"other")
+- [x] 3.7 Month-boundary expense lands in the correct month
+- [x] 3.8 Mobile width renders cleanly, no console errors
