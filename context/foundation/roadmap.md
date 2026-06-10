@@ -28,15 +28,15 @@ Replace the personal-budget Excel workflow with a mobile-first web app where log
 ## At a glance
 
 | ID   | Change ID              | Outcome (user can …)                                                                                           | Prerequisites    | PRD refs                            | Status   |
-| ---- | ---------------------- | -------------------------------------------------------------------------------------------------------------- | ---------------- | ----------------------------------- | -------- |
+| ---- | ---------------------- | -------------------------------------------------------------------------------------------------------------- | ---------------- | ----------------------------------- |----------|
 | F-01 | data-layer-and-rls     | (foundation) categories + expenses tables + per-user RLS + generated TS types                                  | —                | NFR §Data isolation, FR-003, FR-007 | done     |
 | S-01 | signed-in-shell        | sign in, sign out, and land on a hub linking to Categories / Log expense / Report                              | —                | FR-001, FR-002                      | done     |
 | S-02 | categories-create-list | create a category and see all categories listed (including implicit "other")                                   | F-01, S-01       | FR-003, FR-004                      | done     |
-| S-03 | log-expense-from-phone | log an expense (amount + category + date) from a phone, with "other" as fallback                               | F-01, S-01, S-02 | FR-007, FR-008                      | shipped  |
-| S-04 | per-category-report    | view a Monthly section (recurring: avg/limit + burn%) and a Yearly section (irregular: spent/limit + remaining + burn%, "other" last) | F-01, S-02, S-03 | FR-011, US-01                       | shipped  |
-| S-05 | expenses-list          | view the list of previously logged expenses                                                                    | S-03             | FR-009                              | ready    |
-| S-06 | expenses-edit-delete   | edit or delete a previously logged expense                                                                     | S-05             | FR-010                              | proposed |
-| S-07 | categories-edit-delete | edit a category and delete one with cascade-to-"other" reassignment of expenses                                | S-02             | FR-005, FR-006                      | proposed |
+| S-03 | log-expense-from-phone | log an expense (amount + category + date) from a phone, with "other" as fallback                               | F-01, S-01, S-02 | FR-007, FR-008                      | done     |
+| S-04 | per-category-report    | view a Monthly section (recurring: avg/limit + burn%) and a Yearly section (irregular: spent/limit + remaining + burn%, "other" last) | F-01, S-02, S-03 | FR-011, US-01                       | done     |
+| S-05 | expenses-list          | view the list of previously logged expenses                                                                    | S-03             | FR-009                              | done     |
+| S-06 | expenses-edit-delete   | edit or delete a previously logged expense                                                                     | S-05             | FR-010                              | done     |
+| S-07 | categories-edit-delete | edit a category and delete one with cascade-to-"other" reassignment of expenses                                | S-02             | FR-005, FR-006                      | done     |
 | S-08 | ui-visual-refresh      | experience a modern, visually consistent, mobile-first UI with reasonable accessibility across every shipped page | S-01, S-02, S-03, S-04 | NFR §Mobile responsiveness, NFR §Accessibility assumption | proposed |
 
 ## Streams
