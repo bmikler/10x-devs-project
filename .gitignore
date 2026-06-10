@@ -1,5 +1,6 @@
 # Local Claude/agent skills
 .claude/
+.agents/skills/
 
 # JetBrains / macOS noise
 .idea/
