@@ -12,20 +12,41 @@ interface Category {
   is_system: boolean;
 }
 
+interface InitialValues {
+  categoryId: string;
+  amount: string;
+  name: string;
+  date: string;
+}
+
 interface Props {
   categories: Category[];
   today: string; // YYYY-MM-DD in Warsaw TZ
   serverError?: string | null;
   success?: boolean;
+  action?: string;
+  initial?: InitialValues;
+  submitLabel?: string;
 }
 
-export default function ExpenseForm({ categories, today, serverError, success: initialSuccess }: Props) {
+export default function ExpenseForm({
+  categories,
+  today,
+  serverError,
+  success: initialSuccess,
+  action = "/api/expenses",
+  initial,
+  submitLabel = "Save expense",
+}: Props) {
   const otherCategory = categories.find((c) => c.is_system) ?? categories[0];
 
-  const [selectedId, setSelectedId] = useState<string>(otherCategory.id);
-  const [amount, setAmount] = useState("");
-  const [name, setName] = useState(otherCategory.name);
-  const [date, setDate] = useState(today);
+  const seedId = initial?.categoryId ?? otherCategory.id;
+  const seedName = initial?.name ?? otherCategory.name;
+
+  const [selectedId, setSelectedId] = useState<string>(seedId);
+  const [amount, setAmount] = useState(initial?.amount ?? "");
+  const [name, setName] = useState(seedName);
+  const [date, setDate] = useState(initial?.date ?? today);
   const [amountError, setAmountError] = useState<string | undefined>();
   const [showSuccess, setShowSuccess] = useState(initialSuccess ?? false);
 
@@ -78,7 +99,7 @@ export default function ExpenseForm({ categories, today, serverError, success: i
         </div>
       )}
 
-      <form method="POST" action="/api/expenses" className="space-y-5" onSubmit={handleSubmit} noValidate>
+      <form method="POST" action={action} className="space-y-5" onSubmit={handleSubmit} noValidate>
         {/* Category grid */}
         <div>
           <span className="mb-2 block text-sm text-blue-100/80">Category</span>
@@ -180,7 +201,7 @@ export default function ExpenseForm({ categories, today, serverError, success: i
         <ServerError message={serverError} />
 
         <SubmitButton pendingText="Saving..." icon={<DollarSign className="size-4" />}>
-          Save expense
+          {submitLabel}
         </SubmitButton>
       </form>
     </div>

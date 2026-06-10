@@ -1,0 +1,111 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import Topbar from "@/components/Topbar.astro";
+import ExpenseForm from "@/components/expenses/ExpenseForm";
+import { createClient } from "@/lib/supabase";
+import { getCurrentBudgetYear } from "@/lib/budget-year";
+import { todayInWarsaw } from "@/lib/expense-write";
+
+const { user } = Astro.locals;
+const { id } = Astro.params;
+const error = Astro.url.searchParams.get("error");
+const year = getCurrentBudgetYear();
+const today = todayInWarsaw();
+
+interface CategoryRow {
+  id: string;
+  name: string;
+  is_system: boolean;
+}
+
+let expense: { id: string; category_id: string; name: string; amount_cents: number; expense_at: string } | null = null;
+let categories: CategoryRow[] = [];
+let notFound = false;
+
+const supabase = createClient(Astro.request.headers, Astro.cookies);
+if (supabase && user) {
+  const { data: expData } = await supabase
+    .from("expenses")
+    .select("id,category_id,name,amount_cents,expense_at")
+    .eq("id", id)
+    .single();
+
+  if (!expData) {
+    notFound = true;
+  } else {
+    expense = expData;
+  }
+
+  const { data: catData } = await supabase
+    .from("categories")
+    .select("id,name,is_system")
+    .eq("year", year)
+    .order("is_system", { ascending: true })
+    .order("name", { ascending: true });
+  categories = catData ?? [];
+}
+
+const initial = expense
+  ? {
+      categoryId: expense.category_id,
+      amount: (expense.amount_cents / 100).toFixed(2),
+      name: expense.name,
+      date: new Intl.DateTimeFormat("en-CA", {
+        timeZone: "Europe/Warsaw",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+      }).format(new Date(expense.expense_at)),
+    }
+  : undefined;
+---
+
+<Layout title="Edit Expense">
+  <div class="bg-cosmic flex min-h-screen flex-col p-4">
+    <div class="mx-auto w-full max-w-md">
+      <Topbar />
+
+      <a
+        href="/report/monthly"
+        class="mb-4 inline-flex items-center gap-1 text-sm text-purple-300 transition-colors hover:text-purple-100 hover:underline"
+      >
+        ← Monthly report
+      </a>
+
+      <h1
+        class="mb-2 bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text text-center text-3xl font-bold text-transparent"
+      >
+        Edit Expense
+      </h1>
+      <p class="mb-6 text-center text-blue-100/80">Budget year {year}</p>
+
+      {
+        notFound ? (
+          <div class="rounded-2xl border border-white/10 bg-white/5 p-6 text-center text-blue-100/70">
+            Expense not found.{" "}
+            <a href="/report/monthly" class="text-purple-300 underline">
+              Back to monthly report.
+            </a>
+          </div>
+        ) : categories.length === 0 ? (
+          <div class="rounded-2xl border border-white/10 bg-white/5 p-6 text-center text-blue-100/70">
+            No categories yet.{" "}
+            <a href="/categories" class="text-purple-300 underline">
+              Create a category first.
+            </a>
+          </div>
+        ) : (
+          <ExpenseForm
+            client:load
+            categories={categories}
+            today={today}
+            initial={initial}
+            action={`/api/expenses/${id}`}
+            submitLabel="Update expense"
+            serverError={error}
+          />
+        )
+      }
+    </div>
+  </div>
+</Layout>

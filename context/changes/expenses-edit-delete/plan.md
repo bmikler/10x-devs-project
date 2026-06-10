@@ -243,8 +243,8 @@ None. Hard delete and update use the existing `expenses` table and RLS policy; n
 
 #### Automated
 
-- [x] 1.1 Build passes: `npm run build`
-- [x] 1.2 Lint passes: `npm run lint`
+- [x] 1.1 Build passes: `npm run build` — a9b74cf
+- [x] 1.2 Lint passes: `npm run lint` — a9b74cf
 
 #### Manual
 
@@ -257,8 +257,8 @@ None. Hard delete and update use the existing `expenses` table and RLS policy; n
 
 #### Automated
 
-- [ ] 2.1 Build passes: `npm run build`
-- [ ] 2.2 Lint passes: `npm run lint`
+- [x] 2.1 Build passes: `npm run build`
+- [x] 2.2 Lint passes: `npm run lint`
 
 #### Manual
 
