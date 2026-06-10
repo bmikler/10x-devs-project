@@ -271,13 +271,13 @@ None. Hard delete and update use the existing `expenses` table and RLS policy; n
 
 #### Automated
 
-- [x] 3.1 Build passes: `npm run build`
-- [x] 3.2 Lint passes: `npm run lint`
+- [x] 3.1 Build passes: `npm run build` — 13ebac1
+- [x] 3.2 Lint passes: `npm run lint` — 13ebac1
 
 #### Manual
 
-- [x] 3.3 Each expense row shows Edit and Delete controls
-- [x] 3.4 Edit round-trips with an "updated" banner and the new value is visible
-- [x] 3.5 Delete requires confirmation; cancel is a no-op; confirm removes the row with a "deleted" banner
-- [x] 3.6 Edited/deleted expense is reflected in the yearly report too
-- [x] 3.7 Roadmap S-06 section carries the REST-refactor follow-up note
+- [x] 3.3 Each expense row shows Edit and Delete controls — 13ebac1
+- [x] 3.4 Edit round-trips with an "updated" banner and the new value is visible — 13ebac1
+- [x] 3.5 Delete requires confirmation; cancel is a no-op; confirm removes the row with a "deleted" banner — 13ebac1
+- [x] 3.6 Edited/deleted expense is reflected in the yearly report too — 13ebac1
+- [x] 3.7 Roadmap S-06 section carries the REST-refactor follow-up note — 13ebac1
