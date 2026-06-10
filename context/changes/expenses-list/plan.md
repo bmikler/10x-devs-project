@@ -241,8 +241,8 @@ No data migration. Pure additive routing + UI change. Rollback = restore `src/pa
 
 #### Automated
 
-- [x] 2.1 Build passes: `npm run build`
-- [x] 2.2 Lint passes: `npm run lint`
+- [x] 2.1 Build passes: `npm run build` — 5b70a0a
+- [x] 2.2 Lint passes: `npm run lint` — 5b70a0a
 
 #### Manual
 
@@ -254,8 +254,8 @@ No data migration. Pure additive routing + UI change. Rollback = restore `src/pa
 
 #### Automated
 
-- [ ] 3.1 Build passes: `npm run build`
-- [ ] 3.2 Lint passes: `npm run lint`
+- [x] 3.1 Build passes: `npm run build`
+- [x] 3.2 Lint passes: `npm run lint`
 
 #### Manual
 
