@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { ChevronLeft, ChevronRight, ChevronDown } from "lucide-react";
 import { buildMonthBreakdown } from "@/lib/report";
 import type { ReportCategory, MonthExpense } from "@/lib/report";
 import { formatCentsToPln } from "@/lib/money";
@@ -17,30 +18,64 @@ interface Props {
 
 export default function MonthlyReport({ categories, expenses, months, defaultMonth }: Props) {
   const [selectedMonth, setSelectedMonth] = useState(defaultMonth);
+  // Categories collapse by default; users toggle each one open independently.
+  const [expanded, setExpanded] = useState<Set<string>>(new Set());
+
+  function toggle(categoryId: string) {
+    setExpanded((prev) => {
+      const next = new Set(prev);
+      if (next.has(categoryId)) {
+        next.delete(categoryId);
+      } else {
+        next.add(categoryId);
+      }
+      return next;
+    });
+  }
+
+  const index = months.findIndex((m) => m.key === selectedMonth);
+  const atFirst = index <= 0;
+  const atLast = index >= months.length - 1;
+  const selectedLabel = months[index]?.label ?? selectedMonth;
+
+  function step(delta: number) {
+    const next = index + delta;
+    if (next >= 0 && next < months.length) {
+      setSelectedMonth(months[next].key);
+    }
+  }
 
   const breakdown = buildMonthBreakdown(categories, expenses, selectedMonth);
-  const selectedLabel = months.find((m) => m.key === selectedMonth)?.label ?? selectedMonth;
   const hasAnyExpenses = breakdown.groups.some((g) => g.expenses.length > 0);
 
   return (
     <div>
-      <label htmlFor="month-select" className="mb-1 block text-sm text-blue-100/80">
-        Month
-      </label>
-      <select
-        id="month-select"
-        value={selectedMonth}
-        onChange={(e) => {
-          setSelectedMonth(e.target.value);
-        }}
-        className="mb-6 w-full rounded-lg border border-white/20 bg-white/10 px-3 py-2 text-white transition-colors focus:ring-2 focus:ring-purple-400 focus:outline-none"
-      >
-        {months.map((m) => (
-          <option key={m.key} value={m.key} className="bg-slate-900 text-white">
-            {m.label}
-          </option>
-        ))}
-      </select>
+      {/* Month switcher: < June > */}
+      <div className="mb-6 flex items-center justify-between gap-3">
+        <button
+          type="button"
+          onClick={() => {
+            step(-1);
+          }}
+          disabled={atFirst}
+          aria-label="Previous month"
+          className="flex size-10 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white transition-colors hover:bg-white/20 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-white/10"
+        >
+          <ChevronLeft className="size-5" />
+        </button>
+        <span className="text-lg font-semibold text-white">{selectedLabel}</span>
+        <button
+          type="button"
+          onClick={() => {
+            step(1);
+          }}
+          disabled={atLast}
+          aria-label="Next month"
+          className="flex size-10 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white transition-colors hover:bg-white/20 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-white/10"
+        >
+          <ChevronRight className="size-5" />
+        </button>
+      </div>
 
       {!hasAnyExpenses && (
         <p className="mb-6 text-center text-sm text-blue-100/60">No expenses logged in {selectedLabel}.</p>
@@ -49,57 +84,77 @@ export default function MonthlyReport({ categories, expenses, months, defaultMon
       <ul className="flex flex-col gap-3">
         {breakdown.groups.map((group) => {
           const isRecurring = group.limitCents !== null;
-          const remainingCents = isRecurring ? (group.limitCents ?? 0) - group.spentCents : 0;
+          // Traffic light vs the monthly limit: over → red, equal → yellow, under → green.
+          let spendColor = "text-white";
+          if (isRecurring) {
+            const limit = group.limitCents ?? 0;
+            if (group.spentCents > limit) {
+              spendColor = "text-red-400";
+            } else if (group.spentCents === limit) {
+              spendColor = "text-amber-300";
+            } else {
+              spendColor = "text-emerald-300";
+            }
+          }
+
+          const hasExpenses = group.expenses.length > 0;
+          const isOpen = hasExpenses && expanded.has(group.id);
 
           return (
             <li
               key={group.id}
               className={
                 group.isSystem
-                  ? "rounded-2xl border border-amber-300/30 bg-amber-400/10 p-4 text-white"
-                  : "rounded-2xl border border-white/10 bg-white/10 p-4 text-white backdrop-blur-xl"
+                  ? "overflow-hidden rounded-2xl border border-amber-300/30 bg-amber-400/10 text-white"
+                  : "overflow-hidden rounded-2xl border border-white/10 bg-white/10 text-white backdrop-blur-xl"
               }
             >
-              <div className={group.isSystem ? "mb-2 font-semibold text-amber-100" : "mb-2 font-semibold"}>
-                {group.name}
-              </div>
+              {/* Header: name + spending / limit. Clickable to toggle details when there are expenses. */}
+              <button
+                type="button"
+                onClick={
+                  hasExpenses
+                    ? () => {
+                        toggle(group.id);
+                      }
+                    : undefined
+                }
+                disabled={!hasExpenses}
+                aria-expanded={hasExpenses ? isOpen : undefined}
+                className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left transition-colors enabled:hover:bg-white/5 disabled:cursor-default"
+              >
+                <div
+                  className={
+                    group.isSystem ? "min-w-0 truncate font-semibold text-amber-100" : "min-w-0 truncate font-semibold"
+                  }
+                >
+                  {group.name}
+                </div>
+                <div className="flex shrink-0 items-center gap-2">
+                  <span className={`font-semibold ${spendColor}`}>
+                    {formatCentsToPln(group.spentCents)}
+                    {isRecurring && (
+                      <span className="text-blue-100/50"> / {formatCentsToPln(group.limitCents ?? 0)}</span>
+                    )}
+                  </span>
+                  <ChevronDown
+                    className={`size-4 transition-transform ${hasExpenses ? "text-blue-100/50" : "invisible"} ${
+                      isOpen ? "rotate-180" : ""
+                    }`}
+                  />
+                </div>
+              </button>
 
-              <div className="flex justify-between text-sm text-blue-100/70">
-                <span>Spent</span>
-                <span>{formatCentsToPln(group.spentCents)}</span>
-              </div>
-
-              {isRecurring && (
-                <>
-                  <div className="flex justify-between text-sm text-blue-100/70">
-                    <span>Limit / month</span>
-                    <span>{formatCentsToPln(group.limitCents ?? 0)}</span>
-                  </div>
-                  <div className="mt-2 flex justify-between border-t border-white/10 pt-2 text-sm font-medium">
-                    <span className="text-blue-100/70">{remainingCents < 0 ? "Over" : "Under"}</span>
-                    <span className={remainingCents < 0 ? "text-red-400" : "text-emerald-300"}>
-                      {formatCentsToPln(remainingCents)}
-                    </span>
-                  </div>
-                  {group.burnPct !== null && (
-                    <div className="flex justify-between text-sm font-medium">
-                      <span className="text-blue-100/70">Burn</span>
-                      <span className={group.burnPct > 100 ? "text-amber-400" : "text-blue-100/70"}>
-                        {group.burnPct}%
-                      </span>
-                    </div>
-                  )}
-                </>
-              )}
-
-              {group.expenses.length > 0 && (
-                <ul className="mt-3 flex flex-col gap-1 border-t border-white/10 pt-3">
+              {/* Expense rows: date · text · amount */}
+              {isOpen && (
+                <ul className="border-t border-white/10 bg-black/10">
                   {group.expenses.map((expense) => (
-                    <li key={expense.id} className="flex justify-between gap-2 text-sm">
-                      <span className="flex min-w-0 gap-2">
-                        <span className="shrink-0 text-blue-100/50">{expense.dateLabel}</span>
-                        <span className="truncate text-blue-100/90">{expense.name}</span>
-                      </span>
+                    <li
+                      key={expense.id}
+                      className="flex items-center gap-3 px-4 py-2 text-sm not-last:border-b not-last:border-white/5"
+                    >
+                      <span className="w-14 shrink-0 text-blue-100/50">{expense.dateLabel}</span>
+                      <span className="min-w-0 flex-1 truncate text-blue-100/90">{expense.name}</span>
                       <span className="shrink-0 text-blue-100/80">{formatCentsToPln(expense.amountCents)}</span>
                     </li>
                   ))}

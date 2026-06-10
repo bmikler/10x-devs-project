@@ -95,12 +95,12 @@ function warsawMonthKey(expenseAt: string): string {
 /**
  * Group a single month's expenses by category for the monthly report.
  *
- * `monthKey` is `"YYYY-MM"`. Recurring categories are always emitted (so the
- * limit bar is stable month to month, even at zero spend) and compared against
- * their monthly `limit_cents`. Irregular and system ("other") categories are
- * emitted only when they have spend that month, and carry no limit. Groups sort
- * `is_system`-then-`name`; each group's expenses sort newest-first. Pure — safe
- * to import into a client island.
+ * `monthKey` is `"YYYY-MM"`. Every category is emitted, even at zero spend, so
+ * the full list is stable month to month. Recurring categories are compared
+ * against their monthly `limit_cents`; irregular and system ("other")
+ * categories carry no limit. Groups sort recurring → irregular → "other", then
+ * by name; each group's expenses sort newest-first. Pure — safe to import into
+ * a client island.
  */
 export function buildMonthBreakdown(
   categories: ReportCategory[],
@@ -124,11 +124,6 @@ export function buildMonthBreakdown(
   for (const cat of categories) {
     const catExpenses = byCategoryId.get(cat.id) ?? [];
     const isRecurring = cat.type === "recurring";
-
-    // Irregular / "other" categories only appear in months where they have spend.
-    if (!isRecurring && catExpenses.length === 0) {
-      continue;
-    }
 
     const spentCents = catExpenses.reduce((sum, e) => sum + e.amount_cents, 0);
 
@@ -161,9 +156,16 @@ export function buildMonthBreakdown(
     });
   }
 
+  // Order: recurring (monthly) first, then irregular (yearly), then system
+  // ("other") last; alphabetical within each band.
+  const typeRank = (g: MonthCategoryGroup): number => {
+    if (g.isSystem) return 2;
+    return g.type === "recurring" ? 0 : 1;
+  };
   groups.sort((a, b) => {
-    if (a.isSystem !== b.isSystem) {
-      return a.isSystem ? 1 : -1;
+    const rankDelta = typeRank(a) - typeRank(b);
+    if (rankDelta !== 0) {
+      return rankDelta;
     }
     return a.name.localeCompare(b.name);
   });

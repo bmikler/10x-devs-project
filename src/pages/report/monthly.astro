@@ -37,7 +37,7 @@ const months = Array.from({ length: currentMonth }, (_, i) => {
   const monthNumber = i + 1;
   return {
     key: `${year}-${String(monthNumber).padStart(2, "0")}`,
-    label: `${MONTH_NAMES[i]} ${year}`,
+    label: MONTH_NAMES[i],
   };
 });
 const defaultMonth = `${year}-${String(currentMonth).padStart(2, "0")}`;
@@ -76,6 +76,13 @@ const hasCategories = categories.length > 0;
   <div class="bg-cosmic flex min-h-screen flex-col p-4">
     <div class="mx-auto w-full max-w-md">
       <Topbar />
+
+      <a
+        href="/report"
+        class="mb-4 inline-flex items-center gap-1 text-sm text-purple-300 transition-colors hover:text-purple-100 hover:underline"
+      >
+        ← Reports
+      </a>
 
       <h1
         class="mb-2 bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text text-center text-3xl font-bold text-transparent"
