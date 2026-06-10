@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Tag, Wallet, FolderPlus } from "lucide-react";
+import { Tag, Wallet, FolderPlus, Save } from "lucide-react";
 import { FormField } from "@/components/auth/FormField";
 import { SubmitButton } from "@/components/auth/SubmitButton";
 import { ServerError } from "@/components/auth/ServerError";
@@ -9,6 +9,13 @@ import { SYSTEM_OTHER_NAME, type CategoryType } from "@/lib/categories";
 
 interface Props {
   serverError?: string | null;
+  action?: string;
+  initialName?: string;
+  initialType?: CategoryType;
+  initialLimit?: string;
+  submitLabel?: string;
+  pendingText?: string;
+  onCancel?: () => void;
 }
 
 const TYPE_OPTIONS: { value: CategoryType; label: string; hint: string }[] = [
@@ -16,13 +23,23 @@ const TYPE_OPTIONS: { value: CategoryType; label: string; hint: string }[] = [
   { value: "irregular", label: "Irregular", hint: "Annual" },
 ];
 
-export default function CategoryForm({ serverError }: Props) {
-  const [name, setName] = useState("");
-  const [type, setType] = useState<CategoryType>("recurring");
-  const [limit, setLimit] = useState("");
+export default function CategoryForm({
+  serverError,
+  action = "/api/categories",
+  initialName = "",
+  initialType = "recurring",
+  initialLimit = "",
+  submitLabel = "Add category",
+  pendingText = "Adding...",
+  onCancel,
+}: Props) {
+  const [name, setName] = useState(initialName);
+  const [type, setType] = useState<CategoryType>(initialType);
+  const [limit, setLimit] = useState(initialLimit);
   const [errors, setErrors] = useState<{ name?: string; limit?: string }>({});
 
   const limitLabel = type === "recurring" ? "Monthly limit (PLN)" : "Annual limit (PLN)";
+  const SubmitIcon = submitLabel === "Add category" ? <FolderPlus className="size-4" /> : <Save className="size-4" />;
 
   function validate() {
     const next: typeof errors = {};
@@ -51,7 +68,7 @@ export default function CategoryForm({ serverError }: Props) {
   }
 
   return (
-    <form method="POST" action="/api/categories" className="space-y-4" onSubmit={handleSubmit} noValidate>
+    <form method="POST" action={action} className="space-y-4" onSubmit={handleSubmit} noValidate>
       <FormField
         id="name"
         label="Name"
@@ -108,9 +125,22 @@ export default function CategoryForm({ serverError }: Props) {
 
       <ServerError message={serverError} />
 
-      <SubmitButton pendingText="Adding..." icon={<FolderPlus className="size-4" />}>
-        Add category
-      </SubmitButton>
+      <div className={cn("flex gap-2", onCancel ? "flex-row" : "")}>
+        {onCancel && (
+          <button
+            type="button"
+            onClick={onCancel}
+            className="flex-1 rounded-lg border border-white/20 bg-white/10 py-2 text-sm text-blue-100/80 hover:bg-white/20"
+          >
+            Cancel
+          </button>
+        )}
+        <div className={cn(onCancel ? "flex-1" : "w-full")}>
+          <SubmitButton pendingText={pendingText} icon={SubmitIcon}>
+            {submitLabel}
+          </SubmitButton>
+        </div>
+      </div>
     </form>
   );
 }
