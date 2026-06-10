@@ -167,6 +167,7 @@ What's already in place in the codebase as of 2026-05-27 (auto-researched + user
   - Soft-delete (set `deleted_at`) vs hard-delete? PRD FR-010 doesn't specify. — Owner: user. Block: no.
 - **Risk:** Low — mutation flow on a single row.
 - **Status:** proposed
+- **Tech-debt follow-up:** Expense mutations currently use `POST /api/expenses/[id]` with an `intent` discriminator (`update`/`delete`) for progressive enhancement. A future refactor should split this into `PUT /api/expenses/[id]` (update) and `DELETE /api/expenses/[id]` (delete).
 
 ### S-07: Categories — edit and delete (with cascade-to-"other")
 
