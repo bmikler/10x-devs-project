@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ChevronLeft, ChevronRight, ChevronDown } from "lucide-react";
+import { ChevronLeft, ChevronRight, ChevronDown, Pencil, Trash2 } from "lucide-react";
 import { buildMonthBreakdown } from "@/lib/report";
 import type { ReportCategory, MonthExpense } from "@/lib/report";
 import { formatCentsToPln } from "@/lib/money";
@@ -20,6 +20,7 @@ export default function MonthlyReport({ categories, expenses, months, defaultMon
   const [selectedMonth, setSelectedMonth] = useState(defaultMonth);
   // Categories collapse by default; users toggle each one open independently.
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
+  const [confirmingId, setConfirmingId] = useState<string | null>(null);
 
   function toggle(categoryId: string) {
     setExpanded((prev) => {
@@ -145,17 +146,60 @@ export default function MonthlyReport({ categories, expenses, months, defaultMon
                 </div>
               </button>
 
-              {/* Expense rows: date · text · amount */}
+              {/* Expense rows: date · text · amount · edit · delete */}
               {isOpen && (
                 <ul className="border-t border-white/10 bg-black/10">
                   {group.expenses.map((expense) => (
                     <li
                       key={expense.id}
-                      className="flex items-center gap-3 px-4 py-2 text-sm not-last:border-b not-last:border-white/5"
+                      className="flex flex-col gap-1 px-4 py-2 text-sm not-last:border-b not-last:border-white/5"
                     >
-                      <span className="w-14 shrink-0 text-blue-100/50">{expense.dateLabel}</span>
-                      <span className="min-w-0 flex-1 truncate text-blue-100/90">{expense.name}</span>
-                      <span className="shrink-0 text-blue-100/80">{formatCentsToPln(expense.amountCents)}</span>
+                      <div className="flex items-center gap-3">
+                        <span className="w-14 shrink-0 text-blue-100/50">{expense.dateLabel}</span>
+                        <span className="min-w-0 flex-1 truncate text-blue-100/90">{expense.name}</span>
+                        <span className="shrink-0 text-blue-100/80">{formatCentsToPln(expense.amountCents)}</span>
+                        <a
+                          href={`/expenses/${expense.id}/edit`}
+                          aria-label="Edit expense"
+                          className="shrink-0 text-blue-100/40 transition-colors hover:text-purple-300"
+                        >
+                          <Pencil className="size-3.5" />
+                        </a>
+                        <button
+                          type="button"
+                          aria-label="Delete expense"
+                          onClick={() => {
+                            setConfirmingId(expense.id === confirmingId ? null : expense.id);
+                          }}
+                          className="shrink-0 text-blue-100/40 transition-colors hover:text-red-400"
+                        >
+                          <Trash2 className="size-3.5" />
+                        </button>
+                      </div>
+
+                      {confirmingId === expense.id && (
+                        <div className="flex items-center gap-2 pl-[4.25rem]">
+                          <span className="text-xs text-blue-100/60">Delete this expense?</span>
+                          <form method="POST" action={`/api/expenses/${expense.id}`}>
+                            <input type="hidden" name="intent" value="delete" />
+                            <button
+                              type="submit"
+                              className="rounded px-2 py-0.5 text-xs font-medium text-red-400 transition-colors hover:bg-red-400/20"
+                            >
+                              Confirm
+                            </button>
+                          </form>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setConfirmingId(null);
+                            }}
+                            className="rounded px-2 py-0.5 text-xs text-blue-100/50 transition-colors hover:text-white"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      )}
                     </li>
                   ))}
                 </ul>

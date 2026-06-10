@@ -248,36 +248,36 @@ None. Hard delete and update use the existing `expenses` table and RLS policy; n
 
 #### Manual
 
-- [ ] 1.3 Update via `POST /api/expenses/[id]` changes the row and redirects to `/report/monthly?success=updated`
-- [ ] 1.4 Delete via `intent=delete` removes the row and redirects to `/report/monthly?success=deleted`
-- [ ] 1.5 Invalid amount/date redirects to `/expenses/[id]/edit?error=…` and leaves the row unchanged
-- [ ] 1.6 Existing create flow still works end-to-end
+- [x] 1.3 Update via `POST /api/expenses/[id]` changes the row and redirects to `/report/monthly?success=updated`
+- [x] 1.4 Delete via `intent=delete` removes the row and redirects to `/report/monthly?success=deleted`
+- [x] 1.5 Invalid amount/date redirects to `/expenses/[id]/edit?error=…` and leaves the row unchanged
+- [x] 1.6 Existing create flow still works end-to-end
 
 ### Phase 2: Edit Page + Form Generalization
 
 #### Automated
 
-- [x] 2.1 Build passes: `npm run build`
-- [x] 2.2 Lint passes: `npm run lint`
+- [x] 2.1 Build passes: `npm run build` — c40b128
+- [x] 2.2 Lint passes: `npm run lint` — c40b128
 
 #### Manual
 
-- [ ] 2.3 Edit page shows the form prefilled with the expense's current values
-- [ ] 2.4 Editing and submitting updates the expense and lands on `/report/monthly` with a success banner
-- [ ] 2.5 Bogus id shows the friendly "not found" card
-- [ ] 2.6 Create page still renders and logs expenses unchanged
+- [x] 2.3 Edit page shows the form prefilled with the expense's current values
+- [x] 2.4 Editing and submitting updates the expense and lands on `/report/monthly` with a success banner
+- [x] 2.5 Bogus id shows the friendly "not found" card
+- [x] 2.6 Create page still renders and logs expenses unchanged
 
 ### Phase 3: Wire Affordances into the Monthly Report + Roadmap Note
 
 #### Automated
 
-- [ ] 3.1 Build passes: `npm run build`
-- [ ] 3.2 Lint passes: `npm run lint`
+- [x] 3.1 Build passes: `npm run build`
+- [x] 3.2 Lint passes: `npm run lint`
 
 #### Manual
 
-- [ ] 3.3 Each expense row shows Edit and Delete controls
-- [ ] 3.4 Edit round-trips with an "updated" banner and the new value is visible
-- [ ] 3.5 Delete requires confirmation; cancel is a no-op; confirm removes the row with a "deleted" banner
-- [ ] 3.6 Edited/deleted expense is reflected in the yearly report too
-- [ ] 3.7 Roadmap S-06 section carries the REST-refactor follow-up note
+- [x] 3.3 Each expense row shows Edit and Delete controls
+- [x] 3.4 Edit round-trips with an "updated" banner and the new value is visible
+- [x] 3.5 Delete requires confirmation; cancel is a no-op; confirm removes the row with a "deleted" banner
+- [x] 3.6 Edited/deleted expense is reflected in the yearly report too
+- [x] 3.7 Roadmap S-06 section carries the REST-refactor follow-up note
