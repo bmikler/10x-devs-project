@@ -37,6 +37,7 @@ Replace the personal-budget Excel workflow with a mobile-first web app where log
 | S-05 | expenses-list          | view the list of previously logged expenses                                                                    | S-03             | FR-009                              | ready    |
 | S-06 | expenses-edit-delete   | edit or delete a previously logged expense                                                                     | S-05             | FR-010                              | proposed |
 | S-07 | categories-edit-delete | edit a category and delete one with cascade-to-"other" reassignment of expenses                                | S-02             | FR-005, FR-006                      | proposed |
+| S-08 | ui-visual-refresh      | experience a modern, visually consistent, mobile-first UI with reasonable accessibility across every shipped page | S-01, S-02, S-03, S-04 | NFR §Mobile responsiveness, NFR §Accessibility assumption | proposed |
 
 ## Streams
 
@@ -48,6 +49,7 @@ Navigation aid — groups items that share a Prerequisites chain. Canonical orde
 | B      | Path to the north star | `F-01` → `S-02` → `S-03` → `S-04` | Critical path. `main_goal: learn` puts the most novel tech (RLS, period attribution) on this chain. |
 | C      | Expenses lifecycle     | `S-05` → `S-06`                   | Post-north-star hardening; joins Stream B at `S-03` (consumes the expenses table).                  |
 | D      | Categories lifecycle   | `S-07`                            | Post-north-star hardening; joins Stream B at `S-02`. Exercises cascade-to-"other" semantics.        |
+| E      | Cross-cutting UX       | `S-08`                            | Horizontal polish over already-shipped surfaces (S-01–S-04). Not a vertical slice — a quality pass that supersedes the parked hub-styling item. Best run once the primary loop is feature-complete so the visual system is applied once, not re-litigated per slice. |
 
 ## Baseline
 
@@ -179,6 +181,27 @@ What's already in place in the codebase as of 2026-05-27 (auto-researched + user
 - **Risk:** Cascade correctness — silent reassignment must work atomically or the user loses expenses. DB-level FK `ON DELETE SET` (to "other") or a transactional `UPDATE`-then-`DELETE`; either way `/10x-plan` decides.
 - **Status:** proposed
 
+### S-08: UI visual refresh — modern, consistent, accessible
+
+- **Outcome:** user can move through every shipped surface (sign-in, landing hub, Categories create/list, Log expense, Report) and experience a cohesive, modern, mobile-first visual system — clear typography hierarchy, consistent spacing and colour, polished cards/forms/tables, and reasonable accessibility (visible focus states, keyboard-navigable controls, sufficient contrast, semantic landmarks, labelled inputs). No behaviour or data changes — same flows, better-looking and easier to use.
+- **Change ID:** ui-visual-refresh
+- **PRD refs:** NFR §Mobile responsiveness, PRD §Non-Goals (the "reasonable contrast + keyboard usability assumed" clause — this slice *delivers* that assumption without crossing into a formal WCAG-AA audit, which stays parked)
+- **Type:** Cross-cutting (horizontal) — a quality pass over surfaces already shipped by S-01–S-04, not a new user-visible feature. Allowed as a bounded enabler: it raises the visual/UX bar so later slices (S-05–S-07) inherit a finished design language instead of each re-inventing one. Absorbs and supersedes the parked **"Signed-in hub styling polish"** item.
+- **Prerequisites:** S-01, S-02, S-03, S-04 (the surfaces being refreshed must exist and be shipped — all are)
+- **Parallel with:** S-05, S-06, S-07 — but sequencing it **before** them is preferable, so those slices build on the refreshed design tokens/components rather than the old styling. If run after, expect a small re-style pass on whatever S-05–S-07 added.
+- **Blockers:** —
+- **Scope guardrails (to keep this from sprawling):**
+  - Tailwind-utility-driven refresh against the existing `src/layouts/Layout.astro`; introduce a small set of shared design tokens / reusable presentational components only if duplication demands it. No new UI framework or component library unless `/10x-plan` justifies it.
+  - Honour the runtime constraints: stay `.astro`-first; do not convert static pages to React islands "to look interactive" (CLAUDE.md §Runtime gotchas). No new client JS unless a specific interaction requires it.
+  - Accessibility target is **reasonable**, not certified: visible focus rings, logical tab order, labelled form controls, semantic headings/landmarks, AA-ish contrast. A formal WCAG-AA audit remains a PRD §Non-Goal (still parked).
+  - Visual-only: zero changes to API routes, queries, RLS, or the Warsaw-noon storage invariant.
+- **Unknowns:**
+  - Is there an existing brand/identity to anchor on (the roadmap references a "cosmic identity" in the parked hub-styling note), or does this slice define the design language from scratch? — Owner: user/designer. Block: no (default to codifying the existing direction; `/10x-plan` settles it).
+  - Dark mode in scope for v1, or light-only? — Owner: user. Block: no (default light-only; tokenise colours so dark mode is a cheap follow-up).
+  - How far to factor shared components (extract a `Card`/`Field`/`Table` vs. keep per-page utilities)? — Owner: `/10x-plan`. Block: no.
+- **Risk:** Low on correctness (no logic touched), but **scope-creep-prone** — "make it beautiful" has no natural stopping line. Mitigation: the guardrails above plus a fixed per-surface checklist (typography, spacing, colour, focus, contrast, mobile breakpoint) so "done" is defined per page, not by taste. Secondary risk: a visual refactor that quietly changes markup can regress the mobile `sm:`/`lg:` responsiveness already in `Layout.astro` — verify each breakpoint after the pass.
+- **Status:** proposed
+
 ## Backlog Handoff
 
 | Roadmap ID | Change ID              | Suggested issue title                               | Ready for `/10x-plan` | Notes                                                                                                     |
@@ -191,6 +214,7 @@ What's already in place in the codebase as of 2026-05-27 (auto-researched + user
 | S-05       | expenses-list          | Expenses list view                                  | ready                 | Prereq S-03 shipped — ready to plan.                                                                      |
 | S-06       | expenses-edit-delete   | Expenses: edit + delete                             | no                    | Blocked by S-05.                                                                                          |
 | S-07       | categories-edit-delete | Categories: edit + delete (cascade-to-"other")      | ready                 | Sole prereq S-02 shipped — ready to plan.                                                                 |
+| S-08       | ui-visual-refresh      | UI visual refresh (modern, consistent, accessible)  | ready                 | Prereqs S-01–S-04 shipped — ready to plan. Cross-cutting polish; supersedes parked "hub styling polish". Prefer before S-05–S-07. |
 
 ## Open Roadmap Questions
 
@@ -215,7 +239,7 @@ What's already in place in the codebase as of 2026-05-27 (auto-researched + user
 - **Multi-year planning + year-switcher UI** — deferred to v1.1.
 - **Multi-currency / FX conversion** — deferred to v1.1.
 - **Burn-rate / pacing signal for irregular annual categories** — deferred to v1.1 (see Open Q #3).
-- **Signed-in hub styling polish** — S-01 shipped functional but visually rough (tested on prod 2026-05-29). Refine the action-card visuals, spacing, and welcome header against the cosmic identity, and drop the redundant Topbar "Dashboard" link the user is already on. Cosmetic only — no behaviour change. Owner: user/designer. Open via `/10x-new` when picked up.
+- **Signed-in hub styling polish** — S-01 shipped functional but visually rough (tested on prod 2026-05-29). Refine the action-card visuals, spacing, and welcome header against the cosmic identity, and drop the redundant Topbar "Dashboard" link the user is already on. Cosmetic only — no behaviour change. Owner: user/designer. **Promoted into S-08 (ui-visual-refresh)** — track it there rather than as a standalone item.
 
 ## Done
 

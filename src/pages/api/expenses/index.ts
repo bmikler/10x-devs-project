@@ -88,6 +88,13 @@ export const POST: APIRoute = async (context) => {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(resolvedDate)) {
     return back(context, "Invalid date");
   }
+  const dateCheck = new Date(resolvedDate);
+  if (isNaN(dateCheck.getTime())) {
+    return back(context, "Invalid date");
+  }
+  if (resolvedDate > todayInWarsaw()) {
+    return back(context, "Date cannot be in the future");
+  }
 
   const expenseAt = warsawNoon(resolvedDate);
 

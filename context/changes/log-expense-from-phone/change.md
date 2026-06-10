@@ -1,9 +1,9 @@
 ---
 change_id: log-expense-from-phone
 title: Log expense from phone
-status: implemented
+status: impl_reviewed
 created: 2026-06-03
-updated: 2026-06-03
+updated: 2026-06-08
 archived_at: null
 ---
 
