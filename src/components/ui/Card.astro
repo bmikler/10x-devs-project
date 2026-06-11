@@ -1,0 +1,23 @@
+---
+import type { CardVariant } from "./variants";
+
+// Shared translucent card panel — the repeated cosmic "glass" surface.
+// `variant` tweaks the accent: default (neutral), amber (system/"other"),
+// error (destructive). Content goes in the default slot.
+interface Props {
+  variant?: CardVariant;
+}
+
+const { variant = "default" } = Astro.props;
+---
+
+<div
+  class:list={[
+    "rounded-2xl border p-6 text-white backdrop-blur-xl",
+    variant === "default" && "border-white/10 bg-white/10",
+    variant === "amber" && "border-amber-400/20 bg-amber-400/10",
+    variant === "error" && "border-red-500/30 bg-red-900/30",
+  ]}
+>
+  <slot />
+</div>

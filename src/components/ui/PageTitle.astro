@@ -1,0 +1,18 @@
+---
+// Shared page heading: gradient clip-text title with an optional subtitle.
+// Replaces the copy-pasted gradient <h1> + subtitle <p> on every page so the
+// heading scale and treatment are defined once.
+interface Props {
+  title: string;
+  subtitle?: string;
+}
+
+const { title, subtitle } = Astro.props;
+---
+
+<h1
+  class="mb-2 bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text text-center text-2xl font-bold text-transparent sm:text-3xl"
+>
+  {title}
+</h1>
+{subtitle && <p class="mb-6 text-center text-blue-100/80">{subtitle}</p>}

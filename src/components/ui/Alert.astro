@@ -1,0 +1,28 @@
+---
+import type { AlertVariant } from "./variants";
+
+// Shared status banner — one standard size for every inline status message.
+// Carries the right ARIA role per variant so assistive tech announces it:
+// errors are assertive (role="alert"), success is polite (role="status").
+interface Props {
+  variant: AlertVariant;
+}
+
+const { variant } = Astro.props;
+
+const role = variant === "error" ? "alert" : "status";
+const ariaLive = variant === "success" ? "polite" : undefined;
+---
+
+<div
+  class:list={[
+    "rounded-lg border px-4 py-3 text-sm",
+    variant === "success" && "border-emerald-500/30 bg-emerald-900/30 text-emerald-200",
+    variant === "error" && "border-red-500/30 bg-red-900/30 text-red-300",
+    variant === "warning" && "border-amber-400/30 bg-amber-900/30 text-amber-200",
+  ]}
+  role={role}
+  aria-live={ariaLive}
+>
+  <slot />
+</div>

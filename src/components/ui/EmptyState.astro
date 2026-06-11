@@ -1,0 +1,14 @@
+---
+// Shared empty-state card — shown when a list has no rows yet.
+// Per the consistency rule this surface uses bg-white/5 and NO backdrop-blur
+// (it is a placeholder, not a content panel).
+interface Props {
+  class?: string;
+}
+
+const { class: className } = Astro.props;
+---
+
+<div class:list={["rounded-2xl border border-white/10 bg-white/5 p-6 text-center text-blue-100/70", className]}>
+  <slot />
+</div>

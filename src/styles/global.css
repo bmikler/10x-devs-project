@@ -36,6 +36,27 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+
+  /* --- Cosmic identity tokens ---------------------------------------------
+   * Single source of truth for the app's dark "cosmic" look. Promoted here
+   * from copy-pasted literal Tailwind utilities so pages reference one
+   * named constant instead of repeating class chains (like a value in
+   * application.properties reused across the UI). Rendered output is
+   * intentionally identical to the previous hard-coded values.
+   * The shadcn :root/.dark/@theme block above stays dormant (future toggle).
+   */
+
+  /* Background gradient stops (consumed by the bg-cosmic utility) */
+  --cosmic-bg-start: #0a0e1a;
+  --cosmic-bg-mid: #0f1529;
+  --cosmic-bg-end: #0a0e1a;
+
+  /* Accent roles */
+  --cosmic-primary: var(--color-purple-400); /* primary / selected */
+  --cosmic-primary-strong: var(--color-purple-300);
+  --cosmic-system: var(--color-amber-400); /* system / "other" */
+  --cosmic-positive: var(--color-emerald-300); /* positive delta */
+  --cosmic-negative: var(--color-red-400); /* negative / destructive */
 }
 
 .dark {
@@ -108,10 +129,24 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+
+  /* Expose cosmic accent roles to Tailwind so they can be used as utilities
+   * (e.g. text-cosmic-primary, border-cosmic-system) where a page needs
+   * token access rather than a literal colour. */
+  --color-cosmic-primary: var(--cosmic-primary);
+  --color-cosmic-primary-strong: var(--cosmic-primary-strong);
+  --color-cosmic-system: var(--cosmic-system);
+  --color-cosmic-positive: var(--cosmic-positive);
+  --color-cosmic-negative: var(--cosmic-negative);
 }
 
 @utility bg-cosmic {
-  background-image: linear-gradient(to bottom, #0a0e1a, #0f1529, #0a0e1a);
+  background-image: linear-gradient(
+    to bottom,
+    var(--cosmic-bg-start),
+    var(--cosmic-bg-mid),
+    var(--cosmic-bg-end)
+  );
 }
 
 @layer base {

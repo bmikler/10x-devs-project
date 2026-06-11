@@ -1,0 +1,20 @@
+---
+// Shared back navigation link with a visible keyboard focus ring.
+// `href` is the destination; the link text goes in the default slot.
+interface Props {
+  href: string;
+  class?: string;
+}
+
+const { href, class: className } = Astro.props;
+---
+
+<a
+  href={href}
+  class:list={[
+    "mb-4 inline-flex items-center gap-1 rounded-md text-sm text-purple-300 transition-colors hover:text-purple-100 hover:underline focus-visible:ring-2 focus-visible:ring-purple-400 focus-visible:outline-none",
+    className,
+  ]}
+>
+  <slot />
+</a>
