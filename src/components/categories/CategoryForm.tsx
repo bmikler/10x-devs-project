@@ -82,8 +82,8 @@ export default function CategoryForm({
         icon={<Tag className="size-4" />}
       />
 
-      <div>
-        <span className="mb-1 block text-sm text-blue-100/80">Type</span>
+      <fieldset>
+        <legend className="mb-1 block text-sm text-blue-100/80">Type</legend>
         <div className="grid grid-cols-2 gap-2">
           {TYPE_OPTIONS.map((opt) => (
             <button
@@ -107,7 +107,7 @@ export default function CategoryForm({
         </div>
         {/* Native value carried to the API route; the buttons above drive it. */}
         <input type="hidden" name="type" value={type} />
-      </div>
+      </fieldset>
 
       <FormField
         id="limit"

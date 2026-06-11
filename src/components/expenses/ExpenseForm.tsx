@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { DollarSign, Tag, CalendarDays, CircleAlert } from "lucide-react";
+import React, { useState, useEffect, useRef } from "react";
+import { DollarSign, Tag, CalendarDays, CircleAlert, Pencil } from "lucide-react";
 import { FormField } from "@/components/auth/FormField";
 import { SubmitButton } from "@/components/auth/SubmitButton";
 import { ServerError } from "@/components/auth/ServerError";
@@ -49,6 +49,10 @@ export default function ExpenseForm({
   const [date, setDate] = useState(initial?.date ?? today);
   const [amountError, setAmountError] = useState<string | undefined>();
   const [showSuccess, setShowSuccess] = useState(initialSuccess ?? false);
+  // Two-step flow: "pick" shows the category grid, "log" shows the amount/name/date panel.
+  // Edit mode (initial values present) skips straight to the log panel since the category is known.
+  const [step, setStep] = useState<"pick" | "log">(initial ? "log" : "pick");
+  const amountRef = useRef<HTMLInputElement>(null);
 
   // Auto-dismiss success banner after ~4 seconds.
   useEffect(() => {
@@ -61,9 +65,18 @@ export default function ExpenseForm({
     };
   }, [showSuccess]);
 
+  // When the log panel appears, move focus to the amount field so the user can type immediately.
+  useEffect(() => {
+    if (step === "log") {
+      amountRef.current?.focus();
+    }
+  }, [step]);
+
   function selectCategory(cat: Category) {
     setSelectedId(cat.id);
     setName(cat.name);
+    // Advance to the log panel in the same tap — protects the 10-second logging budget.
+    setStep("log");
   }
 
   function validateAmount(): boolean {
@@ -91,6 +104,9 @@ export default function ExpenseForm({
   const systemCats = categories.filter((c) => c.is_system);
   const orderedCats = [...userCats, ...systemCats];
 
+  // The currently chosen category, shown as a chip on the log panel.
+  const selectedCat = categories.find((c) => c.id === selectedId) ?? otherCategory;
+
   return (
     <div>
       {showSuccess && (
@@ -99,11 +115,11 @@ export default function ExpenseForm({
         </div>
       )}
 
-      <form method="POST" action={action} className="space-y-5" onSubmit={handleSubmit} noValidate>
-        {/* Category grid */}
-        <div>
-          <span className="mb-2 block text-sm text-blue-100/80">Category</span>
-          <div className="grid grid-cols-2 gap-2">
+      {/* Step 1: category picker. type="button" controls never submit the form. */}
+      {step === "pick" && (
+        <fieldset className="space-y-3">
+          <legend className="mb-3 block text-center text-lg font-semibold text-white">Pick a category</legend>
+          <div className="grid grid-cols-1 gap-2">
             {orderedCats.map((cat) => (
               <button
                 key={cat.id}
@@ -113,7 +129,7 @@ export default function ExpenseForm({
                 }}
                 aria-pressed={selectedId === cat.id}
                 className={cn(
-                  "min-h-12 rounded-lg border px-3 py-2.5 text-left text-sm transition-colors",
+                  "min-h-12 rounded-lg border px-3 py-2.5 text-center text-sm transition-colors",
                   selectedId === cat.id
                     ? "border-purple-400 bg-purple-500/30 text-white"
                     : cat.is_system
@@ -126,9 +142,37 @@ export default function ExpenseForm({
               </button>
             ))}
           </div>
-          {/* Hidden inputs carry the resolved values to the POST. */}
-          <input type="hidden" name="category_id" value={selectedId} />
+        </fieldset>
+      )}
+
+      {/* Step 2: log panel. Hidden only — kept mounted so the amount ref is stable. */}
+      <form
+        method="POST"
+        action={action}
+        className={cn("space-y-5", step === "pick" && "hidden")}
+        onSubmit={handleSubmit}
+        noValidate
+      >
+        {/* Selected-category chip with a "Change" affordance back to Step 1. */}
+        <div className="flex items-center justify-between gap-2 rounded-lg border border-purple-400/40 bg-purple-500/20 px-3 py-2">
+          <span className="flex items-center gap-2 text-sm font-medium text-white">
+            <Tag className="size-4 text-purple-200" />
+            {selectedCat.name}
+          </span>
+          <button
+            type="button"
+            onClick={() => {
+              setStep("pick");
+            }}
+            className="flex items-center gap-1 rounded-md px-2 py-1 text-xs text-purple-200 transition-colors hover:bg-white/10 hover:text-white focus-visible:ring-2 focus-visible:ring-purple-400 focus-visible:outline-none"
+          >
+            <Pencil className="size-3" />
+            Change
+          </button>
         </div>
+
+        {/* Hidden input carries the resolved category to the POST. */}
+        <input type="hidden" name="category_id" value={selectedId} />
 
         {/* Amount — inline so we can set inputMode="decimal" for mobile numeric keyboard */}
         <div>
@@ -142,6 +186,7 @@ export default function ExpenseForm({
             <input
               id="amount"
               name="amount"
+              ref={amountRef}
               type="text"
               inputMode="decimal"
               value={amount}
@@ -200,7 +245,7 @@ export default function ExpenseForm({
 
         <ServerError message={serverError} />
 
-        <SubmitButton pendingText="Saving..." icon={<DollarSign className="size-4" />}>
+        <SubmitButton pendingText="Saving..." icon={<DollarSign className="size-5" />} className="py-3 text-base">
           {submitLabel}
         </SubmitButton>
       </form>

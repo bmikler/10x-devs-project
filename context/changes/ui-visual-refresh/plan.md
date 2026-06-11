@@ -460,32 +460,32 @@ Add a visual progress signal to the report, emphasise over-budget rows, and coll
 
 #### Automated
 
-- [x] 3.1 Build passes: `npm run build`
-- [x] 3.2 Linting passes: `npm run lint`
-- [x] 3.3 No duplicated `bg-cosmic` wrapper boilerplate remains in migrated pages
+- [x] 3.1 Build passes: `npm run build` — 42866ab
+- [x] 3.2 Linting passes: `npm run lint` — 42866ab
+- [x] 3.3 No duplicated `bg-cosmic` wrapper boilerplate remains in migrated pages — 42866ab
 
 #### Manual
 
-- [x] 3.4 Every page reads as one consistent visual system
-- [x] 3.5 Config-missing `Banner` renders on-theme and legible
-- [x] 3.6 Dashboard leads with "Log expense"; sign-out only via header
-- [x] 3.7 Headings scale correctly at 320px → `sm` → `lg`
-- [x] 3.8 Eyeball contrast pass (headings, `white/N` text, banner)
+- [x] 3.4 Every page reads as one consistent visual system — 42866ab
+- [x] 3.5 Config-missing `Banner` renders on-theme and legible — 42866ab
+- [x] 3.6 Dashboard leads with "Log expense"; sign-out only via header — 42866ab
+- [x] 3.7 Headings scale correctly at 320px → `sm` → `lg` — 42866ab
+- [x] 3.8 Eyeball contrast pass (headings, `white/N` text, banner) — 42866ab
 
 ### Phase 4: Two-Step Category-First Expense Flow
 
 #### Automated
 
-- [ ] 4.1 Build passes: `npm run build`
-- [ ] 4.2 Linting passes: `npm run lint`
+- [x] 4.1 Build passes: `npm run build`
+- [x] 4.2 Linting passes: `npm run lint`
 
 #### Manual
 
-- [ ] 4.3 New-expense flow completes in under 10 seconds on a phone
-- [ ] 4.4 "Change" affordance returns to category picker correctly
-- [ ] 4.5 Edit-expense opens directly on the log panel with values pre-filled
-- [ ] 4.6 Selector group announced as a labelled group
-- [ ] 4.7 `inputMode="decimal"` + native date picker still work on mobile
+- [x] 4.3 New-expense flow completes in under 10 seconds on a phone
+- [x] 4.4 "Change" affordance returns to category picker correctly
+- [x] 4.5 Edit-expense opens directly on the log panel with values pre-filled
+- [x] 4.6 Selector group announced as a labelled group
+- [x] 4.7 `inputMode="decimal"` + native date picker still work on mobile
 
 ### Phase 5: Focused Category-Create Flow
 
