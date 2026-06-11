@@ -1,0 +1,30 @@
+---
+// Shell wrapper for authenticated pages: composes the branded header, the
+// cosmic page container, and the persistent bottom nav so pages stop repeating
+// the `bg-cosmic … max-w-md` boilerplate. Owns the #main landmark (skip-link
+// target from Layout) and reserves bottom padding so the fixed BottomNav never
+// occludes the last row of content, including the notched-phone safe area.
+import Layout from "@/layouts/Layout.astro";
+import AppHeader from "@/components/AppHeader.astro";
+import BottomNav from "@/components/BottomNav.astro";
+
+interface Props {
+  title?: string;
+}
+
+const { title } = Astro.props;
+---
+
+<Layout title={title} wrapMain={false}>
+  <div class="bg-cosmic flex min-h-screen flex-col">
+    <AppHeader />
+    <main
+      id="main"
+      class="mx-auto w-full max-w-md flex-1 px-4 pt-4"
+      style="padding-bottom: calc(5rem + env(safe-area-inset-bottom));"
+    >
+      <slot />
+    </main>
+    <BottomNav />
+  </div>
+</Layout>

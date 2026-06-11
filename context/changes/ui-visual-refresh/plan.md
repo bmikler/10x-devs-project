@@ -429,32 +429,32 @@ Add a visual progress signal to the report, emphasise over-budget rows, and coll
 
 #### Automated
 
-- [x] 1.1 Build passes (includes type-check): `npm run build`
-- [x] 1.2 Linting passes: `npm run lint`
-- [x] 1.3 New component files exist under `src/components/ui/`
+- [x] 1.1 Build passes (includes type-check): `npm run build` — 3b564b8
+- [x] 1.2 Linting passes: `npm run lint` — 3b564b8
+- [x] 1.3 New component files exist under `src/components/ui/` — 3b564b8
 
 #### Manual
 
-- [x] 1.4 Every existing page still renders pixel-identically
-- [x] 1.5 Skip link appears on keyboard focus and jumps to main content
-- [x] 1.6 Form validation error announced via `aria-invalid`/`aria-describedby`
-- [x] 1.7 Viewport renders at correct scale on a real phone
+- [x] 1.4 Every existing page still renders pixel-identically — 3b564b8
+- [x] 1.5 Skip link appears on keyboard focus and jumps to main content — 3b564b8
+- [x] 1.6 Form validation error announced via `aria-invalid`/`aria-describedby` — 3b564b8
+- [x] 1.7 Viewport renders at correct scale on a real phone — 3b564b8
 
 ### Phase 2: Branded Header + Persistent Bottom Navigation (AppShell)
 
 #### Automated
 
-- [ ] 2.1 Build passes: `npm run build`
-- [ ] 2.2 Linting passes: `npm run lint`
-- [ ] 2.3 `Topbar.astro` no longer imported by any authenticated page
+- [x] 2.1 Build passes: `npm run build`
+- [x] 2.2 Linting passes: `npm run lint`
+- [x] 2.3 `Topbar.astro` no longer imported by any authenticated page
 
 #### Manual
 
-- [ ] 2.4 Bottom nav appears on all authenticated pages; destinations navigate
-- [ ] 2.5 Active destination highlighted matching current URL (incl. nested `/report/*`)
-- [ ] 2.6 Logo tap returns to dashboard; logo link has accessible name
-- [ ] 2.7 Bottom bar does not occlude content; respects safe-area
-- [ ] 2.8 Header account menu shows sign-out; email no longer overflows at 320px
+- [x] 2.4 Bottom nav appears on all authenticated pages; destinations navigate
+- [x] 2.5 Active destination highlighted matching current URL (incl. nested `/report/*`)
+- [x] 2.6 Logo tap returns to dashboard; logo link has accessible name
+- [x] 2.7 Bottom bar does not occlude content; respects safe-area
+- [x] 2.8 Header account menu shows sign-out; email no longer overflows at 320px
 
 ### Phase 3: Page-Body Consolidation onto Tokens & Components
 

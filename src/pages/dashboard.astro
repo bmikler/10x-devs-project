@@ -1,6 +1,5 @@
 ---
-import Layout from "@/layouts/Layout.astro";
-import Topbar from "@/components/Topbar.astro";
+import AppShell from "@/components/AppShell.astro";
 
 const { user } = Astro.locals;
 
@@ -26,45 +25,39 @@ const actions = [
 ];
 ---
 
-<Layout title="Dashboard">
-  <div class="bg-cosmic flex min-h-screen flex-col p-4">
-    <div class="mx-auto w-full max-w-md">
-      <Topbar />
+<AppShell title="Dashboard">
+  <h1
+    class="mb-2 bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text text-center text-3xl font-bold text-transparent"
+  >
+    Budget Tracker
+  </h1>
+  <p class="mb-6 text-center text-blue-100/80">
+    Welcome, <span class="font-semibold text-white">{user?.email}</span>
+  </p>
 
-      <h1
-        class="mb-2 bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text text-center text-3xl font-bold text-transparent"
-      >
-        Budget Tracker
-      </h1>
-      <p class="mb-6 text-center text-blue-100/80">
-        Welcome, <span class="font-semibold text-white">{user?.email}</span>
-      </p>
-
-      <div class="flex flex-col gap-4">
-        {
-          actions.map((action) => (
-            <a
-              href={action.href}
-              class="flex min-h-20 items-center gap-4 rounded-2xl border border-white/10 bg-white/10 p-5 text-white backdrop-blur-xl transition-colors hover:bg-white/20"
-            >
-              <span class="text-3xl">{action.icon}</span>
-              <div>
-                <div class="text-lg font-semibold">{action.title}</div>
-                <div class="text-sm text-blue-100/70">{action.description}</div>
-              </div>
-            </a>
-          ))
-        }
-      </div>
-
-      <form method="POST" action="/api/auth/signout" class="mt-8 text-center">
-        <button
-          type="submit"
-          class="rounded-lg border border-white/20 bg-white/10 px-6 py-2 text-sm text-white transition-colors hover:bg-white/20"
+  <div class="flex flex-col gap-4">
+    {
+      actions.map((action) => (
+        <a
+          href={action.href}
+          class="flex min-h-20 items-center gap-4 rounded-2xl border border-white/10 bg-white/10 p-5 text-white backdrop-blur-xl transition-colors hover:bg-white/20"
         >
-          Sign out
-        </button>
-      </form>
-    </div>
+          <span class="text-3xl">{action.icon}</span>
+          <div>
+            <div class="text-lg font-semibold">{action.title}</div>
+            <div class="text-sm text-blue-100/70">{action.description}</div>
+          </div>
+        </a>
+      ))
+    }
   </div>
-</Layout>
+
+  <form method="POST" action="/api/auth/signout" class="mt-8 text-center">
+    <button
+      type="submit"
+      class="rounded-lg border border-white/20 bg-white/10 px-6 py-2 text-sm text-white transition-colors hover:bg-white/20"
+    >
+      Sign out
+    </button>
+  </form>
+</AppShell>

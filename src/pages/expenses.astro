@@ -1,6 +1,5 @@
 ---
-import Layout from "@/layouts/Layout.astro";
-import Topbar from "@/components/Topbar.astro";
+import AppShell from "@/components/AppShell.astro";
 import ExpenseForm from "@/components/expenses/ExpenseForm";
 import { createClient } from "@/lib/supabase";
 import { getCurrentBudgetYear } from "@/lib/budget-year";
@@ -42,30 +41,24 @@ if (supabase && user) {
 }
 ---
 
-<Layout title="Log Expense">
-  <div class="bg-cosmic flex min-h-screen flex-col p-4">
-    <div class="mx-auto w-full max-w-md">
-      <Topbar />
+<AppShell title="Log Expense">
+  <h1
+    class="mb-2 bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text text-center text-3xl font-bold text-transparent"
+  >
+    Log Expense
+  </h1>
+  <p class="mb-6 text-center text-blue-100/80">Budget year {year}</p>
 
-      <h1
-        class="mb-2 bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text text-center text-3xl font-bold text-transparent"
-      >
-        Log Expense
-      </h1>
-      <p class="mb-6 text-center text-blue-100/80">Budget year {year}</p>
-
-      {
-        categories.length === 0 ? (
-          <div class="rounded-2xl border border-white/10 bg-white/5 p-6 text-center text-blue-100/70">
-            No categories yet.{" "}
-            <a href="/categories" class="text-purple-300 underline">
-              Create a category first.
-            </a>
-          </div>
-        ) : (
-          <ExpenseForm client:load categories={categories} today={today} serverError={error} success={success} />
-        )
-      }
-    </div>
-  </div>
-</Layout>
+  {
+    categories.length === 0 ? (
+      <div class="rounded-2xl border border-white/10 bg-white/5 p-6 text-center text-blue-100/70">
+        No categories yet.{" "}
+        <a href="/categories" class="text-purple-300 underline">
+          Create a category first.
+        </a>
+      </div>
+    ) : (
+      <ExpenseForm client:load categories={categories} today={today} serverError={error} success={success} />
+    )
+  }
+</AppShell>

@@ -1,0 +1,68 @@
+---
+// Persistent bottom navigation bar for the three top-level destinations.
+// Server-rendered: the active destination is derived from the request URL —
+// no client JS. Fixed to the bottom and respects the notched-phone safe area.
+const pathname = Astro.url.pathname;
+
+const items = [
+  { href: "/categories", label: "Categories" },
+  { href: "/expenses", label: "Log" },
+  { href: "/report", label: "Report" },
+] as const;
+
+// Active when the path matches the destination exactly or is nested under it
+// (e.g. /report/monthly, /categories/new, /expenses/<id>/edit).
+function isActive(href: string): boolean {
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
+---
+
+<nav
+  aria-label="Primary"
+  class="fixed inset-x-0 bottom-0 z-40 border-t border-white/10 bg-[#0a0e1a]/95 backdrop-blur-xl"
+  style="padding-bottom: env(safe-area-inset-bottom);"
+>
+  <ul class="mx-auto flex w-full max-w-md">
+    {
+      items.map((item) => {
+        const active = isActive(item.href);
+        return (
+          <li class="flex-1">
+            <a
+              href={item.href}
+              aria-current={active ? "page" : undefined}
+              class:list={[
+                "flex min-h-14 flex-col items-center justify-center gap-1 text-xs font-medium transition-colors focus-visible:ring-2 focus-visible:ring-purple-300 focus-visible:outline-none focus-visible:ring-inset",
+                active ? "text-purple-300" : "text-blue-100/70 hover:text-blue-100",
+              ]}
+            >
+              {item.href === "/categories" && (
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path
+                    d="M3 7a2 2 0 0 1 2-2h4l2 2h6a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              )}
+              {item.href === "/expenses" && (
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8" />
+                  <path d="M12 8v8M8 12h8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                </svg>
+              )}
+              {item.href === "/report" && (
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M5 20V10M12 20V4M19 20v-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                </svg>
+              )}
+              <span>{item.label}</span>
+            </a>
+          </li>
+        );
+      })
+    }
+  </ul>
+</nav>

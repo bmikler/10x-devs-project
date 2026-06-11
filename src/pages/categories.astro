@@ -1,6 +1,5 @@
 ---
-import Layout from "@/layouts/Layout.astro";
-import Topbar from "@/components/Topbar.astro";
+import AppShell from "@/components/AppShell.astro";
 import CategoryForm from "@/components/categories/CategoryForm";
 import CategoryList from "@/components/categories/CategoryList";
 import { createClient } from "@/lib/supabase";
@@ -35,38 +34,32 @@ if (supabase && user) {
 const userCategories = categories.filter((c) => !c.is_system);
 ---
 
-<Layout title="Categories">
-  <div class="bg-cosmic flex min-h-screen flex-col p-4">
-    <div class="mx-auto w-full max-w-md">
-      <Topbar />
+<AppShell title="Categories">
+  <h1
+    class="mb-2 bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text text-center text-3xl font-bold text-transparent"
+  >
+    Categories
+  </h1>
+  <p class="mb-6 text-center text-blue-100/80">Budget year {year}</p>
 
-      <h1
-        class="mb-2 bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text text-center text-3xl font-bold text-transparent"
-      >
-        Categories
-      </h1>
-      <p class="mb-6 text-center text-blue-100/80">Budget year {year}</p>
-
-      {
-        categories.length === 0 ? (
-          <div class="mb-6 rounded-2xl border border-white/10 bg-white/5 p-6 text-center text-blue-100/70">
-            No categories yet. Create your first one below to start budgeting.
-          </div>
-        ) : (
-          <CategoryList categories={categories} client:load />
-        )
-      }
-
-      {
-        userCategories.length === 0 && categories.length > 0 && (
-          <p class="mb-4 text-center text-sm text-blue-100/60">Add your first category below.</p>
-        )
-      }
-
-      <div class="rounded-2xl border border-white/10 bg-white/10 p-6 text-white backdrop-blur-xl">
-        <h2 class="mb-4 text-lg font-semibold">Add a category</h2>
-        <CategoryForm serverError={error} client:load />
+  {
+    categories.length === 0 ? (
+      <div class="mb-6 rounded-2xl border border-white/10 bg-white/5 p-6 text-center text-blue-100/70">
+        No categories yet. Create your first one below to start budgeting.
       </div>
-    </div>
+    ) : (
+      <CategoryList categories={categories} client:load />
+    )
+  }
+
+  {
+    userCategories.length === 0 && categories.length > 0 && (
+      <p class="mb-4 text-center text-sm text-blue-100/60">Add your first category below.</p>
+    )
+  }
+
+  <div class="rounded-2xl border border-white/10 bg-white/10 p-6 text-white backdrop-blur-xl">
+    <h2 class="mb-4 text-lg font-semibold">Add a category</h2>
+    <CategoryForm serverError={error} client:load />
   </div>
-</Layout>
+</AppShell>

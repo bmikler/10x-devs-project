@@ -1,6 +1,5 @@
 ---
-import Layout from "@/layouts/Layout.astro";
-import Topbar from "@/components/Topbar.astro";
+import AppShell from "@/components/AppShell.astro";
 import { getCurrentBudgetYear } from "@/lib/budget-year";
 
 const year = getCurrentBudgetYear();
@@ -21,34 +20,28 @@ const reports = [
 ];
 ---
 
-<Layout title="Report">
-  <div class="bg-cosmic flex min-h-screen flex-col p-4">
-    <div class="mx-auto w-full max-w-md">
-      <Topbar />
+<AppShell title="Report">
+  <h1
+    class="mb-2 bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text text-center text-3xl font-bold text-transparent"
+  >
+    Report
+  </h1>
+  <p class="mb-6 text-center text-blue-100/80">Budget year {year}</p>
 
-      <h1
-        class="mb-2 bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text text-center text-3xl font-bold text-transparent"
-      >
-        Report
-      </h1>
-      <p class="mb-6 text-center text-blue-100/80">Budget year {year}</p>
-
-      <div class="flex flex-col gap-4">
-        {
-          reports.map((report) => (
-            <a
-              href={report.href}
-              class="flex min-h-20 items-center gap-4 rounded-2xl border border-white/10 bg-white/10 p-5 text-white backdrop-blur-xl transition-colors hover:bg-white/20"
-            >
-              <span class="text-3xl">{report.icon}</span>
-              <div>
-                <div class="text-lg font-semibold">{report.title}</div>
-                <div class="text-sm text-blue-100/70">{report.description}</div>
-              </div>
-            </a>
-          ))
-        }
-      </div>
-    </div>
+  <div class="flex flex-col gap-4">
+    {
+      reports.map((report) => (
+        <a
+          href={report.href}
+          class="flex min-h-20 items-center gap-4 rounded-2xl border border-white/10 bg-white/10 p-5 text-white backdrop-blur-xl transition-colors hover:bg-white/20"
+        >
+          <span class="text-3xl">{report.icon}</span>
+          <div>
+            <div class="text-lg font-semibold">{report.title}</div>
+            <div class="text-sm text-blue-100/70">{report.description}</div>
+          </div>
+        </a>
+      ))
+    }
   </div>
-</Layout>
+</AppShell>

@@ -5,9 +5,13 @@ import { missingConfigs } from "@/lib/config-status";
 
 interface Props {
   title?: string;
+  // When false, Layout does not wrap the slot in its own <main id="main">.
+  // AppShell sets this so it can own the #main landmark (with header/nav as
+  // siblings) without producing a nested <main> / duplicate id.
+  wrapMain?: boolean;
 }
 
-const { title = "Money Tracker" } = Astro.props;
+const { title = "Money Tracker", wrapMain = true } = Astro.props;
 ---
 
 <!doctype html>
@@ -41,9 +45,15 @@ const { title = "Money Tracker" } = Astro.props;
         </Banner>
       ))
     }
-    <main id="main">
-      <slot />
-    </main>
+    {
+      wrapMain ? (
+        <main id="main">
+          <slot />
+        </main>
+      ) : (
+        <slot />
+      )
+    }
   </body>
 </html>
 
