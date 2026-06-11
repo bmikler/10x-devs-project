@@ -37,7 +37,7 @@ Replace the personal-budget Excel workflow with a mobile-first web app where log
 | S-05 | expenses-list          | view the list of previously logged expenses                                                                    | S-03             | FR-009                              | done     |
 | S-06 | expenses-edit-delete   | edit or delete a previously logged expense                                                                     | S-05             | FR-010                              | done     |
 | S-07 | categories-edit-delete | edit a category and delete one with cascade-to-"other" reassignment of expenses                                | S-02             | FR-005, FR-006                      | done     |
-| S-08 | ui-visual-refresh      | experience a modern, visually consistent, mobile-first UI with reasonable accessibility across every shipped page | S-01, S-02, S-03, S-04 | NFR §Mobile responsiveness, NFR §Accessibility assumption | proposed |
+| S-08 | ui-visual-refresh      | experience a modern, visually consistent, mobile-first UI **and improved user-experience flows** (navigation, expense logging, category creation, dashboard, reports) with reasonable accessibility across every shipped page | S-01, S-02, S-03, S-04 | NFR §Mobile responsiveness, NFR §Accessibility assumption, US-01 (10s logging) | proposed |
 
 ## Streams
 
@@ -49,7 +49,7 @@ Navigation aid — groups items that share a Prerequisites chain. Canonical orde
 | B      | Path to the north star | `F-01` → `S-02` → `S-03` → `S-04` | Critical path. `main_goal: learn` puts the most novel tech (RLS, period attribution) on this chain. |
 | C      | Expenses lifecycle     | `S-05` → `S-06`                   | Post-north-star hardening; joins Stream B at `S-03` (consumes the expenses table).                  |
 | D      | Categories lifecycle   | `S-07`                            | Post-north-star hardening; joins Stream B at `S-02`. Exercises cascade-to-"other" semantics.        |
-| E      | Cross-cutting UX       | `S-08`                            | Horizontal polish over already-shipped surfaces (S-01–S-04). Not a vertical slice — a quality pass that supersedes the parked hub-styling item. Best run once the primary loop is feature-complete so the visual system is applied once, not re-litigated per slice. |
+| E      | Cross-cutting UX       | `S-08`                            | Horizontal UX + visual polish over already-shipped surfaces (S-01–S-04). Not a single vertical slice — a quality pass covering both the visual system **and user-experience/interaction flows** (navigation, two-step expense logging, category create flow, dashboard, reports). Supersedes the parked hub-styling item. Best run once the primary loop is feature-complete so the design language and interaction patterns are applied once, not re-litigated per slice. |
 
 ## Baseline
 
@@ -182,25 +182,35 @@ What's already in place in the codebase as of 2026-05-27 (auto-researched + user
 - **Risk:** Cascade correctness — silent reassignment must work atomically or the user loses expenses. DB-level FK `ON DELETE SET` (to "other") or a transactional `UPDATE`-then-`DELETE`; either way `/10x-plan` decides.
 - **Status:** proposed
 
-### S-08: UI visual refresh — modern, consistent, accessible
+### S-08: UI visual refresh + UX improvements — modern, consistent, accessible
 
-- **Outcome:** user can move through every shipped surface (sign-in, landing hub, Categories create/list, Log expense, Report) and experience a cohesive, modern, mobile-first visual system — clear typography hierarchy, consistent spacing and colour, polished cards/forms/tables, and reasonable accessibility (visible focus states, keyboard-navigable controls, sufficient contrast, semantic landmarks, labelled inputs). No behaviour or data changes — same flows, better-looking and easier to use.
+- **Outcome:** user can move through every shipped surface (sign-in, landing hub, Categories create/list, Log expense, Report) and experience a cohesive, modern, mobile-first visual system — clear typography hierarchy, consistent spacing and colour, polished cards/forms/tables, and reasonable accessibility (visible focus states, keyboard-navigable controls, sufficient contrast, semantic landmarks, labelled inputs) — **plus concrete user-experience improvements to the interaction flows**: persistent navigation (easy move-back and move-to-dashboard from every screen), a category-first two-step expense-logging flow, a focused category-creation flow (list → add → create screen → back to list), a branded application header (name + logo), a more glanceable dashboard, and a clearer yearly report. Same underlying data and rules — better-looking **and easier to use**, optimised for mobile.
 - **Change ID:** ui-visual-refresh
-- **PRD refs:** NFR §Mobile responsiveness, PRD §Non-Goals (the "reasonable contrast + keyboard usability assumed" clause — this slice *delivers* that assumption without crossing into a formal WCAG-AA audit, which stays parked)
-- **Type:** Cross-cutting (horizontal) — a quality pass over surfaces already shipped by S-01–S-04, not a new user-visible feature. Allowed as a bounded enabler: it raises the visual/UX bar so later slices (S-05–S-07) inherit a finished design language instead of each re-inventing one. Absorbs and supersedes the parked **"Signed-in hub styling polish"** item.
+- **PRD refs:** NFR §Mobile responsiveness, US-01 (10-second logging — the two-step flow must not regress it), PRD §Non-Goals (the "reasonable contrast + keyboard usability assumed" clause — this slice *delivers* that assumption without crossing into a formal WCAG-AA audit, which stays parked)
+- **Type:** Cross-cutting (horizontal) — a **UX + visual** quality pass over surfaces already shipped by S-01–S-04. **No longer visual-only**: at the user's explicit request it now also reshapes interaction flows and information architecture (navigation, expense-logging steps, category-creation flow, dashboard layout). Allowed as a bounded enabler: it raises the visual/UX bar so later slices (S-05–S-07) inherit a finished design language and interaction patterns instead of each re-inventing them. Absorbs and supersedes the parked **"Signed-in hub styling polish"** item. See `context/changes/ui-visual-refresh/research.md` for the full audit + flow redesigns.
 - **Prerequisites:** S-01, S-02, S-03, S-04 (the surfaces being refreshed must exist and be shipped — all are)
-- **Parallel with:** S-05, S-06, S-07 — but sequencing it **before** them is preferable, so those slices build on the refreshed design tokens/components rather than the old styling. If run after, expect a small re-style pass on whatever S-05–S-07 added.
+- **Parallel with:** S-05, S-06, S-07 — but sequencing it **before** them is preferable, so those slices build on the refreshed design tokens/components **and navigation/interaction patterns** rather than the old styling. If run after, expect a small re-style pass on whatever S-05–S-07 added.
 - **Blockers:** —
+- **Researcher/learner context:** the user is a **Java engineer with little React knowledge and no UI-framework background** — `/10x-plan` and `/10x-implement` must explain every UI concept, library, and pattern in plain terms (bridging from JVM where useful) and surface framework/IA decisions as explicit, explained questions rather than silent choices. (Recorded in `research.md` §Researcher context.)
 - **Scope guardrails (to keep this from sprawling):**
-  - Tailwind-utility-driven refresh against the existing `src/layouts/Layout.astro`; introduce a small set of shared design tokens / reusable presentational components only if duplication demands it. No new UI framework or component library unless `/10x-plan` justifies it.
-  - Honour the runtime constraints: stay `.astro`-first; do not convert static pages to React islands "to look interactive" (CLAUDE.md §Runtime gotchas). No new client JS unless a specific interaction requires it.
+  - Tailwind-utility-driven refresh against the existing `src/layouts/Layout.astro`; introduce a small set of shared design tokens / reusable presentational components only if duplication demands it. No new UI framework or component library unless `/10x-plan` justifies it (and explains it to the user).
+  - Honour the runtime constraints: stay `.astro`-first; do not convert static pages to React islands "to look interactive" (CLAUDE.md §Runtime gotchas). New client JS only where a specific interaction (e.g. the two-step expense flow) requires it.
   - Accessibility target is **reasonable**, not certified: visible focus rings, logical tab order, labelled form controls, semantic headings/landmarks, AA-ish contrast. A formal WCAG-AA audit remains a PRD §Non-Goal (still parked).
-  - Visual-only: zero changes to API routes, queries, RLS, or the Warsaw-noon storage invariant.
+  - **UX/IA changes are now in scope** (navigation pattern, expense two-step flow, category create flow, dashboard, yearly report) but each must preserve existing behaviour where not explicitly being redesigned, and must not touch API routes' contracts, queries' correctness, RLS, or the Warsaw-noon storage invariant beyond what a flow change strictly requires. `/10x-plan` must draw the line on how much IA change lands here vs a follow-up slice (open question below).
+- **UX scope (requested by user, detailed in `research.md` follow-up):**
+  1. **Navigation** — persistent back + move-to-dashboard from every screen (bottom nav bar candidate; removes the hub round-trip).
+  2. **Expense logging** — category-first two-step flow: pick category, then a log panel with categories hidden.
+  3. **Branded header** — application name + logo replacing the raw email Topbar.
+  4. **Categories** — list + "Add category" button → focused create screen (list hidden) → back to list on success.
+  5. **Dashboard** — improved, more glanceable layout (best-practice content home rather than a pure launcher).
+  6. **Yearly report** — clearer, more scannable (e.g. progress bars, over-budget emphasis).
 - **Unknowns:**
-  - Is there an existing brand/identity to anchor on (the roadmap references a "cosmic identity" in the parked hub-styling note), or does this slice define the design language from scratch? — Owner: user/designer. Block: no (default to codifying the existing direction; `/10x-plan` settles it).
-  - Dark mode in scope for v1, or light-only? — Owner: user. Block: no (default light-only; tokenise colours so dark mode is a cheap follow-up).
-  - How far to factor shared components (extract a `Card`/`Field`/`Table` vs. keep per-page utilities)? — Owner: `/10x-plan`. Block: no.
-- **Risk:** Low on correctness (no logic touched), but **scope-creep-prone** — "make it beautiful" has no natural stopping line. Mitigation: the guardrails above plus a fixed per-surface checklist (typography, spacing, colour, focus, contrast, mobile breakpoint) so "done" is defined per page, not by taste. Secondary risk: a visual refactor that quietly changes markup can regress the mobile `sm:`/`lg:` responsiveness already in `Layout.astro` — verify each breakpoint after the pass.
+  - **How much IA/behaviour change belongs in S-08 vs a follow-up slice?** (bottom nav, `/categories/new` route, two-step expense flow, data-rich dashboard). — Owner: user / `/10x-plan`. Block: no (plan decides the line).
+  - **Product name + logo** — what is the wordmark, and is there a logo asset/brief? — Owner: user. Block: branded header only.
+  - Is there an existing brand/identity to anchor on (the roadmap references a "cosmic identity"), or does this slice define the design language from scratch? — Owner: user/designer. Block: no (default to codifying the existing cosmic direction).
+  - Dark mode in scope for v1, or light-only? — Owner: user. Block: no (cosmic is already dark; tokenise so a toggle is a cheap follow-up).
+  - How far to factor shared components (extract a `Card`/`Field`/`Table`/`PageLayout` vs. keep per-page utilities)? — Owner: `/10x-plan`. Block: no.
+- **Risk:** Low on data correctness (no aggregation logic touched), but **higher than a pure visual pass** and **scope-creep-prone** — "make it beautiful and easier to use" has no natural stopping line, and the IA changes (navigation, two-step flow, new routes) carry real interaction risk. Mitigations: the guardrails above; a fixed per-surface checklist (typography, spacing, colour, focus, contrast, mobile breakpoint, tap-target size); the explicit IA-scope decision in `/10x-plan`; and the US-01 **10-second logging** budget as a hard regression guard on the two-step expense flow. Secondary risk: a visual/markup refactor can regress the mobile `sm:`/`lg:` responsiveness already in `Layout.astro` — verify each breakpoint after the pass. Also fix the mobile **viewport meta** bug (`initial-scale=1` missing) noted in research.
 - **Status:** proposed
 
 ## Backlog Handoff
@@ -215,7 +225,7 @@ What's already in place in the codebase as of 2026-05-27 (auto-researched + user
 | S-05       | expenses-list          | Expenses list view                                  | ready                 | Prereq S-03 shipped — ready to plan.                                                                      |
 | S-06       | expenses-edit-delete   | Expenses: edit + delete                             | no                    | Blocked by S-05.                                                                                          |
 | S-07       | categories-edit-delete | Categories: edit + delete (cascade-to-"other")      | ready                 | Sole prereq S-02 shipped — ready to plan.                                                                 |
-| S-08       | ui-visual-refresh      | UI visual refresh (modern, consistent, accessible)  | ready                 | Prereqs S-01–S-04 shipped — ready to plan. Cross-cutting polish; supersedes parked "hub styling polish". Prefer before S-05–S-07. |
+| S-08       | ui-visual-refresh      | UI visual refresh + UX improvements (modern, consistent, accessible)  | ready                 | Prereqs S-01–S-04 shipped — ready to plan. Cross-cutting UX + visual polish; supersedes parked "hub styling polish". Now includes navigation, two-step expense logging, category create flow, dashboard & yearly-report UX (see research.md). Prefer before S-05–S-07. |
 
 ## Open Roadmap Questions
 
