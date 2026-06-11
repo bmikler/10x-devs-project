@@ -476,32 +476,32 @@ Add a visual progress signal to the report, emphasise over-budget rows, and coll
 
 #### Automated
 
-- [x] 4.1 Build passes: `npm run build`
-- [x] 4.2 Linting passes: `npm run lint`
+- [x] 4.1 Build passes: `npm run build` — 46df4c1
+- [x] 4.2 Linting passes: `npm run lint` — 46df4c1
 
 #### Manual
 
-- [x] 4.3 New-expense flow completes in under 10 seconds on a phone
-- [x] 4.4 "Change" affordance returns to category picker correctly
-- [x] 4.5 Edit-expense opens directly on the log panel with values pre-filled
-- [x] 4.6 Selector group announced as a labelled group
-- [x] 4.7 `inputMode="decimal"` + native date picker still work on mobile
+- [x] 4.3 New-expense flow completes in under 10 seconds on a phone — 46df4c1
+- [x] 4.4 "Change" affordance returns to category picker correctly — 46df4c1
+- [x] 4.5 Edit-expense opens directly on the log panel with values pre-filled — 46df4c1
+- [x] 4.6 Selector group announced as a labelled group — 46df4c1
+- [x] 4.7 `inputMode="decimal"` + native date picker still work on mobile — 46df4c1
 
 ### Phase 5: Focused Category-Create Flow
 
 #### Automated
 
-- [ ] 5.1 Build passes: `npm run build`
-- [ ] 5.2 Linting passes: `npm run lint`
-- [ ] 5.3 `/categories/new` route file exists
+- [x] 5.1 Build passes: `npm run build`
+- [x] 5.2 Linting passes: `npm run lint`
+- [x] 5.3 `/categories/new` route file exists
 
 #### Manual
 
-- [ ] 5.4 `/categories` shows list + "Add category" button; no stacked form
-- [ ] 5.5 Add opens `/categories/new` (list hidden); browser back returns to list
-- [ ] 5.6 Creating a category redirects to `/categories` and appears
-- [ ] 5.7 Inline edit/delete still works
-- [ ] 5.8 Empty-state copy points at the Add button
+- [x] 5.4 `/categories` shows list + "Add category" button; no stacked form
+- [x] 5.5 Add opens `/categories/new` (list hidden); browser back returns to list
+- [x] 5.6 Creating a category redirects to `/categories` and appears
+- [x] 5.7 Inline edit/delete still works
+- [x] 5.8 Empty-state copy points at the Add button
 
 ### Phase 6: Report UX — Progress Bars, Over-Budget Emphasis & Tabs
 

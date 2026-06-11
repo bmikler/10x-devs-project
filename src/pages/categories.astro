@@ -1,15 +1,12 @@
 ---
 import AppShell from "@/components/AppShell.astro";
 import PageTitle from "@/components/ui/PageTitle.astro";
-import Card from "@/components/ui/Card.astro";
 import EmptyState from "@/components/ui/EmptyState.astro";
-import CategoryForm from "@/components/categories/CategoryForm";
 import CategoryList from "@/components/categories/CategoryList";
 import { createClient } from "@/lib/supabase";
 import { getCurrentBudgetYear } from "@/lib/budget-year";
 
 const { user } = Astro.locals;
-const error = Astro.url.searchParams.get("error");
 const year = getCurrentBudgetYear();
 
 const supabase = createClient(Astro.request.headers, Astro.cookies);
@@ -33,29 +30,23 @@ if (supabase && user) {
     .order("name", { ascending: true });
   categories = data ?? [];
 }
-
-const userCategories = categories.filter((c) => !c.is_system);
 ---
 
 <AppShell title="Categories">
   <PageTitle title="Categories" subtitle={`Budget year ${year}`} />
 
+  <a
+    href="/categories/new"
+    class="mb-6 flex w-full items-center justify-center gap-2 rounded-lg bg-purple-600 px-4 py-3 text-base font-medium text-white transition-colors hover:bg-purple-500 focus-visible:ring-2 focus-visible:ring-purple-400 focus-visible:outline-none"
+  >
+    + Add category
+  </a>
+
   {
     categories.length === 0 ? (
-      <EmptyState class="mb-6">No categories yet. Create your first one below to start budgeting.</EmptyState>
+      <EmptyState>No categories yet. Tap “Add category” above to create your first one.</EmptyState>
     ) : (
       <CategoryList categories={categories} client:load />
     )
   }
-
-  {
-    userCategories.length === 0 && categories.length > 0 && (
-      <p class="mb-4 text-center text-sm text-blue-100/60">Add your first category below.</p>
-    )
-  }
-
-  <Card>
-    <h2 class="mb-4 text-lg font-semibold">Add a category</h2>
-    <CategoryForm serverError={error} client:load />
-  </Card>
 </AppShell>

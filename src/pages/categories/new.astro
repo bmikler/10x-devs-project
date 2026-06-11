@@ -1,0 +1,21 @@
+---
+import AppShell from "@/components/AppShell.astro";
+import PageTitle from "@/components/ui/PageTitle.astro";
+import BackLink from "@/components/ui/BackLink.astro";
+import Card from "@/components/ui/Card.astro";
+import CategoryForm from "@/components/categories/CategoryForm";
+import { getCurrentBudgetYear } from "@/lib/budget-year";
+
+const error = Astro.url.searchParams.get("error");
+const year = getCurrentBudgetYear();
+---
+
+<AppShell title="Add Category">
+  <BackLink href="/categories">← Categories</BackLink>
+
+  <PageTitle title="Add a category" subtitle={`Budget year ${year}`} />
+
+  <Card>
+    <CategoryForm serverError={error} client:load />
+  </Card>
+</AppShell>

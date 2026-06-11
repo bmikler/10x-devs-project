@@ -1,8 +1,6 @@
 import React, { useState } from "react";
 import { Trash2 } from "lucide-react";
-import CategoryForm from "@/components/categories/CategoryForm";
 import { formatCentsToPln } from "@/lib/money";
-import { type CategoryType } from "@/lib/categories";
 
 interface CategoryRow {
   id: string;
@@ -16,24 +14,15 @@ interface Props {
   categories: CategoryRow[];
 }
 
-type RowMode = "idle" | "editing" | "confirming";
+type RowMode = "idle" | "confirming";
 
 function typeLabel(type: string) {
   return type === "recurring" ? "Monthly" : "Annual";
 }
 
-function centsToInputString(cents: number): string {
-  return (cents / 100).toFixed(2).replace(/\.?0+$/, "");
-}
-
 export default function CategoryList({ categories }: Props) {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [mode, setMode] = useState<RowMode>("idle");
-
-  function openEdit(id: string) {
-    setActiveId(id);
-    setMode("editing");
-  }
 
   function openConfirm(id: string) {
     setActiveId(id);
@@ -61,25 +50,6 @@ export default function CategoryList({ categories }: Props) {
                 <div className="font-semibold text-amber-100">{category.name}</div>
                 <div className="text-xs text-amber-100/70">Catch-all · auto-managed</div>
               </div>
-            </li>
-          );
-        }
-
-        if (isActive && mode === "editing") {
-          return (
-            <li
-              key={category.id}
-              className="rounded-2xl border border-purple-400/30 bg-white/10 p-4 text-white backdrop-blur-xl"
-            >
-              <CategoryForm
-                action={`/api/categories/${category.id}`}
-                initialName={category.name}
-                initialType={category.type as CategoryType}
-                initialLimit={category.limit_cents !== null ? centsToInputString(category.limit_cents) : ""}
-                submitLabel="Save"
-                pendingText="Saving..."
-                onCancel={reset}
-              />
             </li>
           );
         }
@@ -130,15 +100,12 @@ export default function CategoryList({ categories }: Props) {
               </div>
             )}
             <div className="flex gap-1">
-              <button
-                type="button"
-                onClick={() => {
-                  openEdit(category.id);
-                }}
+              <a
+                href={`/categories/${category.id}/edit`}
                 className="rounded-lg border border-white/20 bg-white/10 px-3 py-1.5 text-xs text-blue-100/80 hover:bg-white/20"
               >
                 Edit
-              </button>
+              </a>
               <button
                 type="button"
                 onClick={() => {

@@ -1,0 +1,79 @@
+---
+import AppShell from "@/components/AppShell.astro";
+import PageTitle from "@/components/ui/PageTitle.astro";
+import BackLink from "@/components/ui/BackLink.astro";
+import Card from "@/components/ui/Card.astro";
+import EmptyState from "@/components/ui/EmptyState.astro";
+import CategoryForm from "@/components/categories/CategoryForm";
+import { createClient } from "@/lib/supabase";
+import { getCurrentBudgetYear } from "@/lib/budget-year";
+import type { CategoryType } from "@/lib/categories";
+
+const { user } = Astro.locals;
+const { id } = Astro.params;
+const error = Astro.url.searchParams.get("error");
+const year = getCurrentBudgetYear();
+
+interface CategoryRow {
+  id: string;
+  name: string;
+  type: string;
+  limit_cents: number | null;
+  is_system: boolean;
+}
+
+let category: CategoryRow | null = null;
+let blocked = false;
+
+const supabase = createClient(Astro.request.headers, Astro.cookies);
+if (supabase && user) {
+  // RLS scopes this to the signed-in user; also constrain to the budget year.
+  const { data } = await supabase
+    .from("categories")
+    .select("id,name,type,limit_cents,is_system")
+    .eq("id", id)
+    .eq("year", year)
+    .maybeSingle();
+
+  // The system "other" category cannot be edited (mirrors the API guard).
+  if (data && !data.is_system) {
+    category = data;
+  } else {
+    blocked = true;
+  }
+}
+
+function centsToInputString(cents: number): string {
+  return (cents / 100).toFixed(2).replace(/\.?0+$/, "");
+}
+---
+
+<AppShell title="Edit Category">
+  <BackLink href="/categories">← Categories</BackLink>
+
+  <PageTitle title="Edit category" subtitle={`Budget year ${year}`} />
+
+  {
+    blocked || !category ? (
+      <EmptyState>
+        Category not found.{" "}
+        <a href="/categories" class="text-purple-300 underline">
+          Back to categories.
+        </a>
+      </EmptyState>
+    ) : (
+      <Card>
+        <CategoryForm
+          action={`/api/categories/${category.id}`}
+          serverError={error}
+          initialName={category.name}
+          initialType={category.type as CategoryType}
+          initialLimit={category.limit_cents !== null ? centsToInputString(category.limit_cents) : ""}
+          submitLabel="Save changes"
+          pendingText="Saving..."
+          client:load
+        />
+      </Card>
+    )
+  }
+</AppShell>
