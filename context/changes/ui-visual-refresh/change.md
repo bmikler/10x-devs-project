@@ -1,7 +1,7 @@
 ---
 change_id: ui-visual-refresh
 title: UI visual refresh — modern, consistent, accessible
-status: implemented
+status: impl_reviewed
 created: 2026-06-11
 updated: 2026-06-11
 archived_at: null

@@ -421,6 +421,10 @@ Add a visual progress signal to the report, emphasise over-budget rows, and coll
 - Reuse model: `src/components/auth/FormField.tsx`, `SubmitButton.tsx`, `ServerError.tsx`
 - Token layer: `src/styles/global.css:5-115`
 
+## Addenda (post-implementation)
+
+- **Phase 5 — category edit became a focused route (review F1).** The Phase 5 contract said "inline edit/delete stays in the list." During implementation, category *edit* was promoted to a focused `/categories/[id]/edit` route (mirroring the new `/categories/new` create route), and `CategoryList`'s Edit affordance now links there; inline *delete* still lives in the list. Reuses the existing `/api/categories/[id]` endpoint — no contract change. Accepted in impl-review as a consistent extension of the create-route pattern. See `reviews/impl-review.md` F1.
+
 ## Progress
 
 > Convention: `- [ ]` pending, `- [x]` done. Append ` — <commit sha>` when a step lands. Do not rename step titles. See `references/progress-format.md`.
