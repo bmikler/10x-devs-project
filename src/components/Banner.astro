@@ -8,35 +8,14 @@ interface Props {
 const { variant = "info" } = Astro.props;
 ---
 
-<div class:list={["banner", `banner--${variant}`]} role={variant === "error" ? "alert" : "status"}>
+<div
+  class:list={[
+    "border-b px-4 py-3 text-center text-sm [&_a]:font-semibold [&_a]:underline",
+    variant === "info" && "border-blue-400/30 bg-blue-900/40 text-blue-100",
+    variant === "warning" && "border-amber-400/30 bg-amber-900/40 text-amber-200",
+    variant === "error" && "border-red-500/40 bg-red-900/40 text-red-200",
+  ]}
+  role={variant === "error" ? "alert" : "status"}
+>
   <slot />
 </div>
-
-<style>
-  .banner {
-    padding: 0.75rem 1rem;
-    font-size: 0.875rem;
-    text-align: center;
-    border-bottom: 1px solid;
-  }
-  .banner :global(a) {
-    color: inherit;
-    text-decoration: underline;
-    font-weight: 600;
-  }
-  .banner--info {
-    background: #dbeafe;
-    color: #1e3a8a;
-    border-color: #3b82f6;
-  }
-  .banner--warning {
-    background: #fef3c7;
-    color: #78350f;
-    border-color: #f59e0b;
-  }
-  .banner--error {
-    background: #fee2e2;
-    color: #7f1d1d;
-    border-color: #dc2626;
-  }
-</style>

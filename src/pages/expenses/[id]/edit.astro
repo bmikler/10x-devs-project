@@ -1,5 +1,8 @@
 ---
 import AppShell from "@/components/AppShell.astro";
+import PageTitle from "@/components/ui/PageTitle.astro";
+import BackLink from "@/components/ui/BackLink.astro";
+import EmptyState from "@/components/ui/EmptyState.astro";
 import ExpenseForm from "@/components/expenses/ExpenseForm";
 import { createClient } from "@/lib/supabase";
 import { getCurrentBudgetYear } from "@/lib/budget-year";
@@ -60,35 +63,25 @@ const initial = expense
 ---
 
 <AppShell title="Edit Expense">
-  <a
-    href="/report/monthly"
-    class="mb-4 inline-flex items-center gap-1 text-sm text-purple-300 transition-colors hover:text-purple-100 hover:underline"
-  >
-    ← Monthly report
-  </a>
+  <BackLink href="/report/monthly">← Monthly report</BackLink>
 
-  <h1
-    class="mb-2 bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text text-center text-3xl font-bold text-transparent"
-  >
-    Edit Expense
-  </h1>
-  <p class="mb-6 text-center text-blue-100/80">Budget year {year}</p>
+  <PageTitle title="Edit Expense" subtitle={`Budget year ${year}`} />
 
   {
     notFound ? (
-      <div class="rounded-2xl border border-white/10 bg-white/5 p-6 text-center text-blue-100/70">
+      <EmptyState>
         Expense not found.{" "}
         <a href="/report/monthly" class="text-purple-300 underline">
           Back to monthly report.
         </a>
-      </div>
+      </EmptyState>
     ) : categories.length === 0 ? (
-      <div class="rounded-2xl border border-white/10 bg-white/5 p-6 text-center text-blue-100/70">
+      <EmptyState>
         No categories yet.{" "}
         <a href="/categories" class="text-purple-300 underline">
           Create a category first.
         </a>
-      </div>
+      </EmptyState>
     ) : (
       <ExpenseForm
         client:load

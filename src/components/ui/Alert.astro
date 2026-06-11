@@ -6,9 +6,10 @@ import type { AlertVariant } from "./variants";
 // errors are assertive (role="alert"), success is polite (role="status").
 interface Props {
   variant: AlertVariant;
+  class?: string;
 }
 
-const { variant } = Astro.props;
+const { variant, class: className } = Astro.props;
 
 const role = variant === "error" ? "alert" : "status";
 const ariaLive = variant === "success" ? "polite" : undefined;
@@ -20,6 +21,7 @@ const ariaLive = variant === "success" ? "polite" : undefined;
     variant === "success" && "border-emerald-500/30 bg-emerald-900/30 text-emerald-200",
     variant === "error" && "border-red-500/30 bg-red-900/30 text-red-300",
     variant === "warning" && "border-amber-400/30 bg-amber-900/30 text-amber-200",
+    className,
   ]}
   role={role}
   aria-live={ariaLive}

@@ -1,20 +1,24 @@
 ---
 import AppShell from "@/components/AppShell.astro";
+import PageTitle from "@/components/ui/PageTitle.astro";
 
 const { user } = Astro.locals;
 
-const actions = [
+// "Log expense" is the dominant primary action (NN/g: lead with the primary
+// task), rendered as a prominent hero card above the two secondary shortcuts.
+const primary = {
+  href: "/expenses",
+  icon: "💸",
+  title: "Log expense",
+  description: "Record a new expense",
+};
+
+const secondary = [
   {
     href: "/categories",
     icon: "📂",
     title: "Categories",
     description: "Manage your budget categories",
-  },
-  {
-    href: "/expenses",
-    icon: "💸",
-    title: "Log expense",
-    description: "Record a new expense",
   },
   {
     href: "/report",
@@ -26,21 +30,28 @@ const actions = [
 ---
 
 <AppShell title="Dashboard">
-  <h1
-    class="mb-2 bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text text-center text-3xl font-bold text-transparent"
-  >
-    Budget Tracker
-  </h1>
+  <PageTitle title="Budget Tracker" />
   <p class="mb-6 text-center text-blue-100/80">
     Welcome, <span class="font-semibold text-white">{user?.email}</span>
   </p>
 
-  <div class="flex flex-col gap-4">
+  <a
+    href={primary.href}
+    class="mb-4 flex min-h-24 items-center gap-4 rounded-2xl border border-purple-400/40 bg-purple-500/20 p-6 text-white backdrop-blur-xl transition-colors hover:bg-purple-500/30 focus-visible:ring-2 focus-visible:ring-purple-300 focus-visible:outline-none"
+  >
+    <span class="text-4xl">{primary.icon}</span>
+    <div>
+      <div class="text-xl font-bold">{primary.title}</div>
+      <div class="text-sm text-blue-100/80">{primary.description}</div>
+    </div>
+  </a>
+
+  <div class="flex flex-col gap-3">
     {
-      actions.map((action) => (
+      secondary.map((action) => (
         <a
           href={action.href}
-          class="flex min-h-20 items-center gap-4 rounded-2xl border border-white/10 bg-white/10 p-5 text-white backdrop-blur-xl transition-colors hover:bg-white/20"
+          class="flex min-h-20 items-center gap-4 rounded-2xl border border-white/10 bg-white/10 p-4 text-white backdrop-blur-xl transition-colors hover:bg-white/20 focus-visible:ring-2 focus-visible:ring-purple-300 focus-visible:outline-none"
         >
           <span class="text-3xl">{action.icon}</span>
           <div>
@@ -51,13 +62,4 @@ const actions = [
       ))
     }
   </div>
-
-  <form method="POST" action="/api/auth/signout" class="mt-8 text-center">
-    <button
-      type="submit"
-      class="rounded-lg border border-white/20 bg-white/10 px-6 py-2 text-sm text-white transition-colors hover:bg-white/20"
-    >
-      Sign out
-    </button>
-  </form>
 </AppShell>

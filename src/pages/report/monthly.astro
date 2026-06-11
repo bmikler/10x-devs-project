@@ -1,5 +1,9 @@
 ---
 import AppShell from "@/components/AppShell.astro";
+import PageTitle from "@/components/ui/PageTitle.astro";
+import BackLink from "@/components/ui/BackLink.astro";
+import Alert from "@/components/ui/Alert.astro";
+import EmptyState from "@/components/ui/EmptyState.astro";
 import MonthlyReport from "@/components/report/MonthlyReport";
 import { createClient } from "@/lib/supabase";
 import { getCurrentBudgetYear } from "@/lib/budget-year";
@@ -76,43 +80,33 @@ const hasCategories = categories.length > 0;
 ---
 
 <AppShell title="Monthly report">
-  <a
-    href="/report"
-    class="mb-4 inline-flex items-center gap-1 text-sm text-purple-300 transition-colors hover:text-purple-100 hover:underline"
-  >
-    ← Reports
-  </a>
+  <BackLink href="/report">← Reports</BackLink>
 
-  <h1
-    class="mb-2 bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text text-center text-3xl font-bold text-transparent"
-  >
-    Monthly report
-  </h1>
-  <p class="mb-6 text-center text-blue-100/80">Budget year {year}</p>
+  <PageTitle title="Monthly report" subtitle={`Budget year ${year}`} />
 
   {
     successMessage && (
-      <div class="mb-4 rounded-xl border border-green-400/40 bg-green-500/20 px-4 py-3 text-center text-sm font-medium text-green-200">
+      <Alert variant="success" class="mb-4 text-center font-medium">
         {successMessage} ✓
-      </div>
+      </Alert>
     )
   }
   {
     errorParam && (
-      <div class="mb-4 rounded-xl border border-red-400/40 bg-red-500/20 px-4 py-3 text-center text-sm font-medium text-red-200">
+      <Alert variant="error" class="mb-4 text-center font-medium">
         {errorParam}
-      </div>
+      </Alert>
     )
   }
 
   {
     !hasCategories ? (
-      <div class="rounded-2xl border border-white/10 bg-white/5 p-6 text-center text-blue-100/70">
+      <EmptyState>
         No categories yet.{" "}
         <a href="/categories" class="text-purple-300 underline">
           Create a category first.
         </a>
-      </div>
+      </EmptyState>
     ) : (
       <MonthlyReport
         client:load

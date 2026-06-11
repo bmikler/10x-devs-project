@@ -1,5 +1,8 @@
 ---
 import AppShell from "@/components/AppShell.astro";
+import PageTitle from "@/components/ui/PageTitle.astro";
+import Card from "@/components/ui/Card.astro";
+import EmptyState from "@/components/ui/EmptyState.astro";
 import CategoryForm from "@/components/categories/CategoryForm";
 import CategoryList from "@/components/categories/CategoryList";
 import { createClient } from "@/lib/supabase";
@@ -35,18 +38,11 @@ const userCategories = categories.filter((c) => !c.is_system);
 ---
 
 <AppShell title="Categories">
-  <h1
-    class="mb-2 bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text text-center text-3xl font-bold text-transparent"
-  >
-    Categories
-  </h1>
-  <p class="mb-6 text-center text-blue-100/80">Budget year {year}</p>
+  <PageTitle title="Categories" subtitle={`Budget year ${year}`} />
 
   {
     categories.length === 0 ? (
-      <div class="mb-6 rounded-2xl border border-white/10 bg-white/5 p-6 text-center text-blue-100/70">
-        No categories yet. Create your first one below to start budgeting.
-      </div>
+      <EmptyState class="mb-6">No categories yet. Create your first one below to start budgeting.</EmptyState>
     ) : (
       <CategoryList categories={categories} client:load />
     )
@@ -58,8 +54,8 @@ const userCategories = categories.filter((c) => !c.is_system);
     )
   }
 
-  <div class="rounded-2xl border border-white/10 bg-white/10 p-6 text-white backdrop-blur-xl">
+  <Card>
     <h2 class="mb-4 text-lg font-semibold">Add a category</h2>
     <CategoryForm serverError={error} client:load />
-  </div>
+  </Card>
 </AppShell>

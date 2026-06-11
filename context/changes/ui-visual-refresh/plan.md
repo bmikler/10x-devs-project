@@ -444,33 +444,33 @@ Add a visual progress signal to the report, emphasise over-budget rows, and coll
 
 #### Automated
 
-- [x] 2.1 Build passes: `npm run build`
-- [x] 2.2 Linting passes: `npm run lint`
-- [x] 2.3 `Topbar.astro` no longer imported by any authenticated page
+- [x] 2.1 Build passes: `npm run build` — 324a24c
+- [x] 2.2 Linting passes: `npm run lint` — 324a24c
+- [x] 2.3 `Topbar.astro` no longer imported by any authenticated page — 324a24c
 
 #### Manual
 
-- [x] 2.4 Bottom nav appears on all authenticated pages; destinations navigate
-- [x] 2.5 Active destination highlighted matching current URL (incl. nested `/report/*`)
-- [x] 2.6 Logo tap returns to dashboard; logo link has accessible name
-- [x] 2.7 Bottom bar does not occlude content; respects safe-area
-- [x] 2.8 Header account menu shows sign-out; email no longer overflows at 320px
+- [x] 2.4 Bottom nav appears on all authenticated pages; destinations navigate — 324a24c
+- [x] 2.5 Active destination highlighted matching current URL (incl. nested `/report/*`) — 324a24c
+- [x] 2.6 Logo tap returns to dashboard; logo link has accessible name — 324a24c
+- [x] 2.7 Bottom bar does not occlude content; respects safe-area — 324a24c
+- [x] 2.8 Header account menu shows sign-out; email no longer overflows at 320px — 324a24c
 
 ### Phase 3: Page-Body Consolidation onto Tokens & Components
 
 #### Automated
 
-- [ ] 3.1 Build passes: `npm run build`
-- [ ] 3.2 Linting passes: `npm run lint`
-- [ ] 3.3 No duplicated `bg-cosmic` wrapper boilerplate remains in migrated pages
+- [x] 3.1 Build passes: `npm run build`
+- [x] 3.2 Linting passes: `npm run lint`
+- [x] 3.3 No duplicated `bg-cosmic` wrapper boilerplate remains in migrated pages
 
 #### Manual
 
-- [ ] 3.4 Every page reads as one consistent visual system
-- [ ] 3.5 Config-missing `Banner` renders on-theme and legible
-- [ ] 3.6 Dashboard leads with "Log expense"; sign-out only via header
-- [ ] 3.7 Headings scale correctly at 320px → `sm` → `lg`
-- [ ] 3.8 Eyeball contrast pass (headings, `white/N` text, banner)
+- [x] 3.4 Every page reads as one consistent visual system
+- [x] 3.5 Config-missing `Banner` renders on-theme and legible
+- [x] 3.6 Dashboard leads with "Log expense"; sign-out only via header
+- [x] 3.7 Headings scale correctly at 320px → `sm` → `lg`
+- [x] 3.8 Eyeball contrast pass (headings, `white/N` text, banner)
 
 ### Phase 4: Two-Step Category-First Expense Flow
 

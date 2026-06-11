@@ -1,5 +1,7 @@
 ---
 import AppShell from "@/components/AppShell.astro";
+import PageTitle from "@/components/ui/PageTitle.astro";
+import EmptyState from "@/components/ui/EmptyState.astro";
 import ExpenseForm from "@/components/expenses/ExpenseForm";
 import { createClient } from "@/lib/supabase";
 import { getCurrentBudgetYear } from "@/lib/budget-year";
@@ -42,21 +44,16 @@ if (supabase && user) {
 ---
 
 <AppShell title="Log Expense">
-  <h1
-    class="mb-2 bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text text-center text-3xl font-bold text-transparent"
-  >
-    Log Expense
-  </h1>
-  <p class="mb-6 text-center text-blue-100/80">Budget year {year}</p>
+  <PageTitle title="Log Expense" subtitle={`Budget year ${year}`} />
 
   {
     categories.length === 0 ? (
-      <div class="rounded-2xl border border-white/10 bg-white/5 p-6 text-center text-blue-100/70">
+      <EmptyState>
         No categories yet.{" "}
         <a href="/categories" class="text-purple-300 underline">
           Create a category first.
         </a>
-      </div>
+      </EmptyState>
     ) : (
       <ExpenseForm client:load categories={categories} today={today} serverError={error} success={success} />
     )

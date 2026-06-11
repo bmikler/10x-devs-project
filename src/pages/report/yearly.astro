@@ -1,5 +1,8 @@
 ---
 import AppShell from "@/components/AppShell.astro";
+import PageTitle from "@/components/ui/PageTitle.astro";
+import BackLink from "@/components/ui/BackLink.astro";
+import EmptyState from "@/components/ui/EmptyState.astro";
 import { createClient } from "@/lib/supabase";
 import { getCurrentBudgetYear } from "@/lib/budget-year";
 import { formatCentsToPln } from "@/lib/money";
@@ -48,28 +51,18 @@ const hasCategories = categories.length > 0;
 ---
 
 <AppShell title="Report">
-  <a
-    href="/report"
-    class="mb-4 inline-flex items-center gap-1 text-sm text-purple-300 transition-colors hover:text-purple-100 hover:underline"
-  >
-    ← Reports
-  </a>
+  <BackLink href="/report">← Reports</BackLink>
 
-  <h1
-    class="mb-2 bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text text-center text-3xl font-bold text-transparent"
-  >
-    Report
-  </h1>
-  <p class="mb-6 text-center text-blue-100/80">Budget year {year}</p>
+  <PageTitle title="Report" subtitle={`Budget year ${year}`} />
 
   {
     !hasCategories ? (
-      <div class="rounded-2xl border border-white/10 bg-white/5 p-6 text-center text-blue-100/70">
+      <EmptyState>
         No categories yet.{" "}
         <a href="/categories" class="text-purple-300 underline">
           Create a category first.
         </a>
-      </div>
+      </EmptyState>
     ) : (
       <>
         <h2 class="mb-3 text-lg font-semibold text-blue-100">Monthly</h2>
