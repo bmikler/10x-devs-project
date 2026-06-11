@@ -63,7 +63,7 @@ const initial = expense
 ---
 
 <AppShell title="Edit Expense">
-  <BackLink href="/report/monthly">← Monthly report</BackLink>
+  <BackLink href="/report?view=monthly">← Monthly report</BackLink>
 
   <PageTitle title="Edit Expense" subtitle={`Budget year ${year}`} />
 
@@ -71,7 +71,7 @@ const initial = expense
     notFound ? (
       <EmptyState>
         Expense not found.{" "}
-        <a href="/report/monthly" class="text-purple-300 underline">
+        <a href="/report?view=monthly" class="text-purple-300 underline">
           Back to monthly report.
         </a>
       </EmptyState>

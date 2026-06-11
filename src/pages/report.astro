@@ -1,43 +1,200 @@
 ---
 import AppShell from "@/components/AppShell.astro";
 import PageTitle from "@/components/ui/PageTitle.astro";
+import Alert from "@/components/ui/Alert.astro";
+import EmptyState from "@/components/ui/EmptyState.astro";
+import BudgetRow from "@/components/report/BudgetRow.astro";
+import MonthlyReport from "@/components/report/MonthlyReport";
+import { createClient } from "@/lib/supabase";
 import { getCurrentBudgetYear } from "@/lib/budget-year";
+import { buildReport } from "@/lib/report";
+import type { ReportCategory, MonthExpense } from "@/lib/report";
 
+const { user } = Astro.locals;
 const year = getCurrentBudgetYear();
 
-const reports = [
-  {
-    href: "/report/monthly",
-    icon: "📅",
-    title: "Monthly",
-    description: "One month at a time, grouped by category",
-  },
-  {
-    href: "/report/yearly",
-    icon: "📊",
-    title: "Yearly",
-    description: "Spending vs plan across the budget year",
-  },
+// Tab state is server-read from `?view` so switching needs no client JS.
+const view = Astro.url.searchParams.get("view") === "yearly" ? "yearly" : "monthly";
+
+// Success/error banners arrive here from the expense edit/delete redirects
+// (e.g. /report/monthly?success=updated → /report?view=monthly&success=updated).
+const successParam = Astro.url.searchParams.get("success");
+const errorParam = Astro.url.searchParams.get("error");
+const successMessage =
+  successParam === "updated" ? "Expense updated" : successParam === "deleted" ? "Expense deleted" : null;
+
+// Current month in Warsaw (1-12). Drives both the monthly switcher list and the
+// yearly future-exclusion cutoff — kept consistent with the old split pages.
+const currentMonth = Number(
+  new Intl.DateTimeFormat("en-US", {
+    timeZone: "Europe/Warsaw",
+    month: "numeric",
+  }).format(new Date()),
+);
+
+const MONTH_NAMES = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
 ];
+
+const months = Array.from({ length: currentMonth }, (_, i) => {
+  const monthNumber = i + 1;
+  return {
+    key: `${year}-${String(monthNumber).padStart(2, "0")}`,
+    label: MONTH_NAMES[i],
+  };
+});
+const defaultMonth = `${year}-${String(currentMonth).padStart(2, "0")}`;
+
+const supabase = createClient(Astro.request.headers, Astro.cookies);
+
+let categories: ReportCategory[] = [];
+let expenses: MonthExpense[] = [];
+
+if (supabase && user) {
+  const { data: catData } = await supabase
+    .from("categories")
+    .select("id,name,type,limit_cents,is_system")
+    .eq("year", year)
+    .order("is_system", { ascending: true })
+    .order("name", { ascending: true });
+  categories = catData ?? [];
+
+  // Cap at the start of the next month so future-dated expenses don't surface.
+  // December wraps to January of the following year.
+  const expenseCutoff =
+    currentMonth < 12 ? `${year}-${String(currentMonth + 1).padStart(2, "0")}-01` : `${year + 1}-01-01`;
+
+  const { data: expData } = await supabase
+    .from("expenses")
+    .select("id,category_id,name,amount_cents,expense_at")
+    .gte("expense_at", `${year}-01-01`)
+    .lt("expense_at", expenseCutoff);
+  expenses = expData ?? [];
+}
+
+// The yearly view reuses the same expense set (same cutoff) — buildReport only
+// reads category_id + amount_cents, which MonthExpense already carries.
+const report = buildReport(categories, expenses, currentMonth);
+const hasCategories = categories.length > 0;
+
+const tabs = [
+  { key: "monthly", label: "Monthly" },
+  { key: "yearly", label: "Yearly" },
+] as const;
 ---
 
 <AppShell title="Report">
   <PageTitle title="Report" subtitle={`Budget year ${year}`} />
 
-  <div class="flex flex-col gap-3">
+  <div class="mb-6 flex gap-1 rounded-lg border border-white/10 bg-white/5 p-1" role="group" aria-label="Report view">
     {
-      reports.map((report) => (
+      tabs.map((tab) => (
         <a
-          href={report.href}
-          class="flex min-h-20 items-center gap-4 rounded-2xl border border-white/10 bg-white/10 p-4 text-white backdrop-blur-xl transition-colors hover:bg-white/20 focus-visible:ring-2 focus-visible:ring-purple-300 focus-visible:outline-none"
+          href={`/report?view=${tab.key}`}
+          aria-current={view === tab.key ? "page" : undefined}
+          class:list={[
+            "flex-1 rounded-md px-3 py-2 text-center text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-purple-300 focus-visible:outline-none",
+            view === tab.key ? "bg-white/15 text-white" : "text-blue-100/70 hover:text-blue-100",
+          ]}
         >
-          <span class="text-3xl">{report.icon}</span>
-          <div>
-            <div class="text-lg font-semibold">{report.title}</div>
-            <div class="text-sm text-blue-100/70">{report.description}</div>
-          </div>
+          {tab.label}
         </a>
       ))
     }
   </div>
+
+  {
+    successMessage && (
+      <Alert variant="success" class="mb-4 text-center font-medium">
+        {successMessage} ✓
+      </Alert>
+    )
+  }
+  {
+    errorParam && (
+      <Alert variant="error" class="mb-4 text-center font-medium">
+        {errorParam}
+      </Alert>
+    )
+  }
+
+  {
+    !hasCategories ? (
+      <EmptyState>
+        No categories yet.{" "}
+        <a href="/categories" class="text-purple-300 underline">
+          Create a category first.
+        </a>
+      </EmptyState>
+    ) : view === "monthly" ? (
+      <MonthlyReport
+        client:load
+        categories={categories}
+        expenses={expenses}
+        months={months}
+        defaultMonth={defaultMonth}
+      />
+    ) : (
+      <>
+        <h2 class="mb-3 text-lg font-semibold text-blue-100">Monthly</h2>
+        {report.monthly.length === 0 ? (
+          <p class="mb-6 text-sm text-blue-100/50">No recurring categories yet.</p>
+        ) : (
+          <ul class="mb-6 flex flex-col gap-3">
+            {report.monthly.map((row) => (
+              <li>
+                <BudgetRow
+                  name={row.name}
+                  spentCents={row.avgCents}
+                  limitCents={row.limitCents}
+                  burnPct={row.burnPct}
+                  spentBadge="Avg"
+                />
+              </li>
+            ))}
+          </ul>
+        )}
+
+        <h2 class="mb-3 text-lg font-semibold text-blue-100">Yearly</h2>
+        {report.yearly.length === 0 && !report.other ? (
+          <p class="text-sm text-blue-100/50">No irregular categories yet.</p>
+        ) : (
+          <ul class="flex flex-col gap-3">
+            {report.yearly.map((row) => (
+              <li>
+                <BudgetRow
+                  name={row.name}
+                  spentCents={row.spentCents}
+                  limitCents={row.limitCents}
+                  burnPct={row.burnPct}
+                />
+              </li>
+            ))}
+            {report.other && (
+              <li>
+                <BudgetRow
+                  name={report.other.name}
+                  spentCents={report.other.spentCents}
+                  limitCents={0}
+                  variant="amber"
+                  subtitle="Unplanned spend"
+                />
+              </li>
+            )}
+          </ul>
+        )}
+      </>
+    )
+  }
 </AppShell>

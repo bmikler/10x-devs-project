@@ -3,6 +3,7 @@ import { ChevronLeft, ChevronRight, ChevronDown, Pencil, Trash2 } from "lucide-r
 import { buildMonthBreakdown } from "@/lib/report";
 import type { ReportCategory, MonthExpense } from "@/lib/report";
 import { formatCentsToPln } from "@/lib/money";
+import ProgressBar from "./ProgressBar";
 
 interface MonthOption {
   key: string;
@@ -146,6 +147,13 @@ export default function MonthlyReport({ categories, expenses, months, defaultMon
                 </div>
               </button>
 
+              {/* Colour-coded burn bar for recurring categories that carry a limit. */}
+              {isRecurring && (group.limitCents ?? 0) > 0 && (
+                <div className="px-4 pb-3">
+                  <ProgressBar spentCents={group.spentCents} limitCents={group.limitCents ?? 0} />
+                </div>
+              )}
+
               {/* Expense rows: date · text · amount · edit · delete */}
               {isOpen && (
                 <ul className="border-t border-white/10 bg-black/10">
@@ -154,8 +162,8 @@ export default function MonthlyReport({ categories, expenses, months, defaultMon
                       key={expense.id}
                       className="flex flex-col gap-1 px-4 py-2 text-sm not-last:border-b not-last:border-white/5"
                     >
-                      <div className="flex items-center gap-3">
-                        <span className="w-14 shrink-0 text-blue-100/50">{expense.dateLabel}</span>
+                      <div className="flex items-center gap-2">
+                        <span className="w-11 shrink-0 text-xs text-blue-100/50">{expense.dateLabel}</span>
                         <span className="min-w-0 flex-1 truncate text-blue-100/90">{expense.name}</span>
                         <span className="shrink-0 text-blue-100/80">{formatCentsToPln(expense.amountCents)}</span>
                         <a
@@ -178,7 +186,7 @@ export default function MonthlyReport({ categories, expenses, months, defaultMon
                       </div>
 
                       {confirmingId === expense.id && (
-                        <div className="flex items-center gap-2 pl-[4.25rem]">
+                        <div className="flex items-center gap-2 pl-[3.25rem]">
                           <span className="text-xs text-blue-100/60">Delete this expense?</span>
                           <form method="POST" action={`/api/expenses/${expense.id}`}>
                             <input type="hidden" name="intent" value="delete" />

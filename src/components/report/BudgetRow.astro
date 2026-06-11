@@ -1,0 +1,72 @@
+---
+import ProgressBar from "./ProgressBar";
+import { formatCentsToPln } from "@/lib/money";
+
+// Compact budget row: name + spent/limit on the first line, a colour-coded
+// ProgressBar + burn% on the second. Over-budget rows get a red accent border
+// and an "Over by X" badge so they're obvious at a glance. The `amber` variant
+// is the distinct treatment for the system "other" category, which carries no
+// limit (it shows `subtitle` instead of a bar).
+interface Props {
+  name: string;
+  spentCents: number;
+  limitCents: number;
+  burnPct?: number | null;
+  variant?: "default" | "amber";
+  subtitle?: string;
+  // Small inline badge before the spent figure — e.g. "AVG" for recurring rows,
+  // whose `spentCents` is an average per month, not a running total.
+  spentBadge?: string;
+}
+
+const { name, spentCents, limitCents, burnPct = null, variant = "default", subtitle, spentBadge } = Astro.props;
+
+const hasLimit = limitCents > 0;
+const over = hasLimit && spentCents > limitCents;
+const overByCents = over ? spentCents - limitCents : 0;
+---
+
+<div
+  class:list={[
+    "rounded-2xl border p-4 text-white backdrop-blur-xl",
+    variant === "amber" && "border-amber-400/20 bg-amber-400/10",
+    variant === "default" && !over && "border-white/10 bg-white/10",
+    variant === "default" && over && "border-red-400/40 bg-white/10",
+  ]}
+>
+  <div class="mb-2 flex items-baseline justify-between gap-2">
+    <span class:list={["min-w-0 truncate font-semibold", variant === "amber" && "text-amber-100"]}>{name}</span>
+    <span class="flex shrink-0 items-center gap-1.5 text-sm text-blue-100/80">
+      {
+        spentBadge && (
+          <span class="rounded bg-white/10 px-1 py-0.5 text-[10px] font-semibold tracking-wide text-blue-100/70 uppercase">
+            {spentBadge}
+          </span>
+        )
+      }
+      <span>
+        {formatCentsToPln(spentCents)}
+        {hasLimit && <span class="text-blue-100/50"> / {formatCentsToPln(limitCents)}</span>}
+      </span>
+    </span>
+  </div>
+
+  {
+    hasLimit ? (
+      <div class="flex items-center gap-2">
+        <ProgressBar spentCents={spentCents} limitCents={limitCents} />
+        {burnPct !== null && (
+          <span class:list={["shrink-0 text-xs font-medium", over ? "text-red-300" : "text-blue-100/60"]}>
+            {burnPct}%
+          </span>
+        )}
+      </div>
+    ) : (
+      subtitle && (
+        <div class:list={["text-xs", variant === "amber" ? "text-amber-100/70" : "text-blue-100/50"]}>{subtitle}</div>
+      )
+    )
+  }
+
+  {over && <div class="mt-2 text-xs font-medium text-red-300">Over by {formatCentsToPln(overByCents)}</div>}
+</div>

@@ -9,6 +9,12 @@ import cloudflare from "@astrojs/cloudflare";
 // https://astro.build/config
 export default defineConfig({
   output: "server",
+  // The Monthly/Yearly report hub collapsed into in-page tabs on /report
+  // (ui-visual-refresh phase 6). These keep old links/bookmarks working.
+  redirects: {
+    "/report/monthly": "/report?view=monthly",
+    "/report/yearly": "/report?view=yearly",
+  },
   integrations: [react(), sitemap()],
   vite: {
     plugins: [tailwindcss()],

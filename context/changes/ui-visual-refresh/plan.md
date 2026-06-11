@@ -491,30 +491,30 @@ Add a visual progress signal to the report, emphasise over-budget rows, and coll
 
 #### Automated
 
-- [x] 5.1 Build passes: `npm run build`
-- [x] 5.2 Linting passes: `npm run lint`
-- [x] 5.3 `/categories/new` route file exists
+- [x] 5.1 Build passes: `npm run build` — 539dac8
+- [x] 5.2 Linting passes: `npm run lint` — 539dac8
+- [x] 5.3 `/categories/new` route file exists — 539dac8
 
 #### Manual
 
-- [x] 5.4 `/categories` shows list + "Add category" button; no stacked form
-- [x] 5.5 Add opens `/categories/new` (list hidden); browser back returns to list
-- [x] 5.6 Creating a category redirects to `/categories` and appears
-- [x] 5.7 Inline edit/delete still works
-- [x] 5.8 Empty-state copy points at the Add button
+- [x] 5.4 `/categories` shows list + "Add category" button; no stacked form — 539dac8
+- [x] 5.5 Add opens `/categories/new` (list hidden); browser back returns to list — 539dac8
+- [x] 5.6 Creating a category redirects to `/categories` and appears — 539dac8
+- [x] 5.7 Inline edit/delete still works — 539dac8
+- [x] 5.8 Empty-state copy points at the Add button — 539dac8
 
 ### Phase 6: Report UX — Progress Bars, Over-Budget Emphasis & Tabs
 
 #### Automated
 
-- [ ] 6.1 Build passes: `npm run build`
-- [ ] 6.2 Linting passes: `npm run lint`
+- [x] 6.1 Build passes: `npm run build`
+- [x] 6.2 Linting passes: `npm run lint`
 
 #### Manual
 
-- [ ] 6.3 Each category shows a colour-coded progress bar; over-budget obvious
-- [ ] 6.4 `/report` shows Monthly/Yearly tabs; switching works; `?view=` reflects active tab
-- [ ] 6.5 `/report/monthly` and `/report/yearly` redirect to the tabbed page
-- [ ] 6.6 Monthly expense row no longer overflows at 320px
-- [ ] 6.7 Report numbers match `master` exactly
-- [ ] 6.8 "Other" category remains distinct (amber, last)
+- [x] 6.3 Each category shows a colour-coded progress bar; over-budget obvious
+- [x] 6.4 `/report` shows Monthly/Yearly tabs; switching works; `?view=` reflects active tab
+- [x] 6.5 `/report/monthly` and `/report/yearly` redirect to the tabbed page
+- [x] 6.6 Monthly expense row no longer overflows at 320px
+- [x] 6.7 Report numbers match `master` exactly
+- [x] 6.8 "Other" category remains distinct (amber, last)

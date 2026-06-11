@@ -6,7 +6,7 @@ import { validateExpenseFields } from "@/lib/expense-write";
 export const POST: APIRoute = async (context) => {
   const supabase = createClient(context.request.headers, context.cookies);
   if (!supabase) {
-    return context.redirect(`/report/monthly?error=${encodeURIComponent("Supabase is not configured")}`);
+    return context.redirect(`/report?view=monthly&error=${encodeURIComponent("Supabase is not configured")}`);
   }
 
   const user = context.locals.user;
@@ -21,9 +21,9 @@ export const POST: APIRoute = async (context) => {
   if (intent === "delete") {
     const { error } = await supabase.from("expenses").delete().eq("id", id);
     if (error) {
-      return context.redirect(`/report/monthly?error=${encodeURIComponent(error.message)}`);
+      return context.redirect(`/report?view=monthly&error=${encodeURIComponent(error.message)}`);
     }
-    return context.redirect("/report/monthly?success=deleted");
+    return context.redirect("/report?view=monthly&success=deleted");
   }
 
   // Update branch
@@ -58,5 +58,5 @@ export const POST: APIRoute = async (context) => {
     return context.redirect(`/expenses/${id}/edit?error=${encodeURIComponent(updateError.message)}`);
   }
 
-  return context.redirect("/report/monthly?success=updated");
+  return context.redirect("/report?view=monthly&success=updated");
 };
