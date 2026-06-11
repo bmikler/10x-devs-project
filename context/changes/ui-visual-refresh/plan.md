@@ -507,14 +507,14 @@ Add a visual progress signal to the report, emphasise over-budget rows, and coll
 
 #### Automated
 
-- [x] 6.1 Build passes: `npm run build`
-- [x] 6.2 Linting passes: `npm run lint`
+- [x] 6.1 Build passes: `npm run build` — d968876
+- [x] 6.2 Linting passes: `npm run lint` — d968876
 
 #### Manual
 
-- [x] 6.3 Each category shows a colour-coded progress bar; over-budget obvious
-- [x] 6.4 `/report` shows Monthly/Yearly tabs; switching works; `?view=` reflects active tab
-- [x] 6.5 `/report/monthly` and `/report/yearly` redirect to the tabbed page
-- [x] 6.6 Monthly expense row no longer overflows at 320px
-- [x] 6.7 Report numbers match `master` exactly
-- [x] 6.8 "Other" category remains distinct (amber, last)
+- [x] 6.3 Each category shows a colour-coded progress bar; over-budget obvious — d968876
+- [x] 6.4 `/report` shows Monthly/Yearly tabs; switching works; `?view=` reflects active tab — d968876
+- [x] 6.5 `/report/monthly` and `/report/yearly` redirect to the tabbed page — d968876
+- [x] 6.6 Monthly expense row no longer overflows at 320px — d968876
+- [x] 6.7 Report numbers match `master` exactly — d968876
+- [x] 6.8 "Other" category remains distinct (amber, last) — d968876
