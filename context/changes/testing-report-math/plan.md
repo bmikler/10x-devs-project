@@ -493,10 +493,10 @@ The `expenseCutoff` extract is behavior-preserving; no data or schema change.
 
 #### Automated
 
-- [x] 4.1 `npm run test` appears in `.github/workflows/ci.yml` (valid YAML)
-- [x] 4.2 Full local gate passes: `npm run lint && npm run test && npm run build`
+- [x] 4.1 `npm run test` appears in `.github/workflows/ci.yml` (valid YAML) — 110436d
+- [x] 4.2 Full local gate passes: `npm run lint && npm run test && npm run build` — 110436d
 
 #### Manual
 
-- [x] 4.3 CI unit step runs and passes on the MR
-- [x] 4.4 `test-plan.md` §3/§4/§5/§6.1 updated; a reader can add a unit test from §6.1 alone
+- [x] 4.3 CI unit step runs and passes on the MR — 110436d
+- [x] 4.4 `test-plan.md` §3/§4/§5/§6.1 updated; a reader can add a unit test from §6.1 alone — 110436d
