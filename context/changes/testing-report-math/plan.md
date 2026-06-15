@@ -450,29 +450,29 @@ The `expenseCutoff` extract is behavior-preserving; no data or schema change.
 
 #### Automated
 
-- [x] 1.1 Vitest installs and runs: `npm run test` exits 0
-- [x] 1.2 The sanity test resolves the `@/*` alias (import does not error)
-- [x] 1.3 Lint passes on new files: `npm run lint`
-- [x] 1.4 Build is unaffected: `npm run build`
+- [x] 1.1 Vitest installs and runs: `npm run test` exits 0 — fc144aa
+- [x] 1.2 The sanity test resolves the `@/*` alias (import does not error) — fc144aa
+- [x] 1.3 Lint passes on new files: `npm run lint` — fc144aa
+- [x] 1.4 Build is unaffected: `npm run build` — fc144aa
 
 #### Manual
 
-- [x] 1.5 `npm run test:watch` starts watch mode and re-runs on change
-- [x] 1.6 No Tailwind/Cloudflare/browser dependency pulled into the test env
+- [x] 1.5 `npm run test:watch` starts watch mode and re-runs on change — fc144aa
+- [x] 1.6 No Tailwind/Cloudflare/browser dependency pulled into the test env — fc144aa
 
 ### Phase 2: Report-math coverage (Risk #2)
 
 #### Automated
 
-- [ ] 2.1 All `buildReport` cases pass: `npm run test`
-- [ ] 2.2 All `buildMonthBreakdown` cases pass: `npm run test`
-- [ ] 2.3 Coverage includes an overspend (negative-delta) and a rounding-order case
-- [ ] 2.4 Lint passes: `npm run lint`
+- [x] 2.1 All `buildReport` cases pass: `npm run test`
+- [x] 2.2 All `buildMonthBreakdown` cases pass: `npm run test`
+- [x] 2.3 Coverage includes an overspend (negative-delta) and a rounding-order case
+- [x] 2.4 Lint passes: `npm run lint`
 
 #### Manual
 
-- [ ] 2.5 Spot-check one oracle by hand against the agreed definition
-- [ ] 2.6 Confirm the rounding-order case fails if burn derives from the raw quotient
+- [x] 2.5 Spot-check one oracle by hand against the agreed definition
+- [x] 2.6 Confirm the rounding-order case fails if burn derives from the raw quotient
 
 ### Phase 3: Year-boundary coverage (Risk #3)
 
