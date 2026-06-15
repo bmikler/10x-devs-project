@@ -478,25 +478,25 @@ The `expenseCutoff` extract is behavior-preserving; no data or schema change.
 
 #### Automated
 
-- [x] 3.1 `warsawNoon`, `validateExpenseFields`, `getExpenseCutoff` cases pass: `npm run test`
-- [x] 3.2 DST summer/winter and Dec-31/Jan-1 cases present
-- [x] 3.3 Build passes after the extract: `npm run build`
-- [x] 3.4 Lint passes: `npm run lint`
-- [x] 3.5 Type check passes: `astro check`
+- [x] 3.1 `warsawNoon`, `validateExpenseFields`, `getExpenseCutoff` cases pass: `npm run test` — e590949
+- [x] 3.2 DST summer/winter and Dec-31/Jan-1 cases present — e590949
+- [x] 3.3 Build passes after the extract: `npm run build` — e590949
+- [x] 3.4 Lint passes: `npm run lint` — e590949
+- [x] 3.5 Type check passes: `astro check` — e590949
 
 #### Manual
 
-- [x] 3.6 `/report` renders correctly after the `expenseCutoff` extract
-- [x] 3.7 Fake-timers cases are deterministic across two runs
+- [x] 3.6 `/report` renders correctly after the `expenseCutoff` extract — e590949
+- [x] 3.7 Fake-timers cases are deterministic across two runs — e590949
 
 ### Phase 4: CI gate + docs
 
 #### Automated
 
-- [ ] 4.1 `npm run test` appears in `.github/workflows/ci.yml` (valid YAML)
-- [ ] 4.2 Full local gate passes: `npm run lint && npm run test && npm run build`
+- [x] 4.1 `npm run test` appears in `.github/workflows/ci.yml` (valid YAML)
+- [x] 4.2 Full local gate passes: `npm run lint && npm run test && npm run build`
 
 #### Manual
 
-- [ ] 4.3 CI unit step runs and passes on the MR
-- [ ] 4.4 `test-plan.md` §3/§4/§5/§6.1 updated; a reader can add a unit test from §6.1 alone
+- [x] 4.3 CI unit step runs and passes on the MR
+- [x] 4.4 `test-plan.md` §3/§4/§5/§6.1 updated; a reader can add a unit test from §6.1 alone

@@ -81,7 +81,7 @@ orchestrator updates Status as artifacts appear on disk.
 
 | # | Phase name | Goal (one line) | Risks covered | Test types | Status | Change folder |
 |---|------------|-----------------|----------------|------------|--------|----------------|
-| 1 | Bootstrap runner + report-math coverage | Stand up the test runner; prove report arithmetic and year-boundary attribution against PRD-derived oracles | #2, #3 | unit | change opened | context/changes/testing-report-math/ |
+| 1 | Bootstrap runner + report-math coverage | Stand up the test runner; prove report arithmetic and year-boundary attribution against PRD-derived oracles | #2, #3 | unit | complete | context/changes/testing-report-math/ |
 | 2 | Data-isolation & auth-boundary integration | Prove cross-user access is denied and unauthenticated requests are rejected at the API/route boundary | #1, #5 | integration | not started | — |
 | 3 | Mutation safety: cascade + input validation | Prove category-delete preserves expenses via "other", and the server rejects hostile input | #4, #6 | integration | not started | — |
 | 4 | Quality-gates wiring | Lock unit + integration into the existing GitHub Actions CI floor | cross-cutting | gates (CI) | not started | — |
@@ -102,7 +102,7 @@ The classic test base for this project. AI-native tools (if any) carry a
 
 | Layer | Tool | Version | Notes |
 |-------|------|---------|-------|
-| unit + integration | none yet — see §3 Phase 1 | — | No runner configured today (no `*.test.*`, no config). Phase 1 adds one; Vitest is the natural fit for a Vite/Astro stack — `/10x-research` confirms before adoption |
+| unit | Vitest | ^3.2.x | Node environment; `vitest.config.ts` re-declares `@/*` alias (not inherited from Astro's Vite config); `*.test.ts` colocated next to source. Integration TBD — see §3 Phase 2. |
 | API / Worker integration | none yet — see §3 Phase 2 | — | Astro SSR endpoints run on Cloudflare Workers; integration harness (container API or `wrangler` dev) chosen in Phase 2 research |
 | Supabase / RLS in tests | none yet — see §3 Phase 2 | — | Local Supabase (`supabase/` config present) is the candidate for exercising real RLS; confirm in research |
 | e2e | not adopted | — | Deliberately deferred — integration covers the API risks more cheaply (see §3) |
@@ -123,7 +123,7 @@ rollout phase lands; before that, the gate is `planned`.
 | Gate | Where | Required? | Catches |
 |------|-------|-----------|---------|
 | lint + typecheck | local + CI | required (already wired: `.github/workflows/ci.yml`, husky pre-commit) | syntactic / type drift |
-| unit | local + CI | required after §3 Phase 1 | report-arithmetic and year-boundary regressions |
+| unit | local + CI | required (wired: `ci.yml` Phase 1) | report-arithmetic and year-boundary regressions |
 | integration | local + CI | required after §3 Phase 2 | data-isolation, auth-boundary, cascade, validation regressions |
 | post-edit hook | local (agent loop) | recommended local | regressions at edit time; not a CI substitute |
 | pre-prod smoke | between merge + prod | optional | environment-specific failures (Worker + Supabase wiring) |
@@ -140,7 +140,31 @@ the relevant rollout phase ships; before that, the sub-section reads
 
 ### 6.1 Adding a unit test
 
-- TBD — see §3 Phase 1 (report arithmetic + year-boundary attribution; PRD-derived oracle, never the implementation's own output).
+**Location:** colocated with source — `src/lib/<module>.test.ts` next to
+`src/lib/<module>.ts`. See `src/lib/report.test.ts` as the canonical reference.
+
+**Naming:** `<module>.test.ts`. Vitest discovers all `*.test.ts` files under `src/`
+automatically — no registration needed.
+
+**Run commands:**
+- `npm run test` — one-shot, exits 0 on green (CI mode)
+- `npm run test:watch` — re-runs on file change (local dev)
+
+**Oracle rule (critical):** derive expected values from the PRD or an agreed
+definition — **never lift them from the function's own output**. Lifting from
+the implementation is the oracle anti-pattern: a wrong function passes its own
+wrong numbers. For arithmetic, write out the formula in a comment step-by-step,
+compute the answer, then encode that as the assertion value.
+
+**Fake timers:** when the code under test calls `new Date()` or `todayInWarsaw()`,
+use `vi.useFakeTimers()` + `vi.setSystemTime(new Date("..."))` in a `beforeEach`
+inside a nested `describe`, and restore with `vi.useRealTimers()` in `afterEach`.
+See `src/lib/expense-write.test.ts` for the pattern.
+
+**Reference tests:**
+- `src/lib/report.test.ts` — report arithmetic, sorting, oracle-derived cases
+- `src/lib/expense-write.test.ts` — `warsawNoon` DST + fake-timers for `validateExpenseFields`
+- `src/lib/budget-year.test.ts` — `getExpenseCutoff` boundary cases
 
 ### 6.2 Adding an integration test
 
@@ -160,8 +184,15 @@ the relevant rollout phase ships; before that, the sub-section reads
 
 ### 6.6 Per-rollout-phase notes
 
-(Optional. After each phase lands, `/10x-implement` appends a 2–3 line note
-here capturing anything surprising the rollout phase taught.)
+**Phase 1 (testing-report-math, 2026-06-15):** The noon-pin invariant
+(`warsawNoon`) is the load-bearing piece for year-boundary safety — the SQL
+half-open range is correct *because* every stored instant is pinned to Warsaw
+noon (~10–11h from midnight, outside the UTC-vs-Warsaw ambiguity window). Unit-
+testing the write-side pin is cheaper and more direct than a DB round-trip for
+this risk. The rounding-order oracle for `buildReport` (`burnPct` must derive
+from the *rounded* avg, not the raw quotient) required a hand-crafted fixture:
+`totalSpent=599, elapsedMonths=4, limit=400` — the smallest integer case where
+the two approaches diverge at the `burnPct` level.
 
 ## 7. What We Deliberately Don't Test
 
