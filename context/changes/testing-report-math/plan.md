@@ -464,30 +464,30 @@ The `expenseCutoff` extract is behavior-preserving; no data or schema change.
 
 #### Automated
 
-- [x] 2.1 All `buildReport` cases pass: `npm run test`
-- [x] 2.2 All `buildMonthBreakdown` cases pass: `npm run test`
-- [x] 2.3 Coverage includes an overspend (negative-delta) and a rounding-order case
-- [x] 2.4 Lint passes: `npm run lint`
+- [x] 2.1 All `buildReport` cases pass: `npm run test` — 7bc96ab
+- [x] 2.2 All `buildMonthBreakdown` cases pass: `npm run test` — 7bc96ab
+- [x] 2.3 Coverage includes an overspend (negative-delta) and a rounding-order case — 7bc96ab
+- [x] 2.4 Lint passes: `npm run lint` — 7bc96ab
 
 #### Manual
 
-- [x] 2.5 Spot-check one oracle by hand against the agreed definition
-- [x] 2.6 Confirm the rounding-order case fails if burn derives from the raw quotient
+- [x] 2.5 Spot-check one oracle by hand against the agreed definition — 7bc96ab
+- [x] 2.6 Confirm the rounding-order case fails if burn derives from the raw quotient — 7bc96ab
 
 ### Phase 3: Year-boundary coverage (Risk #3)
 
 #### Automated
 
-- [ ] 3.1 `warsawNoon`, `validateExpenseFields`, `getExpenseCutoff` cases pass: `npm run test`
-- [ ] 3.2 DST summer/winter and Dec-31/Jan-1 cases present
-- [ ] 3.3 Build passes after the extract: `npm run build`
-- [ ] 3.4 Lint passes: `npm run lint`
-- [ ] 3.5 Type check passes: `astro check`
+- [x] 3.1 `warsawNoon`, `validateExpenseFields`, `getExpenseCutoff` cases pass: `npm run test`
+- [x] 3.2 DST summer/winter and Dec-31/Jan-1 cases present
+- [x] 3.3 Build passes after the extract: `npm run build`
+- [x] 3.4 Lint passes: `npm run lint`
+- [x] 3.5 Type check passes: `astro check`
 
 #### Manual
 
-- [ ] 3.6 `/report` renders correctly after the `expenseCutoff` extract
-- [ ] 3.7 Fake-timers cases are deterministic across two runs
+- [x] 3.6 `/report` renders correctly after the `expenseCutoff` extract
+- [x] 3.7 Fake-timers cases are deterministic across two runs
 
 ### Phase 4: CI gate + docs
 

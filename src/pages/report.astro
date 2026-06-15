@@ -6,7 +6,7 @@ import EmptyState from "@/components/ui/EmptyState.astro";
 import BudgetRow from "@/components/report/BudgetRow.astro";
 import MonthlyReport from "@/components/report/MonthlyReport";
 import { createClient } from "@/lib/supabase";
-import { getCurrentBudgetYear } from "@/lib/budget-year";
+import { getCurrentBudgetYear, getExpenseCutoff } from "@/lib/budget-year";
 import { buildReport } from "@/lib/report";
 import type { ReportCategory, MonthExpense } from "@/lib/report";
 
@@ -70,10 +70,7 @@ if (supabase && user) {
     .order("name", { ascending: true });
   categories = catData ?? [];
 
-  // Cap at the start of the next month so future-dated expenses don't surface.
-  // December wraps to January of the following year.
-  const expenseCutoff =
-    currentMonth < 12 ? `${year}-${String(currentMonth + 1).padStart(2, "0")}-01` : `${year + 1}-01-01`;
+  const expenseCutoff = getExpenseCutoff(year, currentMonth);
 
   const { data: expData } = await supabase
     .from("expenses")

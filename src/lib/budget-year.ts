@@ -1,4 +1,12 @@
 /**
+ * First day of the month after `currentMonth` (exclusive upper bound for the
+ * yearly expense query). December wraps to `${year + 1}-01-01`.
+ */
+export function getExpenseCutoff(year: number, currentMonth: number): string {
+  return currentMonth < 12 ? `${year}-${String(currentMonth + 1).padStart(2, "0")}-01` : `${year + 1}-01-01`;
+}
+
+/**
  * Single source of "the current budget year", derived in `Europe/Warsaw`.
  *
  * Cloudflare Workers run in UTC, so `new Date().getFullYear()` is wrong near a
