@@ -82,7 +82,7 @@ orchestrator updates Status as artifacts appear on disk.
 | # | Phase name | Goal (one line) | Risks covered | Test types | Status | Change folder |
 |---|------------|-----------------|----------------|------------|--------|----------------|
 | 1 | Bootstrap runner + report-math coverage | Stand up the test runner; prove report arithmetic and year-boundary attribution against PRD-derived oracles | #2, #3 | unit | complete | context/changes/testing-report-math/ |
-| 2 | Data-isolation & auth-boundary integration | Prove cross-user access is denied and unauthenticated requests are rejected at the API/route boundary | #1, #5 | integration | not started | — |
+| 2 | Data-isolation & auth-boundary integration | Prove cross-user access is denied and unauthenticated requests are rejected at the API/route boundary | #1, #5 | integration | complete | context/changes/testing-data-isolation/ |
 | 3 | Mutation safety: cascade + input validation | Prove category-delete preserves expenses via "other", and the server rejects hostile input | #4, #6 | integration | not started | — |
 | 4 | Quality-gates wiring | Lock unit + integration into the existing GitHub Actions CI floor | cross-cutting | gates (CI) | not started | — |
 
@@ -102,9 +102,9 @@ The classic test base for this project. AI-native tools (if any) carry a
 
 | Layer | Tool | Version | Notes |
 |-------|------|---------|-------|
-| unit | Vitest | ^3.2.x | Node environment; `vitest.config.ts` re-declares `@/*` alias (not inherited from Astro's Vite config); `*.test.ts` colocated next to source. Integration TBD — see §3 Phase 2. |
-| API / Worker integration | none yet — see §3 Phase 2 | — | Astro SSR endpoints run on Cloudflare Workers; integration harness (container API or `wrangler` dev) chosen in Phase 2 research |
-| Supabase / RLS in tests | none yet — see §3 Phase 2 | — | Local Supabase (`supabase/` config present) is the candidate for exercising real RLS; confirm in research |
+| unit | Vitest | ^3.2.x | Node environment; `vitest.config.ts` re-declares `@/*` alias (not inherited from Astro's Vite config); `*.test.ts` colocated next to source. Integration lane is separate — see §6.2. |
+| API / Worker integration | Vitest integration lane | ^3.2.x | `vitest.integration.config.ts` targets `tests/integration/**/*.test.ts`; `npm run test:integration` (one-shot) / `npm run test:integration:watch`; requires `supabase start` + exported keys (see §6.2). checked: 2026-06-18 |
+| Supabase / RLS in tests | Local Supabase + service-role client | CLI ^2.98.x | `tests/integration/helpers/supabase.ts` mints two users via `auth.admin.createUser`; each gets its own `createClient` + `signInWithPassword` so `auth.uid()` resolves correctly per client. Use JWT-format `ANON_KEY` from `supabase status -o env` (not the opaque `sb_publishable_…` key). checked: 2026-06-18 |
 | e2e | not adopted | — | Deliberately deferred — integration covers the API risks more cheaply (see §3) |
 | accessibility | not adopted | — | PRD §Non-Goals: reasonable contrast/keyboard only, no formal WCAG-AA audit |
 
@@ -168,7 +168,21 @@ See `src/lib/expense-write.test.ts` for the pattern.
 
 ### 6.2 Adding an integration test
 
-- TBD — see §3 Phase 2 (cross-user denial + unauthenticated rejection against a real RLS-backed harness; assert side-effects, not just status).
+**Location:** `tests/integration/**/*.test.ts` — discovered by the integration lane, never by the unit lane.
+
+**Helper:** `tests/integration/helpers/supabase.ts` exports `makeUsers()`, which mints two run-unique users via the service-role client, signs each into their own `createClient` instance, and returns `{ a, b, cleanup }`. Call `cleanup()` in `afterAll`; `ON DELETE CASCADE` wipes all their rows automatically.
+
+**Rule (critical): assert DB state, not status.** Cross-user `UPDATE`/`DELETE` on RLS-protected tables return no error and affect 0 rows — re-read the target row (as the owning user or via the service client) to confirm it is unchanged. A test that only checks the RPC response passes against a broken policy.
+
+**Prerequisites:**
+1. `supabase start` — local Supabase running, API on port 54321.
+2. `export $(supabase status -o env | grep -E 'ANON_KEY|SERVICE_ROLE_KEY')` — exports the JWT anon key and service-role key. Use the JWT-format `ANON_KEY`; the opaque `sb_publishable_…` key does not work with local PostgREST.
+
+**Run commands:**
+- `npm run test:integration` — one-shot, exits 0 on green.
+- `npm run test:integration:watch` — watch mode for local dev.
+
+**Reference test:** `tests/integration/data-isolation.test.ts`
 
 ### 6.3 Adding an e2e test
 
@@ -176,13 +190,29 @@ See `src/lib/expense-write.test.ts` for the pattern.
 
 ### 6.4 Adding a test for a new API endpoint
 
-- TBD — see §3 Phase 2 (ownership-scoped read/write, auth guard, and input-validation rejection patterns).
+**Auth-guard (unauthenticated rejection) — unit lane, DB-free:**
+
+1. Mock the runtime virtual at the top of the test file:
+   `vi.mock("astro:env/server", () => ({ SUPABASE_URL: "http://127.0.0.1:54321", SUPABASE_KEY: "test-anon-key" }))`
+2. Import the handler: `const { POST } = await import("@/pages/api/<endpoint>")`.
+3. Synthesize a minimal `APIContext` with `locals.user = null`, empty cookies, and a `redirect()` shim that returns `new Response(null, { status: 302, headers: { Location: path } })`.
+4. Assert `res.status === 302` and `res.headers.get("Location") === "/auth/signin"`.
+
+Note: `middleware.ts` only matches page prefixes — every `/api/*` endpoint carries its own `if (!locals.user)` guard. Both emit 302, not 401/403.
+
+**Reference test:** `src/pages/api/auth-guard.test.ts`
+
+**Ownership-scoped read/write (RLS enforcement):** Use the integration lane — see §6.2.
+
+**Input-validation rejection:** TBD — see §3 Phase 3.
 
 ### 6.5 Adding a test for the cascade / mutation rules
 
 - TBD — see §3 Phase 3 (category-delete reassigns to "other"; durability re-read after a successful save).
 
 ### 6.6 Per-rollout-phase notes
+
+**Phase 2 (testing-data-isolation, 2026-06-18):** The load-bearing insight: cross-user `UPDATE`/`DELETE` on RLS-protected tables return no error and affect 0 rows — tests must assert DB state (re-read the row as the owning user), never the RPC status. The auth boundary emits `302 → /auth/signin`, not 401/403, and `src/middleware.ts` only matches page-route prefixes — every `/api/*` endpoint compensates with its own `if (!locals.user)` guard. The unit and integration lanes are physically split (`vitest.config.ts` excludes `tests/integration/**`; `vitest.integration.config.ts` targets only that directory) so `npm run test` stays DB-free and CI-safe without Supabase. `getViteConfig()` is deliberately avoided — it breaks on Astro 6 + `@astrojs/cloudflare`. For local Supabase, use the JWT-format `ANON_KEY` from `supabase status -o env` as the API key; the newer opaque `sb_publishable_…` key is not recognised by local PostgREST. Running `supabase db reset` is the reliable way to apply migrations to the local DB if PostgREST reports a schema-cache miss despite the migration file being tracked.
 
 **Phase 1 (testing-report-math, 2026-06-15):** The noon-pin invariant
 (`warsawNoon`) is the load-bearing piece for year-boundary safety — the SQL
