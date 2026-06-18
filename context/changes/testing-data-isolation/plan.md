@@ -460,24 +460,24 @@ None — additive. No schema, no data migration, no production code change.
 
 #### Automated
 
-- [x] 3.1 Integration suite passes: `npm run test:integration` (Supabase up, keys set)
-- [x] 3.2 Full matrix present (read/update/delete/forged-insert/FK): `npm run test:integration -- data-isolation`
-- [x] 3.3 Unit lane unaffected and DB-free: `npm run test`
-- [x] 3.4 Linting passes: `npm run lint`
+- [x] 3.1 Integration suite passes: `npm run test:integration` (Supabase up, keys set) — 3d7107a
+- [x] 3.2 Full matrix present (read/update/delete/forged-insert/FK): `npm run test:integration -- data-isolation` — 3d7107a
+- [x] 3.3 Unit lane unaffected and DB-free: `npm run test` — 3d7107a
+- [x] 3.4 Linting passes: `npm run lint` — 3d7107a
 
 #### Manual
 
-- [x] 3.5 Dropping a `WITH CHECK` clause locally makes the forged-insert case fail (real policy exercised)
-- [x] 3.6 Update/delete cases pass despite no-error RPC (assertions read DB state, not status)
+- [x] 3.5 Dropping a `WITH CHECK` clause locally makes the forged-insert case fail (real policy exercised) — 3d7107a
+- [x] 3.6 Update/delete cases pass despite no-error RPC (assertions read DB state, not status) — 3d7107a
 
 ### Phase 4: Cookbook + run documentation
 
 #### Automated
 
-- [ ] 4.1 Markdown lints/formats clean: `npm run lint` + prettier on edited `.md`
-- [ ] 4.2 No "TBD — see §3 Phase 2" remains in §6.2 / §6.4 (grep)
+- [x] 4.1 Markdown lints/formats clean: `npm run lint` + prettier on edited `.md`
+- [x] 4.2 No "TBD — see §3 Phase 2" remains in §6.2 / §6.4 (grep)
 
 #### Manual
 
-- [ ] 4.3 A fresh reader can run the integration lane from §6.2 alone
-- [ ] 4.4 §6.6 Phase 2 note reads consistently with the Phase 1 note
+- [x] 4.3 A fresh reader can run the integration lane from §6.2 alone
+- [x] 4.4 §6.6 Phase 2 note reads consistently with the Phase 1 note
