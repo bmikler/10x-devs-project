@@ -434,27 +434,27 @@ None — additive. No schema, no data migration, no production code change.
 
 #### Automated
 
-- [x] 1.1 Unit suite passes: `npm run test`
-- [x] 1.2 New cases discovered (5 endpoints asserted): `npm run test -- auth-guard`
-- [x] 1.3 Linting passes: `npm run lint`
+- [x] 1.1 Unit suite passes: `npm run test` — 3048475
+- [x] 1.2 New cases discovered (5 endpoints asserted): `npm run test -- auth-guard` — 3048475
+- [x] 1.3 Linting passes: `npm run lint` — 3048475
 
 #### Manual
 
-- [x] 1.4 Commenting one endpoint's `if (!user)` guard makes that case fail (guard actually exercised)
+- [x] 1.4 Commenting one endpoint's `if (!user)` guard makes that case fail (guard actually exercised) — 3048475
 
 ### Phase 2: Integration lane scaffold (config, script, helper)
 
 #### Automated
 
-- [ ] 2.1 Unit lane still green and DB-free: `npm run test` (Supabase down)
-- [ ] 2.2 Integration config resolves with no error: `npm run test:integration` (Supabase up, keys set)
-- [ ] 2.3 Unit lane does not pick up `tests/integration/**` (Supabase down still passes)
-- [ ] 2.4 Linting passes: `npm run lint`
+- [x] 2.1 Unit lane still green and DB-free: `npm run test` (Supabase down)
+- [x] 2.2 Integration config resolves with no error: `npm run test:integration` (Supabase up, keys set)
+- [x] 2.3 Unit lane does not pick up `tests/integration/**` (Supabase down still passes)
+- [x] 2.4 Linting passes: `npm run lint`
 
 #### Manual
 
-- [ ] 2.5 Unset `SUPABASE_SERVICE_ROLE_KEY` → `npm run test:integration` fails fast with the documented message
-- [ ] 2.6 `supabase status` shows API on `54321` locally
+- [x] 2.5 Unset `SUPABASE_SERVICE_ROLE_KEY` → `npm run test:integration` fails fast with the documented message
+- [x] 2.6 `supabase status` shows API on `54321` locally
 
 ### Phase 3: Risk #1 — Data-isolation integration suite
 
