@@ -446,29 +446,29 @@ None — additive. No schema, no data migration, no production code change.
 
 #### Automated
 
-- [x] 2.1 Unit lane still green and DB-free: `npm run test` (Supabase down)
-- [x] 2.2 Integration config resolves with no error: `npm run test:integration` (Supabase up, keys set)
-- [x] 2.3 Unit lane does not pick up `tests/integration/**` (Supabase down still passes)
-- [x] 2.4 Linting passes: `npm run lint`
+- [x] 2.1 Unit lane still green and DB-free: `npm run test` (Supabase down) — b0375ca
+- [x] 2.2 Integration config resolves with no error: `npm run test:integration` (Supabase up, keys set) — b0375ca
+- [x] 2.3 Unit lane does not pick up `tests/integration/**` (Supabase down still passes) — b0375ca
+- [x] 2.4 Linting passes: `npm run lint` — b0375ca
 
 #### Manual
 
-- [x] 2.5 Unset `SUPABASE_SERVICE_ROLE_KEY` → `npm run test:integration` fails fast with the documented message
-- [x] 2.6 `supabase status` shows API on `54321` locally
+- [x] 2.5 Unset `SUPABASE_SERVICE_ROLE_KEY` → `npm run test:integration` fails fast with the documented message — b0375ca
+- [x] 2.6 `supabase status` shows API on `54321` locally — b0375ca
 
 ### Phase 3: Risk #1 — Data-isolation integration suite
 
 #### Automated
 
-- [ ] 3.1 Integration suite passes: `npm run test:integration` (Supabase up, keys set)
-- [ ] 3.2 Full matrix present (read/update/delete/forged-insert/FK): `npm run test:integration -- data-isolation`
-- [ ] 3.3 Unit lane unaffected and DB-free: `npm run test`
-- [ ] 3.4 Linting passes: `npm run lint`
+- [x] 3.1 Integration suite passes: `npm run test:integration` (Supabase up, keys set)
+- [x] 3.2 Full matrix present (read/update/delete/forged-insert/FK): `npm run test:integration -- data-isolation`
+- [x] 3.3 Unit lane unaffected and DB-free: `npm run test`
+- [x] 3.4 Linting passes: `npm run lint`
 
 #### Manual
 
-- [ ] 3.5 Dropping a `WITH CHECK` clause locally makes the forged-insert case fail (real policy exercised)
-- [ ] 3.6 Update/delete cases pass despite no-error RPC (assertions read DB state, not status)
+- [x] 3.5 Dropping a `WITH CHECK` clause locally makes the forged-insert case fail (real policy exercised)
+- [x] 3.6 Update/delete cases pass despite no-error RPC (assertions read DB state, not status)
 
 ### Phase 4: Cookbook + run documentation
 

@@ -1,18 +1,21 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
 function requiredEnv(name: string): string {
-  const value = process.env[name];
-  if (!value) {
+  const raw = process.env[name];
+  if (!raw) {
     throw new Error(
       `${name} is required for integration tests. ` + "Run `supabase status -o env` to get the key, then export it.",
     );
   }
-  return value;
+  // Strip surrounding double-quotes that bash `export $(...)` may leave in the value.
+  return raw.replace(/^"|"$/g, "");
 }
 
 const SUPABASE_URL = requiredEnv("SUPABASE_URL");
-const SUPABASE_KEY = requiredEnv("SUPABASE_KEY");
-const SERVICE_ROLE_KEY = requiredEnv("SUPABASE_SERVICE_ROLE_KEY");
+// ANON_KEY must be the JWT format key from `supabase status -o env`, not the
+// sb_publishable_... opaque key — local PostgREST validates it as a JWT.
+const ANON_KEY = requiredEnv("ANON_KEY");
+const SERVICE_ROLE_KEY = requiredEnv("SERVICE_ROLE_KEY");
 
 function serviceClient() {
   return createClient(SUPABASE_URL, SERVICE_ROLE_KEY, {
@@ -43,7 +46,7 @@ async function mintUser(email: string, password: string): Promise<MintedUser> {
   }
   const id = data.user.id;
 
-  const client = createClient(SUPABASE_URL, SUPABASE_KEY, {
+  const client = createClient(SUPABASE_URL, ANON_KEY, {
     auth: { persistSession: false },
   });
   const { error: signInError } = await client.auth.signInWithPassword({ email, password });
