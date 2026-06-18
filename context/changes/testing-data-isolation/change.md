@@ -1,7 +1,7 @@
 ---
 change_id: testing-data-isolation
 title: Data-isolation & auth-boundary integration tests
-status: implementing
+status: implemented
 created: 2026-06-18
 updated: 2026-06-18
 

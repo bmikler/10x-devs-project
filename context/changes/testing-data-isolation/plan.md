@@ -474,10 +474,10 @@ None — additive. No schema, no data migration, no production code change.
 
 #### Automated
 
-- [x] 4.1 Markdown lints/formats clean: `npm run lint` + prettier on edited `.md`
-- [x] 4.2 No "TBD — see §3 Phase 2" remains in §6.2 / §6.4 (grep)
+- [x] 4.1 Markdown lints/formats clean: `npm run lint` + prettier on edited `.md` — 6c0b328
+- [x] 4.2 No "TBD — see §3 Phase 2" remains in §6.2 / §6.4 (grep) — 6c0b328
 
 #### Manual
 
-- [x] 4.3 A fresh reader can run the integration lane from §6.2 alone
-- [x] 4.4 §6.6 Phase 2 note reads consistently with the Phase 1 note
+- [x] 4.3 A fresh reader can run the integration lane from §6.2 alone — 6c0b328
+- [x] 4.4 §6.6 Phase 2 note reads consistently with the Phase 1 note — 6c0b328
