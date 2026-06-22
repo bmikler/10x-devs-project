@@ -381,21 +381,21 @@ CI uses the new `test:integration:ci` script.
 
 #### Manual
 
-- [ ] 1.5 The `ci` job shows the `astro check` step running and green
+- [x] 1.5 The `ci` job shows the `astro check` step running and green — 0bfe96c
 
 ### Phase 2: Integration lane in CI
 
 #### Automated
 
-- [ ] 2.1 Local dry run mirrors CI and `npm run test:integration:ci` passes
-- [ ] 2.2 The `integration` job runs on a pushed branch and is green
-- [ ] 2.3 A deliberately broken integration assertion turns the `integration` job red
+- [x] 2.1 Local dry run mirrors CI and `npm run test:integration:ci` passes — 37388a6 (verified in CI; local Docker unavailable)
+- [x] 2.2 The `integration` job runs on a pushed branch and is green — 37388a6
+- [x] 2.3 A deliberately broken integration assertion turns the `integration` job red — 37388a6 (proven by red runs 27946553313/27947751391)
 
 #### Manual
 
-- [ ] 2.4 CI shows `ci` and `integration` as two parallel jobs
-- [ ] 2.5 The fast `ci` job does not boot Supabase
-- [ ] 2.6 Integration job logs show migrations applied before the suite runs
+- [x] 2.4 CI shows `ci` and `integration` as two parallel jobs — 37388a6
+- [x] 2.5 The fast `ci` job does not boot Supabase — 37388a6
+- [x] 2.6 Integration job logs show migrations applied before the suite runs — 37388a6
 
 ### Phase 3: Branch protection on master
 

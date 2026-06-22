@@ -17,3 +17,10 @@ Any query that derives a calendar year from `expense_at` (TIMESTAMPTZ) must use 
 ### Layer-split principle: data-loss prevention in DB, UX convenience in app
 
 Invariants that prevent data loss (cascade-to-'other' on category delete) live as database triggers. Invariants that enforce UX convenience ('other' must be seeded before logging) live in application code. Why: DB-level enforcement survives every code path (API, Supabase Studio, future RPCs); app-level enforcement is easier to evolve without migrations. Apply when choosing where a new business rule should live.
+
+## FK integrity checks bypass RLS — don't rely on RLS for ownership-scoped references
+
+- **Context**: Multi-tenant / RLS-protected tables — any cross-user isolation or ownership test (e.g. `tests/integration/data-isolation.test.ts`) and any schema defining foreign keys on user-scoped tables.
+- **Problem**: Postgres runs FK integrity checks with system privileges, bypassing the inserting user's RLS. A user can insert a row referencing another user's row id even when RLS hides that row from them. The cross-user FK test wrongly assumed the FK lookup honors RLS and would deny it — surfaced when the CI integration gate first ran the suite against a clean migrated DB. (Not a data leak: the referencing row is the attacker's own and exposes none of the target's data.)
+- **Rule**: Never assume FK constraint checks are RLS-filtered. Enforce ownership-scoped references with a composite FK on `(id, user_id)` or a trigger — not RLS. Isolation/ownership tests must assert what RLS actually guarantees (the target's rows stay unreadable/unmodified), not FK-level denial of the reference.
+- **Applies to**: plan, implement, impl-review, research
