@@ -374,10 +374,10 @@ CI uses the new `test:integration:ci` script.
 
 #### Automated
 
-- [x] 1.1 Typecheck passes locally: `npx astro sync && npx astro check`
-- [x] 1.2 Lint passes: `npm run lint`
-- [x] 1.3 Unit tests pass: `npm run test`
-- [x] 1.4 Build passes: `npm run build`
+- [x] 1.1 Typecheck passes locally: `npx astro sync && npx astro check` — 0bfe96c
+- [x] 1.2 Lint passes: `npm run lint` — 0bfe96c
+- [x] 1.3 Unit tests pass: `npm run test` — 0bfe96c
+- [x] 1.4 Build passes: `npm run build` — 0bfe96c
 
 #### Manual
 

@@ -24,3 +24,29 @@ jobs:
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+
+  integration:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Start local Supabase
+        run: npx supabase start
+      - name: Apply migrations
+        run: npx supabase db reset --no-seed
+      - name: Export Supabase keys to job env
+        # status -o env emits API_URL/ANON_KEY/SERVICE_ROLE_KEY; the integration
+        # helper reads SUPABASE_URL, so map API_URL -> SUPABASE_URL. ANON_KEY must
+        # be this JWT key, not the opaque sb_publishable_ one.
+        run: |
+          STATUS=$(npx supabase status -o env)
+          {
+            echo "SUPABASE_URL=$(echo "$STATUS" | grep '^API_URL=' | cut -d= -f2- | tr -d '"')"
+            echo "ANON_KEY=$(echo "$STATUS" | grep '^ANON_KEY=' | cut -d= -f2- | tr -d '"')"
+            echo "SERVICE_ROLE_KEY=$(echo "$STATUS" | grep '^SERVICE_ROLE_KEY=' | cut -d= -f2- | tr -d '"')"
+          } >> "$GITHUB_ENV"
+      - run: npm run test:integration:ci
