@@ -378,16 +378,16 @@ change folder column is set.
 
 #### Automated
 
-- [x] 2.1 `npm run test` exits 0 with all six input-validation cases green
-- [x] 2.2 Existing `auth-guard.test.ts` tests still pass (no regression)
+- [x] 2.1 `npm run test` exits 0 with all six input-validation cases green — d9b5fd9
+- [x] 2.2 Existing `auth-guard.test.ts` tests still pass (no regression) — d9b5fd9
 
 #### Manual
 
-- [x] 2.3 Each bad-input label visible in test output (no timeouts or unhandled rejections)
+- [x] 2.3 Each bad-input label visible in test output (no timeouts or unhandled rejections) — d9b5fd9
 
 ### Phase 3: Cookbook §6.5 and rollout status update
 
 #### Manual
 
-- [ ] 3.1 §6.5 in test-plan.md filled in with cascade/mutation patterns
-- [ ] 3.2 Phase 3 row in §3 rollout table updated to `complete`
+- [x] 3.1 §6.5 in test-plan.md filled in with cascade/mutation patterns
+- [x] 3.2 Phase 3 row in §3 rollout table updated to `complete`

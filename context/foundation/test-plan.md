@@ -83,7 +83,7 @@ orchestrator updates Status as artifacts appear on disk.
 |---|------------|-----------------|----------------|------------|--------|----------------|
 | 1 | Bootstrap runner + report-math coverage | Stand up the test runner; prove report arithmetic and year-boundary attribution against PRD-derived oracles | #2, #3 | unit | complete | context/changes/testing-report-math/ |
 | 2 | Data-isolation & auth-boundary integration | Prove cross-user access is denied and unauthenticated requests are rejected at the API/route boundary | #1, #5 | integration | complete | context/changes/testing-data-isolation/ |
-| 3 | Mutation safety: cascade + input validation | Prove category-delete preserves expenses via "other", and the server rejects hostile input | #4, #6 | integration | not started | — |
+| 3 | Mutation safety: cascade + input validation | Prove category-delete preserves expenses via "other", and the server rejects hostile input | #4, #6 | integration | complete | context/changes/testing-mutation-safety/ |
 | 4 | Quality-gates wiring | Lock unit + integration into the existing GitHub Actions CI floor | cross-cutting | gates (CI) | not started | — |
 
 **Status vocabulary** (fixed — parser literals): `not started` →
@@ -204,11 +204,78 @@ Note: `middleware.ts` only matches page prefixes — every `/api/*` endpoint car
 
 **Ownership-scoped read/write (RLS enforcement):** Use the integration lane — see §6.2.
 
-**Input-validation rejection:** TBD — see §3 Phase 3.
+**Input-validation rejection:** Unit lane, DB-free — see §6.5 for the full pattern.
 
 ### 6.5 Adding a test for the cascade / mutation rules
 
-- TBD — see §3 Phase 3 (category-delete reassigns to "other"; durability re-read after a successful save).
+#### Integration — cascade and DB constraint backstop
+
+**Reference test:** `tests/integration/mutation-safety.test.ts` — integration lane, requires `supabase start` (see §6.2 prerequisites).
+
+**"other" seeding rule (critical):** The `is_system = true` "other" category is **not** auto-seeded by `auth.admin.createUser` — seed it manually in `beforeAll` via the user's own client:
+
+```typescript
+import { SYSTEM_OTHER_NAME } from "@/lib/categories";
+
+const { data } = await users.a.client.from("categories").insert({
+  user_id: users.a.id,
+  year: TEST_YEAR,
+  name: SYSTEM_OTHER_NAME,
+  type: "irregular",
+  is_system: true,
+  // do NOT pass limit_cents — the DB constraint requires it to be NULL for system rows
+}).select("id").single();
+```
+
+**Assertion rule (critical):** Assert DB state post-delete — re-read the affected expenses and check `category_id`, not just the delete operation's return value. This mirrors the §6.2 rule for cross-user writes: the DB operation may return no error while silently doing nothing.
+
+```typescript
+// After deleting the named category:
+const { data: moved } = await users.a.client.from("expenses")
+  .select("id,category_id")
+  .in("id", expenseIds);
+expect(moved).toHaveLength(2);
+expect(moved!.every(e => e.category_id === otherId)).toBe(true);
+```
+
+**DB constraint backstop pattern:** Insert with `amount_cents: 0` directly via the client; assert `error !== null` then re-read to confirm 0 rows were written.
+
+```typescript
+const { error } = await users.a.client.from("expenses")
+  .insert({ user_id: users.a.id, category_id: otherId, name: "bad", amount_cents: 0 });
+expect(error).not.toBeNull();
+const { data: bad } = await users.a.client.from("expenses").select("id").eq("name", "bad");
+expect(bad).toHaveLength(0);
+```
+
+**Test ordering:** Run the durability re-read test **before** the cascade test — the cascade deletes the named category and mutates shared state. The system-protection and constraint tests are independent.
+
+#### Unit — input-validation handler tests
+
+**Reference test:** `src/pages/api/expenses/input-validation.test.ts` — unit lane, DB-free.
+
+**Pattern:** mirrors `src/pages/api/auth-guard.test.ts`. Top-level `vi.mock("astro:env/server")` so `createClient` receives a valid-looking URL/key and does not return `null`. A `makeContext(form)` factory sets `locals.user` to a non-null object so the auth guard passes; validation fires before any supabase call.
+
+```typescript
+vi.mock("astro:env/server", () => ({
+  SUPABASE_URL: "http://127.0.0.1:54321",
+  SUPABASE_KEY: "test-anon-key",
+}));
+
+function makeContext(form: FormData): Parameters<APIRoute>[0] {
+  return {
+    request: new Request("http://localhost/api/expenses", { method: "POST", body: form }),
+    cookies: { get: () => undefined, getAll: () => [], has: () => false, set: vi.fn(), delete: vi.fn() },
+    locals: { user: { id: "test-user-id" } },
+    params: {},
+    redirect: (path: string) => new Response(null, { status: 302, headers: { Location: path } }),
+  } as unknown as Parameters<APIRoute>[0];
+}
+```
+
+Use a `validForm()` helper that sets all valid defaults (`amount: "10.00"`, `category_id: "<uuid>"`, `date: "2026-06-01"`); each test overrides exactly one bad field. For missing-field cases, call `form.delete("fieldName")`.
+
+**Shared assertion:** `expect(res.status).toBe(302)` + `expect(res.headers.get("Location")).toMatch(/^\/expenses\?error=/)`. A 302 to the error path proves validation fired and no DB write occurred.
 
 ### 6.6 Per-rollout-phase notes
 
