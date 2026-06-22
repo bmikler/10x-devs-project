@@ -368,22 +368,22 @@ change folder column is set.
 
 #### Automated
 
-- [x] 1.1 `npm run test:integration` exits 0 with all four mutation-safety cases green
+- [x] 1.1 `npm run test:integration` exits 0 with all four mutation-safety cases green — 8c4330d
 
 #### Manual
 
-- [x] 1.2 Integration tests confirmed passing locally with `supabase start`
+- [x] 1.2 Integration tests confirmed passing locally with `supabase start` — 8c4330d
 
 ### Phase 2: Input validation handler unit suite
 
 #### Automated
 
-- [ ] 2.1 `npm run test` exits 0 with all six input-validation cases green
-- [ ] 2.2 Existing `auth-guard.test.ts` tests still pass (no regression)
+- [x] 2.1 `npm run test` exits 0 with all six input-validation cases green
+- [x] 2.2 Existing `auth-guard.test.ts` tests still pass (no regression)
 
 #### Manual
 
-- [ ] 2.3 Each bad-input label visible in test output (no timeouts or unhandled rejections)
+- [x] 2.3 Each bad-input label visible in test output (no timeouts or unhandled rejections)
 
 ### Phase 3: Cookbook §6.5 and rollout status update
 
