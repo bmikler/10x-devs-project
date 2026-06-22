@@ -389,5 +389,5 @@ change folder column is set.
 
 #### Manual
 
-- [x] 3.1 §6.5 in test-plan.md filled in with cascade/mutation patterns
-- [x] 3.2 Phase 3 row in §3 rollout table updated to `complete`
+- [x] 3.1 §6.5 in test-plan.md filled in with cascade/mutation patterns — de9be63
+- [x] 3.2 Phase 3 row in §3 rollout table updated to `complete` — de9be63
