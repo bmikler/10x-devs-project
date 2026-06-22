@@ -17,9 +17,64 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npx astro sync
+      - run: npx astro check
       - run: npm run lint
       - run: npm run test
       - run: npm run build
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+
+  integration:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Start local Supabase
+        run: npx supabase start
+      - name: Apply migrations
+        run: npx supabase db reset --no-seed
+      - name: Export Supabase keys to job env
+        # status -o env emits API_URL/ANON_KEY/SERVICE_ROLE_KEY; the integration
+        # helper reads SUPABASE_URL, so map API_URL -> SUPABASE_URL. ANON_KEY must
+        # be this JWT key, not the opaque sb_publishable_ one.
+        run: |
+          STATUS=$(npx supabase status -o env)
+          {
+            echo "SUPABASE_URL=$(echo "$STATUS" | grep '^API_URL=' | cut -d= -f2- | tr -d '"')"
+            echo "ANON_KEY=$(echo "$STATUS" | grep '^ANON_KEY=' | cut -d= -f2- | tr -d '"')"
+            echo "SERVICE_ROLE_KEY=$(echo "$STATUS" | grep '^SERVICE_ROLE_KEY=' | cut -d= -f2- | tr -d '"')"
+          } >> "$GITHUB_ENV"
+      - name: Wait for Supabase auth clock to settle
+        # Right after `supabase start`, GoTrue's clock briefly runs ahead of
+        # PostgREST's, so a freshly-minted JWT (signInWithPassword) is rejected
+        # with "JWT issued at future" on the first authenticated request — which
+        # reds whichever integration suite mints a token earliest. Mint a fresh
+        # token each attempt and probe until it validates, so the real test
+        # tokens are reliable. (Static anon/service keys don't exhibit this —
+        # their iat is in the past — so they can't be used to detect the skew.)
+        run: |
+          set -uo pipefail
+          email="settle-probe@test.local"; pass="Probe1234!"
+          curl -s -X POST "$SUPABASE_URL/auth/v1/admin/users" \
+            -H "apikey: $SERVICE_ROLE_KEY" -H "Authorization: Bearer $SERVICE_ROLE_KEY" \
+            -H "Content-Type: application/json" \
+            -d "{\"email\":\"$email\",\"password\":\"$pass\",\"email_confirm\":true}" >/dev/null
+          for i in $(seq 1 30); do
+            tok=$(curl -s -X POST "$SUPABASE_URL/auth/v1/token?grant_type=password" \
+              -H "apikey: $ANON_KEY" -H "Content-Type: application/json" \
+              -d "{\"email\":\"$email\",\"password\":\"$pass\"}" \
+              | sed -n 's/.*"access_token":"\([^"]*\)".*/\1/p')
+            resp=$(curl -s "$SUPABASE_URL/rest/v1/categories?limit=1" \
+              -H "apikey: $ANON_KEY" -H "Authorization: Bearer ${tok:-}")
+            if printf '%s' "$resp" | grep -q "issued at future"; then
+              echo "attempt $i: auth clock not settled yet"; sleep 1; continue
+            fi
+            echo "auth clock settled after attempt $i"; exit 0
+          done
+          echo "auth clock did not settle within timeout"; exit 1
+      - run: npm run test:integration:ci

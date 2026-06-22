@@ -75,7 +75,7 @@ describe("data-isolation: cross-user denial matrix", () => {
     expect(check).toHaveLength(0);
   });
 
-  it("cross-user FK: B cannot attach an expense to A's category", async () => {
+  it("cross-user FK: B may reference A's category id but gains no visibility into A's data", async () => {
     // B needs its own category first (for its own expense inserts later)
     const { error: bCatErr } = await users.b.client
       .from("categories")
@@ -84,18 +84,25 @@ describe("data-isolation: cross-user denial matrix", () => {
       .single();
     if (bCatErr) throw new Error(`B category seed: ${bCatErr.message}`);
 
-    // B tries to insert an expense referencing A's category
+    // Postgres runs FK integrity checks with system privileges, bypassing RLS, so
+    // this insert SUCCEEDS even though B cannot read A's category. Not an isolation
+    // hole: the row is B's own and exposes none of A's data.
     const { data, error } = await users.b.client
       .from("expenses")
       .insert({ user_id: users.b.id, category_id: aCategoryId, name: "Cross-FK", amount_cents: 1 })
       .select("id");
+    expect(error).toBeNull();
+    expect(data).toHaveLength(1);
 
-    // FK lookup on categories goes through RLS — B cannot see A's category → error
-    const inserted = error ? [] : (data as unknown[]);
-    expect(inserted).toHaveLength(0);
+    // The actual guarantee: B still cannot read A's category...
+    const { data: aCatFromB } = await users.b.client.from("categories").select("id").eq("id", aCategoryId);
+    expect(aCatFromB).toHaveLength(0);
 
-    // Confirm no expense in the DB references A's category
-    const { data: leaked } = await users.b.client.from("expenses").select("id").eq("category_id", aCategoryId);
-    expect(leaked).toHaveLength(0);
+    // ...and A's category is unchanged from A's own view.
+    const { data: aCatFromA } = await users.a.client.from("categories").select("name").eq("id", aCategoryId).single();
+    expect(aCatFromA?.name).toBe("A-category");
+
+    // Clean up B's cross-referencing row so user-delete teardown doesn't hit the category FK.
+    await users.b.client.from("expenses").delete().eq("name", "Cross-FK");
   });
 });

@@ -25,7 +25,9 @@ let categories: CategoryRow[] = [];
 let notFound = false;
 
 const supabase = createClient(Astro.request.headers, Astro.cookies);
-if (supabase && user) {
+if (!id) {
+  notFound = true;
+} else if (supabase && user) {
   const { data: expData } = await supabase
     .from("expenses")
     .select("id,category_id,name,amount_cents,expense_at")

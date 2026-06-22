@@ -26,7 +26,9 @@ let category: CategoryRow | null = null;
 let blocked = false;
 
 const supabase = createClient(Astro.request.headers, Astro.cookies);
-if (supabase && user) {
+if (!id) {
+  blocked = true;
+} else if (supabase && user) {
   // RLS scopes this to the signed-in user; also constrain to the budget year.
   const { data } = await supabase
     .from("categories")
